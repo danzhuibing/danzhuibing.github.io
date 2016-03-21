@@ -236,94 +236,6 @@
             
               
                 
-                <a class="post-title-link" href="/2016/03/21/test/" itemprop="url">
-                  test
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-03-21T19:46:37+08:00" content="2016-03-21">
-              2016-03-21
-            </time>
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="test"><a href="#test" class="headerlink" title="test"></a>test</h2>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
                 <a class="post-title-link" href="/2015/12/20/Python工具箱：日志与配置文件/" itemprop="url">
                   Python工具箱：日志与配置文件
                 </a>
@@ -1687,6 +1599,122 @@
 
 
     
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2015/09/01/R数据分析进阶03：plyr/" itemprop="url">
+                  R数据分析进阶03：plyr
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-09-01T18:49:11+08:00" content="2015-09-01">
+              2015-09-01
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/R数据分析进阶/" itemprop="url" rel="index">
+                    <span itemprop="name">R数据分析进阶</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本文只考虑基于数据框的操作，所指函数是ddply.</p>
+<h3 id="基本思想"><a href="#基本思想" class="headerlink" title="基本思想"></a>基本思想</h3><p>plyr包数据打理模型是”分割-应用-结合“.<br><strong>ddply()</strong>函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。</p>
+<h3 id="语法介绍"><a href="#语法介绍" class="headerlink" title="语法介绍"></a>语法介绍</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ddply(data, group_vars, summarize OR transform, new_var = <span class="keyword">function</span>(param_var))</span><br></pre></td></tr></table></figure>
+<ul>
+<li>group_vars: 用于作为分割基准的变量，有两种形式，一种是c(“var1”, “var2”)，一种是.(var1, var2)；如果取值为NULL，表示对整个数据框作用函数。</li>
+<li>summarize OR transform:  如果采用summarize，新的数据框，只会包含group_vars和new_var；如果采用transform，新的数据框会保留原始的数据框的所有列，new_var会在相同分组的不同行重复填上相同的结果。</li>
+<li>new_var = function(param_var)：允许使用多个函数。e.g. highestMargin = max(margin), lowestMargin = min(margin)</li>
+</ul>
+<h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p>请参考网上的这个优秀资料<br><a href="http://developer.51cto.com/art/201312/423612_all.htm" target="_blank" rel="external">http://developer.51cto.com/art/201312/423612_all.htm</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
   </section>
 
   
@@ -1732,7 +1760,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-count">12</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
