@@ -1,0 +1,755 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="工具箱,Python," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="上班以来，负责了两个独立的Python工程，一个是为清华合作单位做的GPS点道路匹配的Hadoop Streaming程序，一个是为交通预测项目做的进行在线预测的Spark程序，开发语言都是Python。其中用了同事提供的两个脚本实现了日志和配置文件，感觉非常方便，因此写出来，方便自己以后使用，也分享给其他感兴趣的朋友。用到了一些别人的代码，表示感谢。如果觉得侵权，请联系我，立刻删除。
+代码准备首">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python工具箱：日志与配置文件">
+<meta property="og:url" content="http://yoursite.com/2015/12/20/Python工具箱：日志与配置文件/index.html">
+<meta property="og:site_name" content="三行代码">
+<meta property="og:description" content="上班以来，负责了两个独立的Python工程，一个是为清华合作单位做的GPS点道路匹配的Hadoop Streaming程序，一个是为交通预测项目做的进行在线预测的Spark程序，开发语言都是Python。其中用了同事提供的两个脚本实现了日志和配置文件，感觉非常方便，因此写出来，方便自己以后使用，也分享给其他感兴趣的朋友。用到了一些别人的代码，表示感谢。如果觉得侵权，请联系我，立刻删除。
+代码准备首">
+<meta property="og:updated_time" content="2016-03-21T10:17:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python工具箱：日志与配置文件">
+<meta name="twitter:description" content="上班以来，负责了两个独立的Python工程，一个是为清华合作单位做的GPS点道路匹配的Hadoop Streaming程序，一个是为交通预测项目做的进行在线预测的Spark程序，开发语言都是Python。其中用了同事提供的两个脚本实现了日志和配置文件，感觉非常方便，因此写出来，方便自己以后使用，也分享给其他感兴趣的朋友。用到了一些别人的代码，表示感谢。如果觉得侵权，请联系我，立刻删除。
+代码准备首">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> Python工具箱：日志与配置文件 | 三行代码 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">三行代码</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-heartbeat fa-fw"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Python工具箱：日志与配置文件
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-12-20T16:17:49+08:00" content="2015-12-20">
+              2015-12-20
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/程序员工具箱/" itemprop="url" rel="index">
+                    <span itemprop="name">程序员工具箱</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上班以来，负责了两个独立的Python工程，一个是为清华合作单位做的GPS点道路匹配的Hadoop Streaming程序，一个是为交通预测项目做的进行在线预测的Spark程序，开发语言都是Python。其中用了同事提供的两个脚本实现了日志和配置文件，感觉非常方便，因此写出来，方便自己以后使用，也分享给其他感兴趣的朋友。用到了一些别人的代码，表示感谢。如果觉得侵权，请联系我，立刻删除。</p>
+<h1 id="代码准备"><a href="#代码准备" class="headerlink" title="代码准备"></a>代码准备</h1><p>首先，拷贝以下几个代码文件。</p>
+<h2 id="日志logger-py"><a href="#日志logger-py" class="headerlink" title="日志logger.py"></a>日志<strong>logger.py</strong></h2><p>作者是百度的裴欣，感谢他的代码，尽管我和他并不相识</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#-*-coding:gbk-*-</span></span><br><span class="line"><span class="string">"""</span><br><span class="line">实现log相关功能,分级和输出形式模仿了ullog样式</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">******************使用方法*********华丽的分割线***********</span><br><span class="line">import logger</span><br><span class="line"></span><br><span class="line"># 初始化，输出DEUBG及以上级别的日志</span><br><span class="line"># DEBUG, TRACE和NOTICE结果打在/log/a.log文件中</span><br><span class="line"># WARNING和FATAL结果打在/log/a.log.wf文件中</span><br><span class="line">logger.init('/log/a', 'DEBUG')</span><br><span class="line"></span><br><span class="line"># 如果不做初始化，则会直接打在标准错误</span><br><span class="line"></span><br><span class="line"># 打DEBUG日志</span><br><span class="line">logger.debug_log('sdlksdlks')</span><br><span class="line"></span><br><span class="line"># 打FATAL日志</span><br><span class="line">logger.fatal_log('ksldsll')</span><br><span class="line"></span><br><span class="line"># 其他级别log类似</span><br><span class="line"></span><br><span class="line">"""</span></span><br><span class="line">__authors__ = [<span class="string">'裴欣&lt;peixin@baidu.com&gt;'</span>, ]</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> inspect</span><br><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">from</span> logging <span class="keyword">import</span> handlers</span><br><span class="line"></span><br><span class="line">logging.TRACE = <span class="number">15</span></span><br><span class="line">logging.addLevelName(logging.TRACE, <span class="string">'TRACE'</span>)</span><br><span class="line">logging.NOTICE = logging.INFO</span><br><span class="line">logging.addLevelName(logging.NOTICE, <span class="string">"NOTICE"</span>)</span><br><span class="line">logging.FATAL = logging.ERROR</span><br><span class="line">logging.addLevelName(logging.FATAL, <span class="string">'FATAL'</span>)</span><br><span class="line"></span><br><span class="line">log_level_dict = &#123;<span class="string">'DEBUG'</span>:<span class="number">10</span>, <span class="string">'TRACE'</span>:<span class="number">15</span>, <span class="string">'NOTICE'</span>:<span class="number">20</span>, <span class="string">'WARNING'</span>:<span class="number">30</span>, <span class="string">'FATAL'</span>:<span class="number">40</span>&#125;</span><br><span class="line">formatter = logging.Formatter(<span class="string">'%(levelname)s: %(asctime)s: %(message)s'</span>, datefmt=<span class="string">'%m-%d %H:%M:%S'</span>)</span><br><span class="line"></span><br><span class="line"><span class="string">"""</span><br><span class="line">class LoggerState(object):</span><br><span class="line">    def __init__():</span><br><span class="line">        "disable the __init__ method"</span><br><span class="line"></span><br><span class="line">    __instance = None</span><br><span class="line">    __lock = threading.Lock()</span><br><span class="line"></span><br><span class="line">    @staticmethod</span><br><span class="line">    def has_initialized():</span><br><span class="line">        LoggerState.__lock.acquire()</span><br><span class="line">        result = True</span><br><span class="line">        if None == LoggerState.__instance:</span><br><span class="line">            LoggerState.__instance = object.__new__(LoggerState)</span><br><span class="line">            result = False</span><br><span class="line">        LoggerState.__lock.release()</span><br><span class="line">        return result</span><br><span class="line">"""</span></span><br><span class="line">__initialized = <span class="keyword">False</span></span><br><span class="line"></span><br><span class="line">__normal_logger = logging.getLogger(<span class="string">'normal'</span>)</span><br><span class="line">__wf_logger = logging.getLogger(<span class="string">'wf'</span>)</span><br><span class="line"><span class="comment">#if not LoggerState.has_initialized():</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> __initialized:</span><br><span class="line">    __normal_handler = logging.StreamHandler()</span><br><span class="line">    __normal_handler.setFormatter(formatter)</span><br><span class="line">    __normal_logger = logging.getLogger(<span class="string">'normal'</span>)</span><br><span class="line">    __normal_logger.addHandler(__normal_handler)</span><br><span class="line">    __normal_logger.setLevel(<span class="number">0</span>)</span><br><span class="line">    __wf_handler = logging.StreamHandler()</span><br><span class="line">    __wf_handler.setFormatter(formatter)</span><br><span class="line">    __wf_logger = logging.getLogger(<span class="string">'wf'</span>)</span><br><span class="line">    __wf_logger.addHandler(__wf_handler)</span><br><span class="line">    __wf_logger.setLevel(logging.WARNING)</span><br><span class="line">    __initialized = <span class="keyword">True</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">init</span><span class="params">(log_file, log_level=<span class="string">'NOTICE'</span>)</span>:</span></span><br><span class="line">    <span class="keyword">global</span> __normal_handler</span><br><span class="line">    <span class="keyword">global</span> __wf_handler</span><br><span class="line">    <span class="keyword">global</span> __normal_logger</span><br><span class="line">    <span class="keyword">global</span> __wf_logger</span><br><span class="line"></span><br><span class="line">    log_dir = os.path.dirname(log_file)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(log_dir):</span><br><span class="line">        os.makedirs(log_dir)</span><br><span class="line">    <span class="keyword">if</span> os.path.isfile(log_dir):</span><br><span class="line">        <span class="keyword">raise</span> IOException(<span class="string">'the path [%s] is regular file but not a dir'</span>%(log_dir))</span><br><span class="line"></span><br><span class="line">    real_log_level = log_level_dict.get(log_level, <span class="number">20</span>)</span><br><span class="line">    __normal_logger.removeHandler(__normal_handler)</span><br><span class="line">    __normal_handler = logging.handlers.WatchedFileHandler(<span class="string">'%s.log'</span>%(log_file))</span><br><span class="line">    __normal_handler.setFormatter(formatter)</span><br><span class="line">    __normal_logger = logging.getLogger(<span class="string">'normal'</span>)</span><br><span class="line">    __normal_logger.addHandler(__normal_handler)</span><br><span class="line">    __normal_logger.setLevel(real_log_level)</span><br><span class="line"></span><br><span class="line">    __wf_logger.removeHandler(__wf_handler)</span><br><span class="line">    __wf_handler = logging.handlers.WatchedFileHandler(<span class="string">'%s.log.wf'</span>%(log_file))</span><br><span class="line">    __wf_handler.setFormatter(formatter)</span><br><span class="line">    __wf_logger = logging.getLogger(<span class="string">'wf'</span>)</span><br><span class="line">    __wf_logger.addHandler(__wf_handler)</span><br><span class="line">    __wf_logger.setLevel(logging.WARNING)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">close</span><span class="params">()</span>:</span></span><br><span class="line">    __normal_handler.flush()</span><br><span class="line">    __normal_handler.close()</span><br><span class="line"></span><br><span class="line">    __wf_handler.flush()</span><br><span class="line">    __wf_handler.close()</span><br><span class="line"></span><br><span class="line">    logging.shutdown()</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">__get_call_func_frame_info</span><span class="params">()</span>:</span></span><br><span class="line">    frame = inspect.getouterframes(inspect.currentframe())[<span class="number">2</span>]</span><br><span class="line">    frame_info = inspect.getframeinfo(frame[<span class="number">0</span>])</span><br><span class="line">    info = <span class="string">'[%s][%d][%s]'</span>%(frame_info.filename, frame_info.lineno, frame_info.function)</span><br><span class="line">    <span class="keyword">return</span> info</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">warning_log</span><span class="params">(info)</span>:</span></span><br><span class="line">    stack_info = __get_call_func_frame_info()</span><br><span class="line">    __wf_logger.warning(<span class="string">'%s %s'</span>%(stack_info, info))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fatal_log</span><span class="params">(info)</span>:</span></span><br><span class="line">    stack_info = __get_call_func_frame_info()</span><br><span class="line">    __wf_logger.log(logging.FATAL, <span class="string">'%s %s'</span>%(stack_info, info))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">notice_log</span><span class="params">(info)</span>:</span></span><br><span class="line">    stack_info = __get_call_func_frame_info()</span><br><span class="line">    __normal_logger.log(logging.NOTICE, <span class="string">'%s %s'</span>%(stack_info, info))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">trace_log</span><span class="params">(info)</span>:</span></span><br><span class="line">    stack_info = __get_call_func_frame_info()</span><br><span class="line">    __normal_logger.log(logging.TRACE, <span class="string">'%s %s'</span>%(stack_info, info))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">debug_log</span><span class="params">(info)</span>:</span></span><br><span class="line">    stack_info = __get_call_func_frame_info()</span><br><span class="line">    __normal_logger.debug(<span class="string">'%s %s'</span>%(stack_info, info))</span><br></pre></td></tr></table></figure>
+<h2 id="配置read-conf-py"><a href="#配置read-conf-py" class="headerlink" title="配置read_conf.py"></a>配置<strong>read_conf.py</strong></h2><p>作者不详，送出不明方向的祝福。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#-*-coding:gbk-*-</span></span><br><span class="line"><span class="string">"""</span><br><span class="line">提供了从python文件中读取配置的简单检查函数</span><br><span class="line">"""</span></span><br><span class="line"><span class="keyword">import</span> imp</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> types</span><br><span class="line"><span class="keyword">import</span> os.path</span><br><span class="line"><span class="keyword">import</span> logger</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_float</span><span class="params">(value, min=sys.float_info.min, max=sys.float_info.max)</span>:</span></span><br><span class="line">    <span class="string">"""</span><br><span class="line">    检查一个值的类型是否是浮点数</span><br><span class="line">    并检查值是否正常</span><br><span class="line">    """</span></span><br><span class="line">    <span class="keyword">if</span> type(value) != types.FloatType <span class="keyword">and</span> type(value) != types.IntType:</span><br><span class="line">        <span class="keyword">raise</span> TypeError(<span class="string">"type of [%s] is not float"</span>%(value))</span><br><span class="line">    <span class="keyword">if</span> value &lt; min <span class="keyword">or</span> value &gt; max:</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">"invalid value [%d]"</span>%(value))</span><br><span class="line">    <span class="keyword">return</span> value</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_int</span><span class="params">(value, min = -sys.maxint - <span class="number">1</span>, max=sys.maxint )</span>:</span></span><br><span class="line">    <span class="string">"""</span><br><span class="line">    检查一个值的类型是否是整数</span><br><span class="line">    并检查值是否正常</span><br><span class="line">    """</span></span><br><span class="line">    <span class="keyword">if</span> type(value) != types.IntType:</span><br><span class="line">        <span class="keyword">raise</span> TypeError(<span class="string">"type of [%s] is not int"</span>%(value))</span><br><span class="line">    <span class="keyword">if</span> value &lt; min <span class="keyword">or</span> value &gt; max:</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">"invalid value [%d]"</span>%(value))</span><br><span class="line">    <span class="keyword">return</span> value</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_str</span><span class="params">(value)</span>:</span></span><br><span class="line">    <span class="string">"""</span><br><span class="line">    检查一个值的类型是否是字符串</span><br><span class="line">    """</span></span><br><span class="line">    <span class="keyword">if</span> type(value) != types.StringType:</span><br><span class="line">        <span class="keyword">raise</span> TypeError(<span class="string">"type of [%s] is not string"</span>%(value))</span><br><span class="line">    <span class="keyword">return</span> value</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_list</span><span class="params">(value, min_size=<span class="number">0</span>, max_size=sys.maxint, item_type=None)</span>:</span></span><br><span class="line">    <span class="string">"""</span><br><span class="line">    检查一个值的类型是否是list</span><br><span class="line">    同时对list的size进行检查</span><br><span class="line">    是否小于最小size或者大于最大size</span><br><span class="line">    如果item_type不是None，则对list中每个元素的类型进行检查</span><br><span class="line">    要求list中每个元素的类型都要符合要求</span><br><span class="line">    """</span></span><br><span class="line">    <span class="keyword">if</span> type(value) != types.ListType:</span><br><span class="line">        <span class="keyword">raise</span> TypeError(<span class="string">"type of [%s] is not list"</span>%(value))</span><br><span class="line">    <span class="keyword">if</span> len(value) &lt; min_size <span class="keyword">or</span> len(value) &gt; max_size:</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">"the length of input list is invalid"</span>)</span><br><span class="line">    <span class="keyword">if</span> item_type != <span class="keyword">None</span>:</span><br><span class="line">        <span class="keyword">if</span> any([type(item)!=item_type <span class="keyword">for</span> item <span class="keyword">in</span> value]):</span><br><span class="line">            <span class="keyword">raise</span> TypeError(<span class="string">"the type of all the element must be [%s]"</span>%(item_type))</span><br><span class="line">    <span class="keyword">return</span> value</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_conf_module</span><span class="params">(conf_path)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(conf_path):</span><br><span class="line">        logger.fatal_log(<span class="string">'conf file [%s] does not exist'</span>%(conf_path))</span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">'conf file [%s] does not exist'</span>%(conf_path))</span><br><span class="line">    path_split = os.path.split(conf_path)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        conf_module = imp.load_source(path_split[<span class="number">1</span>], conf_path)</span><br><span class="line">    <span class="keyword">except</span> Exception, e:</span><br><span class="line">        logger.fatal_log(<span class="string">'can not load the config file [%s] because [%s]'</span>%(conf_path, e))</span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">'can not load the config file [%s]'</span>%(conf_path))</span><br><span class="line">    <span class="keyword">return</span> conf_module</span><br></pre></td></tr></table></figure>
+<h1 id="构建自己的应用"><a href="#构建自己的应用" class="headerlink" title="构建自己的应用"></a>构建自己的应用</h1><p>首先，设计自己程序需要配置的参数， 文件名假设为<strong>conf.py</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">ODPS_PATH=<span class="string">"XXXXXX"</span></span><br><span class="line">INPUT_PROJECT=<span class="string">"XXXXX"</span></span><br><span class="line">INPUT_TABLES=[<span class="string">"XXXXXX"</span>]</span><br><span class="line">OUTPUT_PROJECT=<span class="string">"XXXXXX"</span></span><br><span class="line">OUTPUT_TABLES=[<span class="string">"XXXXX"</span>]</span><br><span class="line">BIN_NAME=<span class="string">"XXXXX"</span></span><br><span class="line">MAP_HOME=<span class="string">"XXXXXX"</span></span><br><span class="line">MAP_VERSION=<span class="string">"XXXXX"</span></span><br><span class="line">ADCODE=<span class="string">"XXXXX"</span></span><br><span class="line">MONTH=<span class="string">"XXXXX"</span></span><br></pre></td></tr></table></figure>
+<p>然后写主程序，文件名假设为<strong>test.py</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> read_conf</span><br><span class="line"><span class="keyword">import</span> logger</span><br><span class="line"><span class="keyword">from</span> optparse <span class="keyword">import</span> OptionParser</span><br><span class="line"><span class="keyword">import</span> types</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_conf</span><span class="params">(conf_name)</span>:</span> </span><br><span class="line"><span class="comment">#conf_name为配置文件的地址，返回字典，保存配置文件的信息</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        conf_module = read_conf.get_conf_module(conf_name)</span><br><span class="line">    <span class="keyword">except</span> Exception, e:</span><br><span class="line">        logger.fatal_log(<span class="string">'cannot load the config file [%s] because [%s]'</span> % (conf_name, e))</span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">'cannot load the config file [%s]'</span> % (conf_name))</span><br><span class="line">    result = &#123;&#125;</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        result[<span class="string">'odps_path'</span>] = read_conf.get_str(conf_module.ODPS_PATH)</span><br><span class="line">        result[<span class="string">'input_project'</span>] = read_conf.get_str(conf_module.INPUT_PROJECT)</span><br><span class="line">        result[<span class="string">'input_tables'</span>] = read_conf.get_list(conf_module.INPUT_TABLES, <span class="number">1</span>, types.StringType)</span><br><span class="line">        result[<span class="string">'output_project'</span>] = read_conf.get_str(conf_module.OUTPUT_PROJECT)</span><br><span class="line">        result[<span class="string">'output_tables'</span>] = read_conf.get_list(conf_module.OUTPUT_TABLES, <span class="number">1</span>, types.StringType)</span><br><span class="line">        result[<span class="string">'bin_name'</span>] = read_conf.get_str(conf_module.BIN_NAME)</span><br><span class="line">        result[<span class="string">'map_home'</span>] = read_conf.get_str(conf_module.MAP_HOME)</span><br><span class="line">        result[<span class="string">'map_version'</span>] = read_conf.get_str(conf_module.MAP_VERSION)</span><br><span class="line">        result[<span class="string">'adcode'</span>] = read_conf.get_str(conf_module.ADCODE)</span><br><span class="line">        result[<span class="string">'month'</span>] = read_conf.get_str(conf_module.MONTH)</span><br><span class="line">    <span class="keyword">except</span> Exception, e:</span><br><span class="line">        logger.fatal_log(<span class="string">'failed to read conf [%s]'</span>%(e))</span><br><span class="line">        sys.exit(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    usage_string = <span class="string">"usage: python %prog [options] arg"</span></span><br><span class="line">    parser = OptionParser(usage=usage_string)</span><br><span class="line">    parser.add_option(<span class="string">'-c'</span>, dest=<span class="string">'conf'</span>, default=<span class="keyword">None</span>, help=<span class="string">'read conf here'</span>)</span><br><span class="line">    (options, args) = parser.parse_args()</span><br><span class="line">    <span class="keyword">if</span> options.conf == <span class="keyword">None</span>:</span><br><span class="line">        logger.fatal_log(<span class="string">" -c parameter must be specified. See help for more information."</span>)</span><br><span class="line">        sys.exit(<span class="number">-1</span>)</span><br><span class="line">    home = os.path.dirname(sys.path[<span class="number">0</span>])</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        logger.init(<span class="string">'%s/log/log_%s'</span>%(home,options.posix), <span class="string">'NOTICE'</span>)</span><br><span class="line">    <span class="keyword">except</span> Exception, e:</span><br><span class="line">        logger.fatal_log(<span class="string">' failed to create log'</span>)</span><br><span class="line">        sys.exit(<span class="number">-1</span>)</span><br><span class="line">    conf = get_conf(options.conf)</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/工具箱/" rel="tag">#工具箱</a>
+          
+            <a href="/tags/Python/" rel="tag">#Python</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/20/C工具箱：Makefile/" rel="next" title="C工具箱：Makefile">
+                <i class="fa fa-chevron-left"></i> C工具箱：Makefile
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/21/test/" rel="prev" title="test">
+                test <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="丹追兵" />
+          <p class="site-author-name" itemprop="name">丹追兵</p>
+          <p class="site-description motion-element" itemprop="description">刚出道的大数据分析师</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#代码准备"><span class="nav-number">1.</span> <span class="nav-text">代码准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#日志logger-py"><span class="nav-number">1.1.</span> <span class="nav-text">日志logger.py</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置read-conf-py"><span class="nav-number">1.2.</span> <span class="nav-text">配置read_conf.py</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构建自己的应用"><span class="nav-number">2.</span> <span class="nav-text">构建自己的应用</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">丹追兵</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar.display === 'post' || CONFIG.sidebar.display === 'always') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>
