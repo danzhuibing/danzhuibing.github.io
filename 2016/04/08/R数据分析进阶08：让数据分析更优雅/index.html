@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="R语言,数据分析," />
+  <meta name="keywords" content="R语言,统计学," />
 
 
 
@@ -57,22 +57,19 @@
 
 
 
-<meta name="description" content="本文只考虑基于数据框的操作，所指函数是ddply.
-基本思想plyr包数据打理模型是”分割-应用-结合“.ddply()函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。
-语法介绍1ddply(data, group_vars, summarize OR transform, new_var = fu">
+<meta name="description" content="DT包：查看矩阵或数据框的内容12library(DT)datatable(iris, options = list(pageLength = 5))
+DT包提供大量UI定制功能，即修改展示的HTML、CSS和js。12345678910m = matrix(    c(&amp;apos;&amp;lt;b&amp;gt;Bold&amp;lt;/b&amp;gt;&amp;apos;,         &amp;apos;&amp;lt;em&amp;gt;Emp">
 <meta property="og:type" content="article">
-<meta property="og:title" content="R数据分析进阶03：plyr">
-<meta property="og:url" content="http://yoursite.com/2015/09/01/R数据分析进阶03：plyr/index.html">
+<meta property="og:title" content="R数据分析进阶08：让数据分析更优雅.md">
+<meta property="og:url" content="http://yoursite.com/2016/04/08/R数据分析进阶08：让数据分析更优雅/index.html">
 <meta property="og:site_name" content="三行代码">
-<meta property="og:description" content="本文只考虑基于数据框的操作，所指函数是ddply.
-基本思想plyr包数据打理模型是”分割-应用-结合“.ddply()函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。
-语法介绍1ddply(data, group_vars, summarize OR transform, new_var = fu">
-<meta property="og:updated_time" content="2016-03-21T10:17:38.000Z">
+<meta property="og:description" content="DT包：查看矩阵或数据框的内容12library(DT)datatable(iris, options = list(pageLength = 5))
+DT包提供大量UI定制功能，即修改展示的HTML、CSS和js。12345678910m = matrix(    c(&amp;apos;&amp;lt;b&amp;gt;Bold&amp;lt;/b&amp;gt;&amp;apos;,         &amp;apos;&amp;lt;em&amp;gt;Emp">
+<meta property="og:updated_time" content="2016-04-08T10:03:12.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="R数据分析进阶03：plyr">
-<meta name="twitter:description" content="本文只考虑基于数据框的操作，所指函数是ddply.
-基本思想plyr包数据打理模型是”分割-应用-结合“.ddply()函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。
-语法介绍1ddply(data, group_vars, summarize OR transform, new_var = fu">
+<meta name="twitter:title" content="R数据分析进阶08：让数据分析更优雅.md">
+<meta name="twitter:description" content="DT包：查看矩阵或数据框的内容12library(DT)datatable(iris, options = list(pageLength = 5))
+DT包提供大量UI定制功能，即修改展示的HTML、CSS和js。12345678910m = matrix(    c(&amp;apos;&amp;lt;b&amp;gt;Bold&amp;lt;/b&amp;gt;&amp;apos;,         &amp;apos;&amp;lt;em&amp;gt;Emp">
 
 
 
@@ -90,7 +87,7 @@
   };
 </script>
 
-  <title> R数据分析进阶03：plyr | 三行代码 </title>
+  <title> R数据分析进阶08：让数据分析更优雅.md | 三行代码 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -230,7 +227,7 @@
             
             
               
-                R数据分析进阶03：plyr
+                R数据分析进阶08：让数据分析更优雅.md
               
             
           </h1>
@@ -242,8 +239,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-09-01T18:49:11+08:00" content="2015-09-01">
-              2015-09-01
+            <time itemprop="dateCreated" datetime="2016-04-08T18:02:32+08:00" content="2016-04-08">
+              2016-04-08
             </time>
           </span>
 
@@ -288,15 +285,27 @@
       
 
       
-        <p>本文只考虑基于数据框的操作，所指函数是ddply.</p>
-<h3 id="基本思想"><a href="#基本思想" class="headerlink" title="基本思想"></a>基本思想</h3><p>plyr包数据打理模型是”分割-应用-结合“.<br><strong>ddply()</strong>函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。</p>
-<h3 id="语法介绍"><a href="#语法介绍" class="headerlink" title="语法介绍"></a>语法介绍</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ddply(data, group_vars, summarize OR transform, new_var = <span class="keyword">function</span>(param_var))</span><br></pre></td></tr></table></figure>
-<ul>
-<li>group_vars: 用于作为分割基准的变量，有两种形式，一种是c(“var1”, “var2”)，一种是.(var1, var2)；如果取值为NULL，表示对整个数据框作用函数。</li>
-<li>summarize OR transform:  如果采用summarize，新的数据框，只会包含group_vars和new_var；如果采用transform，新的数据框会保留原始的数据框的所有列，new_var会在相同分组的不同行重复填上相同的结果。</li>
-<li>new_var = function(param_var)：允许使用多个函数。e.g. highestMargin = max(margin), lowestMargin = min(margin)</li>
-</ul>
-<h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p>请参考网上的这个优秀资料<br><a href="http://developer.51cto.com/art/201312/423612_all.htm" target="_blank" rel="external">http://developer.51cto.com/art/201312/423612_all.htm</a></p>
+        <h1 id="DT包：查看矩阵或数据框的内容"><a href="#DT包：查看矩阵或数据框的内容" class="headerlink" title="DT包：查看矩阵或数据框的内容"></a>DT包：查看矩阵或数据框的内容</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">library(DT)</span><br><span class="line">datatable(iris, options = list(pageLength = 5))</span><br></pre></td></tr></table></figure>
+<p>DT包提供大量UI定制功能，即修改展示的HTML、CSS和js。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">m = matrix(</span><br><span class="line">    c(&apos;&lt;b&gt;Bold&lt;/b&gt;&apos;, </span><br><span class="line">        &apos;&lt;em&gt;Emphasize&lt;/em&gt;&apos;, </span><br><span class="line">        &apos;&lt;a href=&quot;#&quot; onclick=&quot;alert(\&apos;Hello\&apos;);&quot;&gt;Hello&lt;/a&gt;&apos;, </span><br><span class="line">         &apos;&lt;a href=&quot;#&quot; onclick=&quot;alert(\&apos;World\&apos;);&quot;&gt;World&lt;/a&gt;&apos;</span><br><span class="line">    ), 2</span><br><span class="line">)</span><br><span class="line">colnames(m) = c(&apos;&lt;span style=&quot;color:red&quot;&gt;Column 1&lt;/span&gt;&apos;, &apos;&lt;em&gt;Column 2&lt;/em&gt;&apos;)</span><br><span class="line">datatable(m) # 默认不处理HTML标签</span><br><span class="line">datatable(m, escape = FALSE) # 处理HTML标签</span><br></pre></td></tr></table></figure></p>
+<h1 id="tidyr包：reshape2的替代者，功能更纯粹"><a href="#tidyr包：reshape2的替代者，功能更纯粹" class="headerlink" title="tidyr包：reshape2的替代者，功能更纯粹"></a>tidyr包：reshape2的替代者，功能更纯粹</h1><p>R将整洁数据定义为：每个变量的数据存储在自身的列中，每个观测值的数据存储在其自身的行中。整洁数据是进行数据再加工的基础。</p>
+<p>考虑本系列04的例子。对于melt，tidyr用<strong>gather</strong>进行替代。<br><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">table1 &lt;- gather(table2,  道路等级, 日均覆盖里程,  one_of(c(<span class="string">"高速覆盖里程"</span>, <span class="string">"快速路覆盖里程"</span>, <span class="string">"主要道路覆盖里程"</span>)))</span><br></pre></td></tr></table></figure></p>
+<p>最后一个参数指定要gather的列，x:y表示从x到y的列，-z表示不包括z列。还可以使用dplyr包的select的option表达式进行列的选取，示例代码使用了one_of表达式。</p>
+<p>对于cast, tidyr用<strong>spread</strong>进行替代。<br><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">table2 &lt;- spread(table1, 道路等级, 日均覆盖里程)</span><br></pre></td></tr></table></figure></p>
+<p>此外，tidyr还提供了<strong>separate</strong>将一列按分隔符分割为多列，<strong>unite</strong>将多列按指定分隔符合并为一列。</p>
+<h1 id="dplyr包：plyr包的替代者，专门面对数据框，将ddplyr转变为更易用的接口"><a href="#dplyr包：plyr包的替代者，专门面对数据框，将ddplyr转变为更易用的接口" class="headerlink" title="dplyr包：plyr包的替代者，专门面对数据框，将ddplyr转变为更易用的接口"></a>dplyr包：plyr包的替代者，专门面对数据框，将ddplyr转变为更易用的接口</h1><p>首先dplyr提供了一个符号<strong>%&gt;%</strong>，该符号将左边的对象作为第一个参数传递到右边的函数中，这样就实现类似unix管道的编程风格，代码更易读。</p>
+<p>dplyr很好地解决了base包中的几个数据处理的痛点，具体可以参考本系列01。</p>
+<p>首先，dplyr可以方便地抽取数据框的子集。抽取行的子集函数有<strong>filter</strong>，<strong>distinct</strong>，<strong>sample_frac</strong>，<strong>sample_n</strong>，<strong>slice</strong>，<strong>top_n</strong>。抽取列的子集函数是<strong>select</strong>，可通过列名或选项函数进行选择，常见的选项函数有<strong>contains(“.”)</strong>，<strong>ends_with(“Length”)</strong>，<strong>starts_with(“Sepal”)</strong>，<strong>everything()</strong>，<strong>matches(“.t.”)</strong>，<strong>num_range(“x”, 1:5)</strong>，<strong>one_of(c(“Species”, “Genus”))</strong>。</p>
+<p>其次，dplyr还提供了函数<strong>arrange</strong>，方便按照某一列进行<strong>数据排序</strong>。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">arrange(mtcars, mpg) <span class="comment"># 从低到高</span></span><br><span class="line">arrange(mtcars, desc(mpg)) <span class="comment"># 从高到低</span></span><br></pre></td></tr></table></figure>
+<p>然后，dplyr可以方便地进行数据集的合并，取代merge函数。<br><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">left_join(a, b, by=<span class="string">"x1"</span>)</span><br><span class="line">right_join(a, b, by=<span class="string">"x1"</span>)</span><br><span class="line">inner_join(a, b, by=<span class="string">"x1"</span>)</span><br><span class="line">outer_join(a, b, by=<span class="string">"x1"</span>)</span><br><span class="line">semi_join(a, b, by=<span class="string">"x1"</span>) <span class="comment"># 数据集a中能与数据集b匹配的记录</span></span><br><span class="line">anti_join(a, b, by=<span class="string">"x1"</span>) <span class="comment"># 数据集a中雨数据集b不匹配的记录</span></span><br></pre></td></tr></table></figure></p>
+<p>dplyr还提供了intersection、union和setdiff用于获得两个数据集的交集、并集和差集。</p>
+<p>最后，dplyr可以方便地进行数据集的拼接。<strong>bind_rows(y, z)</strong>将数据集z按行拼接到数据集y中，<strong>bind_cols(y, z)</strong>将数据集z按列拼接到数据集y中。</p>
+<p>本系列03介绍plyr时，知道这个包最主要地是用来做分组处理，dplyr对此功能进行了升级，详述如下。</p>
+<p>dplyr可以方便地对数据框进行概述，相当于ddply中的summarize。<strong>summarise(iris, avg=mean(Sepal.Length))</strong>将数据概括为单行结果输出；<strong>summarise_each(iris, funs(mean))</strong>对每一列运行概述函数。支持的概述函数有<strong>first</strong>，<strong>last</strong>，<strong>nth</strong>，<strong>n</strong>，<strong>n_distinct</strong>，<strong>min</strong>，<strong>max</strong>，<strong>mean</strong>，<strong>median</strong>，<strong>var</strong>，<strong>sd</strong>。</p>
+<p>dplyr可以方便地创建新变量，相当于ddply中的transform。<strong>mutate(iris, sepal=Sepal.Length+Sepal.Width)</strong>计算并添加一个或多个新列。<strong>mutate_each(iris, funs(min_rank))</strong>对每一列运行窗口函数。常见的窗口函数有<strong>row_number</strong>，<strong>min_rank</strong>，<strong>percent_rank</strong>，<strong>cumsum</strong>等。</p>
+<p>dplyr提供了一个分组函数<strong>group_by</strong>，把分组依据相同的数据组合成行，相当于ddply中的group_vars。<strong>ungroup</strong>用于移出数据框的分组信息。配合上管道符号，可以方便地进行分组概述和分组计算。<br><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iris %&gt;% group_by(Species) %&gt;% summarise(<span class="keyword">...</span>)</span><br><span class="line">iris %&gt;% group_by(Species) %&gt;% mutate(<span class="keyword">...</span>)</span><br></pre></td></tr></table></figure></p>
+<h1 id="plotly包：让ggplot2的静态图片变得可交互"><a href="#plotly包：让ggplot2的静态图片变得可交互" class="headerlink" title="plotly包：让ggplot2的静态图片变得可交互"></a>plotly包：让ggplot2的静态图片变得可交互</h1><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(plotly)</span><br><span class="line">p &lt;- ggplot(data = diamonds, aes(x = cut, fill = clarity)) +</span><br><span class="line">            geom_bar(position = <span class="string">"dodge"</span>)</span><br><span class="line">ggplotly(p)</span><br></pre></td></tr></table></figure>
+<p>plotly支持facet，不过当facet的图形超过9个以后，legend处会出现bug。</p>
 
       
     </div>
@@ -313,7 +322,7 @@
           
             <a href="/tags/R语言/" rel="tag">#R语言</a>
           
-            <a href="/tags/数据分析/" rel="tag">#数据分析</a>
+            <a href="/tags/统计学/" rel="tag">#统计学</a>
           
         </div>
       
@@ -322,17 +331,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/08/15/R数据分析进阶02：日期时间处理/" rel="next" title="R数据分析进阶02：日期时间处理">
-                <i class="fa fa-chevron-left"></i> R数据分析进阶02：日期时间处理
+              <a href="/2016/03/21/R数据分析进阶07：R包发布-以线性回归为例/" rel="next" title="R数据分析进阶07：R包发布-以线性回归为例">
+                <i class="fa fa-chevron-left"></i> R数据分析进阶07：R包发布-以线性回归为例
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2015/09/10/R数据分析进阶04：reshape2/" rel="prev" title="R数据分析进阶04：reshape2">
-                R数据分析进阶04：reshape2 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -451,7 +456,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本思想"><span class="nav-number">1.</span> <span class="nav-text">基本思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#语法介绍"><span class="nav-number">2.</span> <span class="nav-text">语法介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#案例"><span class="nav-number">3.</span> <span class="nav-text">案例</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#DT包：查看矩阵或数据框的内容"><span class="nav-number">1.</span> <span class="nav-text">DT包：查看矩阵或数据框的内容</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tidyr包：reshape2的替代者，功能更纯粹"><span class="nav-number">2.</span> <span class="nav-text">tidyr包：reshape2的替代者，功能更纯粹</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#dplyr包：plyr包的替代者，专门面对数据框，将ddplyr转变为更易用的接口"><span class="nav-number">3.</span> <span class="nav-text">dplyr包：plyr包的替代者，专门面对数据框，将ddplyr转变为更易用的接口</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#plotly包：让ggplot2的静态图片变得可交互"><span class="nav-number">4.</span> <span class="nav-text">plotly包：让ggplot2的静态图片变得可交互</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
