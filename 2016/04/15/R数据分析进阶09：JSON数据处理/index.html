@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="R语言,数据分析," />
+  <meta name="keywords" content="R语言,统计学," />
 
 
 
@@ -57,22 +57,19 @@
 
 
 
-<meta name="description" content="本文只考虑基于数据框的操作，所指函数是ddply.
-基本思想plyr包数据打理模型是”分割-应用-结合“.ddply()函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。
-语法介绍1ddply(data, group_vars, summarize OR transform, new_var = fu">
+<meta name="description" content="数据分析的主流格式是DataFrame，起源于R，后被python pandas和spark DataFrame纷纷效仿。但是在网络数据传输领域，DataFrame不是主流，而是JSON（Javascript Object Notation）。本文讲解如何在R里发送网络请求，解析返回的JSON数据。
+httr：发送网络请求获取数据httr是Hadley Wickham的又一力作，可以发送POST和">
 <meta property="og:type" content="article">
-<meta property="og:title" content="R数据分析进阶03：plyr">
-<meta property="og:url" content="http://yoursite.com/2015/09/01/R数据分析进阶03：plyr/index.html">
+<meta property="og:title" content="R数据分析进阶09：JSON数据处理.md">
+<meta property="og:url" content="http://yoursite.com/2016/04/15/R数据分析进阶09：JSON数据处理/index.html">
 <meta property="og:site_name" content="三行代码">
-<meta property="og:description" content="本文只考虑基于数据框的操作，所指函数是ddply.
-基本思想plyr包数据打理模型是”分割-应用-结合“.ddply()函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。
-语法介绍1ddply(data, group_vars, summarize OR transform, new_var = fu">
-<meta property="og:updated_time" content="2016-03-21T10:17:38.000Z">
+<meta property="og:description" content="数据分析的主流格式是DataFrame，起源于R，后被python pandas和spark DataFrame纷纷效仿。但是在网络数据传输领域，DataFrame不是主流，而是JSON（Javascript Object Notation）。本文讲解如何在R里发送网络请求，解析返回的JSON数据。
+httr：发送网络请求获取数据httr是Hadley Wickham的又一力作，可以发送POST和">
+<meta property="og:updated_time" content="2016-04-23T07:06:25.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="R数据分析进阶03：plyr">
-<meta name="twitter:description" content="本文只考虑基于数据框的操作，所指函数是ddply.
-基本思想plyr包数据打理模型是”分割-应用-结合“.ddply()函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。
-语法介绍1ddply(data, group_vars, summarize OR transform, new_var = fu">
+<meta name="twitter:title" content="R数据分析进阶09：JSON数据处理.md">
+<meta name="twitter:description" content="数据分析的主流格式是DataFrame，起源于R，后被python pandas和spark DataFrame纷纷效仿。但是在网络数据传输领域，DataFrame不是主流，而是JSON（Javascript Object Notation）。本文讲解如何在R里发送网络请求，解析返回的JSON数据。
+httr：发送网络请求获取数据httr是Hadley Wickham的又一力作，可以发送POST和">
 
 
 
@@ -90,7 +87,7 @@
   };
 </script>
 
-  <title> R数据分析进阶03：plyr | 三行代码 </title>
+  <title> R数据分析进阶09：JSON数据处理.md | 三行代码 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -230,7 +227,7 @@
             
             
               
-                R数据分析进阶03：plyr
+                R数据分析进阶09：JSON数据处理.md
               
             
           </h1>
@@ -242,8 +239,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-09-01T18:49:11+08:00" content="2015-09-01">
-              2015-09-01
+            <time itemprop="dateCreated" datetime="2016-04-15T09:00:00+08:00" content="2016-04-15">
+              2016-04-15
             </time>
           </span>
 
@@ -288,15 +285,11 @@
       
 
       
-        <p>本文只考虑基于数据框的操作，所指函数是ddply.</p>
-<h3 id="基本思想"><a href="#基本思想" class="headerlink" title="基本思想"></a>基本思想</h3><p>plyr包数据打理模型是”分割-应用-结合“.<br><strong>ddply()</strong>函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。</p>
-<h3 id="语法介绍"><a href="#语法介绍" class="headerlink" title="语法介绍"></a>语法介绍</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ddply(data, group_vars, summarize OR transform, new_var = <span class="keyword">function</span>(param_var))</span><br></pre></td></tr></table></figure>
-<ul>
-<li>group_vars: 用于作为分割基准的变量，有两种形式，一种是c(“var1”, “var2”)，一种是.(var1, var2)；如果取值为NULL，表示对整个数据框作用函数。</li>
-<li>summarize OR transform:  如果采用summarize，新的数据框，只会包含group_vars和new_var；如果采用transform，新的数据框会保留原始的数据框的所有列，new_var会在相同分组的不同行重复填上相同的结果。</li>
-<li>new_var = function(param_var)：允许使用多个函数。e.g. highestMargin = max(margin), lowestMargin = min(margin)</li>
-</ul>
-<h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p>请参考网上的这个优秀资料<br><a href="http://developer.51cto.com/art/201312/423612_all.htm" target="_blank" rel="external">http://developer.51cto.com/art/201312/423612_all.htm</a></p>
+        <p>数据分析的主流格式是DataFrame，起源于R，后被python pandas和spark DataFrame纷纷效仿。但是在网络数据传输领域，DataFrame不是主流，而是JSON（Javascript Object Notation）。本文讲解如何在R里发送网络请求，解析返回的JSON数据。</p>
+<h1 id="httr：发送网络请求获取数据"><a href="#httr：发送网络请求获取数据" class="headerlink" title="httr：发送网络请求获取数据"></a>httr：发送网络请求获取数据</h1><p>httr是Hadley Wickham的又一力作，可以发送POST和GET等HTTP请求，举个简单的POST请求示例。假设我们有一个POST服务，接受json的输入，返回json的输出。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">url &lt;- <span class="string">"http://XXXXX"</span></span><br><span class="line">req &lt;- <span class="string">'[1,"info",1,0,&#123;"1":&#123;"lst":["i64",3,5941105583405931848,5941105583405931847,5941105583405931838]&#125;&#125;]'</span></span><br><span class="line"></span><br><span class="line">p &lt;- POST(url,  content_type_json(),  accept_json(), body = req)</span><br><span class="line">content(p, <span class="string">"text"</span>) <span class="comment"># 调用content获得返回的JSON内容</span></span><br></pre></td></tr></table></figure>
+<h1 id="jsonlite"><a href="#jsonlite" class="headerlink" title="jsonlite"></a>jsonlite</h1><p>fromJSON()方法，将JSON数据转化为list或data.frame结构。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">json &lt;-</span><br><span class="line">&apos;[</span><br><span class="line">  &#123;&quot;Name&quot; : &quot;Mario&quot;, &quot;Age&quot; : 32, &quot;Occupation&quot; : &quot;Plumber&quot;&#125;, </span><br><span class="line">  &#123;&quot;Name&quot; : &quot;Peach&quot;, &quot;Age&quot; : 21, &quot;Occupation&quot; : &quot;Princess&quot;&#125;,</span><br><span class="line">  &#123;&#125;,</span><br><span class="line">  &#123;&quot;Name&quot; : &quot;Bowser&quot;, &quot;Occupation&quot; : &quot;Koopa&quot;&#125;</span><br><span class="line">]&apos;</span><br><span class="line">mydf &lt;- fromJSON(json)</span><br><span class="line">mydf</span><br></pre></td></tr></table></figure></p>
+<h1 id="jsonview：JSON可视化"><a href="#jsonview：JSON可视化" class="headerlink" title="jsonview：JSON可视化"></a>jsonview：JSON可视化</h1><p>采用github方式安装，然后调用json_tree_view即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#devtools::install_github(&quot;hrbrmstr/jsonview&quot;)</span><br><span class="line">library(jsonview)</span><br><span class="line">json_tree_view(fromJSON(res_json))</span><br></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -313,7 +306,7 @@
           
             <a href="/tags/R语言/" rel="tag">#R语言</a>
           
-            <a href="/tags/数据分析/" rel="tag">#数据分析</a>
+            <a href="/tags/统计学/" rel="tag">#统计学</a>
           
         </div>
       
@@ -322,16 +315,16 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/08/15/R数据分析进阶02：日期时间处理/" rel="next" title="R数据分析进阶02：日期时间处理">
-                <i class="fa fa-chevron-left"></i> R数据分析进阶02：日期时间处理
+              <a href="/2016/04/08/R数据分析进阶08：让数据分析更优雅/" rel="next" title="R数据分析进阶08：让数据分析更优雅.md">
+                <i class="fa fa-chevron-left"></i> R数据分析进阶08：让数据分析更优雅.md
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/09/10/R数据分析进阶04：reshape2/" rel="prev" title="R数据分析进阶04：reshape2">
-                R数据分析进阶04：reshape2 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/04/23/R数据分析进阶10：空间数据可视化/" rel="prev" title="R数据分析进阶10：空间数据可视化.md">
+                R数据分析进阶10：空间数据可视化.md <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -451,7 +444,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本思想"><span class="nav-number">1.</span> <span class="nav-text">基本思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#语法介绍"><span class="nav-number">2.</span> <span class="nav-text">语法介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#案例"><span class="nav-number">3.</span> <span class="nav-text">案例</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#httr：发送网络请求获取数据"><span class="nav-number">1.</span> <span class="nav-text">httr：发送网络请求获取数据</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#jsonlite"><span class="nav-number">2.</span> <span class="nav-text">jsonlite</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#jsonview：JSON可视化"><span class="nav-number">3.</span> <span class="nav-text">jsonview：JSON可视化</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">

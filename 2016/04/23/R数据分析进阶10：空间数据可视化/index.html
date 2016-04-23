@@ -1,0 +1,778 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="R语言,统计学," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="空间数据可视化，需要解决两个问题，一是怎么在R中表示空间数据，二是怎么在R中绘制空间数据/地图。sp包用于解决第一个问题，leaflet包用于解决第二个问题。
+sp空间数据最常用的格式是shp，主要由三个文件组成：shp文件用于存储位置几何信息，dbf文件用于存储attribute，shx用于存储位置几何信息与attribute的对照表。位置几何信息主要有以下几类：points，multipoin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="R数据分析进阶10：空间数据可视化.md">
+<meta property="og:url" content="http://yoursite.com/2016/04/23/R数据分析进阶10：空间数据可视化/index.html">
+<meta property="og:site_name" content="三行代码">
+<meta property="og:description" content="空间数据可视化，需要解决两个问题，一是怎么在R中表示空间数据，二是怎么在R中绘制空间数据/地图。sp包用于解决第一个问题，leaflet包用于解决第二个问题。
+sp空间数据最常用的格式是shp，主要由三个文件组成：shp文件用于存储位置几何信息，dbf文件用于存储attribute，shx用于存储位置几何信息与attribute的对照表。位置几何信息主要有以下几类：points，multipoin">
+<meta property="og:updated_time" content="2016-04-23T07:06:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="R数据分析进阶10：空间数据可视化.md">
+<meta name="twitter:description" content="空间数据可视化，需要解决两个问题，一是怎么在R中表示空间数据，二是怎么在R中绘制空间数据/地图。sp包用于解决第一个问题，leaflet包用于解决第二个问题。
+sp空间数据最常用的格式是shp，主要由三个文件组成：shp文件用于存储位置几何信息，dbf文件用于存储attribute，shx用于存储位置几何信息与attribute的对照表。位置几何信息主要有以下几类：points，multipoin">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> R数据分析进阶10：空间数据可视化.md | 三行代码 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">三行代码</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                R数据分析进阶10：空间数据可视化.md
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-23T15:05:42+08:00" content="2016-04-23">
+              2016-04-23
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/R数据分析进阶/" itemprop="url" rel="index">
+                    <span itemprop="name">R数据分析进阶</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>空间数据可视化，需要解决两个问题，一是怎么在R中表示空间数据，二是怎么在R中绘制空间数据/地图。sp包用于解决第一个问题，leaflet包用于解决第二个问题。</p>
+<h1 id="sp"><a href="#sp" class="headerlink" title="sp"></a>sp</h1><p>空间数据最常用的格式是shp，主要由三个文件组成：shp文件用于存储位置几何信息，dbf文件用于存储attribute，shx用于存储位置几何信息与attribute的对照表。位置几何信息主要有以下几类：points，multipoints，lines，polygons等。对此sp包提供了SpatialPoints，SpatialMultiPoints，SpatialLines，SpatialPolygons等用于表示位置几何信息。attribute一般以表格形式存在，所以sp包用dataframe对齐进行表示，为前面提到的Spatial<em>类添加dataframe后得到诸如SpatialPointsDataFrame，SpatialMutilPointsDataFrame，SpatialLinesDataFrame，SpatialPolygonsDataFrame等类。在这些类中，位置几何信息与attribute的对照关系通过Spatial</em>类的ID与dataframe的rownames进行匹配得到。</p>
+<p>假设现在有一个dataframe<strong>lon_lat_df</strong>存储了道路的几何信息，如下：</p>
+<table>
+<thead>
+<tr>
+<th>link</th>
+<th>Lng</th>
+<th>Lat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>道路1</td>
+<td>116.3103</td>
+<td>39.91814</td>
+</tr>
+<tr>
+<td>道路1</td>
+<td>116.3103</td>
+<td>39.91961</td>
+</tr>
+<tr>
+<td>道路1</td>
+<td>116.3101</td>
+<td>39.94624</td>
+</tr>
+<tr>
+<td>道路2</td>
+<td>116.3100</td>
+<td>39.94694</td>
+</tr>
+<tr>
+<td>道路2</td>
+<td>116.3103</td>
+<td>39.93921</td>
+</tr>
+</tbody>
+</table>
+<p>另有一个dataframe**link_status”存储了道路的attribute，如下：<br>| link | realtime_status | history_status |<br>| ——- | ———- | —————|<br>| 道路1 | 1  |  3 |<br>| 道路2  | 3 | 3 |</p>
+<p>那么，将其转化为sp的SpatialLinesDataFrame的示例代码如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(sp)</span><br><span class="line"><span class="keyword">library</span>(maptools)</span><br><span class="line"></span><br><span class="line">points_to_line &lt;- <span class="keyword">function</span>(data, long, lat, id_field = <span class="literal">NULL</span>, sort_field = <span class="literal">NULL</span>) &#123;</span><br><span class="line">  <span class="comment"># 转化为SpatialPointsDataFrame</span></span><br><span class="line">  coordinates(data) &lt;- c(long, lat)</span><br><span class="line">  <span class="comment"># 将link的坐标按照字段进行排序，保证线能正确生成</span></span><br><span class="line">  <span class="keyword">if</span> (!is.null(sort_field)) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!is.null(id_field)) &#123;</span><br><span class="line">      data &lt;- data[order(data[[id_field]], data[[sort_field]]), ]</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      data &lt;- data[order(data[[sort_field]]), ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"> <span class="comment"># 按照id_field对线进行分组</span></span><br><span class="line">  <span class="keyword">if</span> (is.null(id_field)) &#123;   </span><br><span class="line">    lines &lt;- SpatialLines(list(Lines(list(Line(data)), <span class="string">"id"</span>)))    </span><br><span class="line">    <span class="keyword">return</span>(lines)    </span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!is.null(id_field)) &#123;      </span><br><span class="line">    paths &lt;- sp::split(data, data[[id_field]])</span><br><span class="line">    sp_lines &lt;- SpatialLines(list(Lines(list(Line(paths[[<span class="number">1</span>]])), paths[[<span class="number">1</span>]]@data[<span class="number">1</span>,id_field])))   </span><br><span class="line">    <span class="keyword">for</span> (p <span class="keyword">in</span> <span class="number">2</span>:length(paths)) &#123;</span><br><span class="line">      id &lt;- paths[[p]]@data[<span class="number">1</span>,id_field]</span><br><span class="line">      l &lt;- SpatialLines(list(Lines(list(Line(paths[[p]])), id)))</span><br><span class="line">      sp_lines &lt;- spRbind(sp_lines, l)</span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="keyword">return</span>(sp_lines)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 不明原因导致leaflet无法识别sp，只能用上面的方法for循环</span></span><br><span class="line"><span class="comment">#points2spline &lt;- function(df)&#123;</span></span><br><span class="line"><span class="comment">#  data &lt;- as.matrix(df[,c("Lng", "Lat")])</span></span><br><span class="line"><span class="comment">#  id = df$link[1]</span></span><br><span class="line"><span class="comment">#  Lines(list(Line(data)), ID=id)</span></span><br><span class="line"><span class="comment">#&#125;</span></span><br><span class="line"></span><br><span class="line">splines_to_splinesdf &lt;- <span class="keyword">function</span>(splines,  data, id_field)  &#123;</span><br><span class="line">  ids &lt;- data.frame()</span><br><span class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> (<span class="number">1</span>:length(splines))) &#123;</span><br><span class="line">      id &lt;- data.frame(splines@lines[[i]]@ID)</span><br><span class="line">      ids &lt;- rbind(ids, id)</span><br><span class="line">    &#125;</span><br><span class="line">    colnames(ids)[<span class="number">1</span>] &lt;- id_field</span><br><span class="line">    join_name &lt;- join(ids, data)</span><br><span class="line">    row.names(join_name ) &lt;- join_name[, id_field]</span><br><span class="line">    splinesdf &lt;- SpatialLinesDataFrame(splines, data=join_name)</span><br><span class="line">    <span class="comment">#proj4string(splinesdf ) &lt;- CRS("+init=epsg:4326")</span></span><br><span class="line">     <span class="keyword">return</span>(splinesdf)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Sl &lt;- points_to_line(lon_lat_df, <span class="string">"Lng"</span>,<span class="string">"Lat"</span>, id_field = <span class="string">"link"</span>)</span><br><span class="line">Sldf &lt;- splines_to_splinesdf(Sl, data=link_status, id_field=<span class="string">"link"</span>)</span><br></pre></td></tr></table></figure>
+<h1 id="leaflet"><a href="#leaflet" class="headerlink" title="leaflet"></a>leaflet</h1><p>leaflet的基本使用方法如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(leaflet)</span><br><span class="line"></span><br><span class="line"><span class="comment"># hello leaflet </span></span><br><span class="line">m &lt;- leaflet() %&gt;% setView(lng=<span class="number">116.40</span>, lat=<span class="number">39.90</span>, zoom=<span class="number">10</span>) %&gt;%</span><br><span class="line">  addTiles() %&gt;%  </span><br><span class="line">  addMarkers(lng=<span class="number">116.40</span>, lat=<span class="number">39.90</span>, popup=<span class="string">'A pretty CSS3 popup.&lt;br&gt; Easily customizable.'</span>)</span><br><span class="line">m </span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加自定义WMS图层-geoserver</span></span><br><span class="line">m &lt;- leaflet() %&gt;% setView(<span class="number">116.40</span>,<span class="number">39.90</span>, zoom = <span class="number">10</span>) %&gt;%</span><br><span class="line">  addTiles() %&gt;%</span><br><span class="line">  addWMSTiles(</span><br><span class="line">    <span class="string">"http://127.0.0.1:8080/geoserver/shp_beijing/wms"</span>,</span><br><span class="line">    layers = <span class="string">"shp_beijing:110000_road"</span></span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">m</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加瓦片：高德地图</span></span><br><span class="line">m %&gt;%</span><br><span class="line">  addTiles(</span><br><span class="line">        <span class="string">'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&amp;size=1&amp;scale=1&amp;style=8&amp;x=&#123;x&#125;&amp;y=&#123;y&#125;&amp;z=&#123;z&#125;'</span>,</span><br><span class="line">        tileOptions(tileSize=<span class="number">256</span>, minZoom=<span class="number">9</span>, maxZoom=<span class="number">17</span>)</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加轨迹</span></span><br><span class="line">trace &lt;- read.table(<span class="string">"tmp.txt"</span>, sep=<span class="string">","</span>)</span><br><span class="line">colnames(trace) &lt;- c(<span class="string">"Lng"</span>, <span class="string">"Lat"</span>)</span><br><span class="line"></span><br><span class="line">m &lt;- m %&gt;%</span><br><span class="line">  addPolylines(lng = ~Lng, lat = ~Lat, weight = <span class="number">5</span>, color=<span class="string">"red"</span>, opacity=<span class="number">1</span>, popup=<span class="string">"trace"</span>,</span><br><span class="line">             data = trace</span><br><span class="line">  )</span><br><span class="line">m</span><br><span class="line"></span><br><span class="line"><span class="comment"># 分组绘图</span></span><br><span class="line">map &lt;-  leaflet(df)</span><br><span class="line">map &lt;- addTiles(map)</span><br><span class="line"><span class="keyword">for</span>( group <span class="keyword">in</span> levels(df$group))&#123;</span><br><span class="line">        map &lt;- addPolylines(map, lng=~lon,lat=~lat,data=df[df$group==group,], color=~col)</span><br><span class="line">        &#125;</span><br><span class="line">map</span><br></pre></td></tr></table></figure>
+<p>leaflet还可以方便地对sp包的对象进行绘制，继续上面的例子，将其绘制到地图上。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 交通信息配色</span></span><br><span class="line">AmapBlack &lt;- rgb(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>)</span><br><span class="line">AmapRed &lt;- rgb(<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>)</span><br><span class="line">AmapYellow &lt;- rgb(<span class="number">1</span>, <span class="number">219</span>/<span class="number">255</span>, <span class="number">67</span>/<span class="number">255</span>, <span class="number">1</span>)</span><br><span class="line">AmapGreen &lt;- rgb(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">amapPalVec &lt;-  c(AmapGreen, AmapYellow, AmapRed, AmapBlack)</span><br><span class="line">factpal &lt;- colorFactor(amapPalVec, domain=Sldf$realtime_status)</span><br><span class="line"></span><br><span class="line">m &lt;- leaflet(Sldf) %&gt;%</span><br><span class="line">  addTiles(</span><br><span class="line">    <span class="string">'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&amp;size=1&amp;scale=1&amp;style=8&amp;x=&#123;x&#125;&amp;y=&#123;y&#125;&amp;z=&#123;z&#125;'</span>,</span><br><span class="line">    tileOptions(tileSize=<span class="number">256</span>, minZoom=<span class="number">9</span>, maxZoom=<span class="number">17</span>)</span><br><span class="line">  ) %&gt;%</span><br><span class="line">  setView(<span class="number">116.40</span>,<span class="number">39.90</span>, zoom = <span class="number">10</span>)  %&gt;%</span><br><span class="line">  addPolylines(color=~factpal(realtime_status), weight=<span class="number">8</span>,opacity=<span class="number">1</span>, group=<span class="string">"实时交通"</span>) %&gt;%</span><br><span class="line">  addPolylines(color=~factpal(history_status), weight=<span class="number">4</span>,opacity=<span class="number">1</span>, group=<span class="string">"历史交通"</span>) %&gt;%</span><br><span class="line">  addLayersControl(</span><br><span class="line">    overlayGroups = c(<span class="string">"实时交通"</span>, <span class="string">"历史交通"</span>),</span><br><span class="line">    options = layersControlOptions(collapsed = <span class="literal">FALSE</span>)</span><br><span class="line">  ) %&gt;%</span><br><span class="line">  fitBounds(bbox(Sldf)[<span class="string">"x"</span>,<span class="string">"min"</span>], bbox(Sldf)[<span class="string">"y"</span>,<span class="string">"min"</span>], bbox(Sldf)[<span class="string">"x"</span>,<span class="string">"max"</span>], bbox(Sldf)[<span class="string">"y"</span>,<span class="string">"max"</span>]) %&gt;%</span><br><span class="line">  addLegend(<span class="string">"bottomright"</span>, pal = factpal, values = ~history_status,</span><br><span class="line">            title = <span class="string">"历史交通"</span>,</span><br><span class="line">            opacity = <span class="number">1</span></span><br><span class="line">  ) %&gt;%</span><br><span class="line">  addLegend(<span class="string">"bottomleft"</span>, pal = factpal, values = ~realtime_status,</span><br><span class="line">            title = <span class="string">"实时交通"</span>,</span><br><span class="line">            opacity = <span class="number">1</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/R语言/" rel="tag">#R语言</a>
+          
+            <a href="/tags/统计学/" rel="tag">#统计学</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/15/R数据分析进阶09：JSON数据处理/" rel="next" title="R数据分析进阶09：JSON数据处理.md">
+                <i class="fa fa-chevron-left"></i> R数据分析进阶09：JSON数据处理.md
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="丹追兵" />
+          <p class="site-author-name" itemprop="name">丹追兵</p>
+          <p class="site-description motion-element" itemprop="description">刚出道的大数据分析师</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#sp"><span class="nav-number">1.</span> <span class="nav-text">sp</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#leaflet"><span class="nav-number">2.</span> <span class="nav-text">leaflet</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">丹追兵</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar.display === 'post' || CONFIG.sidebar.display === 'always') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>
