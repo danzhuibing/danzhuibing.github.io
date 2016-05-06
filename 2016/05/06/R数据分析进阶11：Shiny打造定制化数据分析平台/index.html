@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Python,Spark,大数据," />
+  <meta name="keywords" content="R语言,统计学," />
 
 
 
@@ -57,22 +57,19 @@
 
 
 
-<meta name="description" content="RDD的概念RDD是Spark的核心。关于它的定义，简单来说，就是能够保存在内存里的分布式数据集。官方定义如下：
-
-The main abstraction Spark provides is a resilient distributed dataset (RDD), which is a collection of elements partitioned across the nodes o">
+<meta name="description" content="Shiny基础Shiny的作用是把你在R的分析代码包装为一个交互式网站，分享给不会或不愿直接接触R代码的朋友，让他也享受到用R进行数据分析的快感。一个最基本的shiny程序如下：
+1234567891011library(shiny)ui &amp;lt;- fluidPage(    numericInput(inputId = &quot;n&quot;, &quot;Smaple size&quot;, value=25),    plo">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Spark入门&大数据处理技术比较">
-<meta property="og:url" content="http://yoursite.com/2015/10/10/Spark入门与大数据处理技术比较/index.html">
+<meta property="og:title" content="R数据分析进阶11：Shiny打造定制化数据分析平台.md">
+<meta property="og:url" content="http://yoursite.com/2016/05/06/R数据分析进阶11：Shiny打造定制化数据分析平台/index.html">
 <meta property="og:site_name" content="三行代码">
-<meta property="og:description" content="RDD的概念RDD是Spark的核心。关于它的定义，简单来说，就是能够保存在内存里的分布式数据集。官方定义如下：
-
-The main abstraction Spark provides is a resilient distributed dataset (RDD), which is a collection of elements partitioned across the nodes o">
-<meta property="og:updated_time" content="2016-03-21T10:17:38.000Z">
+<meta property="og:description" content="Shiny基础Shiny的作用是把你在R的分析代码包装为一个交互式网站，分享给不会或不愿直接接触R代码的朋友，让他也享受到用R进行数据分析的快感。一个最基本的shiny程序如下：
+1234567891011library(shiny)ui &amp;lt;- fluidPage(    numericInput(inputId = &quot;n&quot;, &quot;Smaple size&quot;, value=25),    plo">
+<meta property="og:updated_time" content="2016-05-06T05:18:45.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Spark入门&大数据处理技术比较">
-<meta name="twitter:description" content="RDD的概念RDD是Spark的核心。关于它的定义，简单来说，就是能够保存在内存里的分布式数据集。官方定义如下：
-
-The main abstraction Spark provides is a resilient distributed dataset (RDD), which is a collection of elements partitioned across the nodes o">
+<meta name="twitter:title" content="R数据分析进阶11：Shiny打造定制化数据分析平台.md">
+<meta name="twitter:description" content="Shiny基础Shiny的作用是把你在R的分析代码包装为一个交互式网站，分享给不会或不愿直接接触R代码的朋友，让他也享受到用R进行数据分析的快感。一个最基本的shiny程序如下：
+1234567891011library(shiny)ui &amp;lt;- fluidPage(    numericInput(inputId = &quot;n&quot;, &quot;Smaple size&quot;, value=25),    plo">
 
 
 
@@ -90,7 +87,7 @@ The main abstraction Spark provides is a resilient distributed dataset (RDD), wh
   };
 </script>
 
-  <title> Spark入门&大数据处理技术比较 | 三行代码 </title>
+  <title> R数据分析进阶11：Shiny打造定制化数据分析平台.md | 三行代码 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -230,7 +227,7 @@ The main abstraction Spark provides is a resilient distributed dataset (RDD), wh
             
             
               
-                Spark入门&大数据处理技术比较
+                R数据分析进阶11：Shiny打造定制化数据分析平台.md
               
             
           </h1>
@@ -242,8 +239,8 @@ The main abstraction Spark provides is a resilient distributed dataset (RDD), wh
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-10-10T07:07:36+08:00" content="2015-10-10">
-              2015-10-10
+            <time itemprop="dateCreated" datetime="2016-05-06T13:21:12+08:00" content="2016-05-06">
+              2016-05-06
             </time>
           </span>
 
@@ -256,8 +253,8 @@ The main abstraction Spark provides is a resilient distributed dataset (RDD), wh
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/大数据基础/" itemprop="url" rel="index">
-                    <span itemprop="name">大数据基础</span>
+                  <a href="/categories/R数据分析进阶/" itemprop="url" rel="index">
+                    <span itemprop="name">R数据分析进阶</span>
                   </a>
                 </span>
 
@@ -288,90 +285,17 @@ The main abstraction Spark provides is a resilient distributed dataset (RDD), wh
       
 
       
-        <h2 id="RDD的概念"><a href="#RDD的概念" class="headerlink" title="RDD的概念"></a>RDD的概念</h2><p>RDD是Spark的核心。关于它的定义，简单来说，就是能够保存在内存里的分布式数据集。官方定义如下：</p>
-<blockquote>
-<p>The main abstraction Spark provides is a <strong>resilient distributed dataset (RDD)</strong>, which is a collection of elements partitioned across the nodes of the cluster that can be operated on in parallel.<br>出处：<em>Spark Programming Guide</em></p>
-</blockquote>
-<p>对于Hadoop而言，分布式数据集是存储在文件系统HDFS上的，这样的坏处：数据处理往往需要多个MapReduce环节，下一个环节很可能依赖于上一个环节的输出；由于没有分布式内存机制，Hadoop必须把上一个环节MapReduce的输出结果写到硬盘HDFS上，下一个环节再从HDFS上读取。因此磁盘IO将会花费大量的时间。这种模式对于迭代式计算，如机器学习，非常不便。</p>
-<p>Spark创造的RDD机制可以很好地解决这个问题。一般而言，Spark的流程如下：首先，从HDFS读取数据创建RDD；然后对RDD进行各种数据转换与处理的操作（可以简单理解为若干个Hadoop的MapReduce操作），直到得到满意的结果；最后，将结果写到HDFS，或者输出至屏幕。</p>
-<p>如果把Spark的这个过程和Hadoop作对比，最大的区别就是用RDD替代了HDFS作为不同数据处理环节的媒介；当然，还有一个重要的区别，Hadoop只提供了Map和Reduce两种操作，Spark提供了更加灵活的操作方法，后面会有更详细的阐述。</p>
-<h2 id="入门例子：wordcount"><a href="#入门例子：wordcount" class="headerlink" title="入门例子：wordcount"></a>入门例子：wordcount</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pyspark <span class="keyword">import</span> SparkContext</span><br><span class="line">sc = SparkContext(<span class="string">"local"</span>, <span class="string">"wordcount"</span>)</span><br><span class="line">textFile = sc.textFile(<span class="string">"YOUR_SPARK_HOME/README.md"</span>)</span><br><span class="line">wordCounts = textFile.flatMap(<span class="keyword">lambda</span> line: line.split()).map(<span class="keyword">lambda</span> word: (word, <span class="number">1</span>)).reduceByKey(<span class="keyword">lambda</span> a, b: a+b)</span><br><span class="line"><span class="keyword">print</span> wordCounts.collect()</span><br></pre></td></tr></table></figure>
-<p>代码剖析如下：</p>
-<ol>
-<li>导入Python使用的Spark包</li>
-<li>初始化Spark环境，”local”表示程序用单机模拟Spark，”wordcount”是Spark程序的名字，这个名字会显示在Spark的集群管理页面</li>
-<li><strong>textFile()</strong>用于从文件系统读取数据，生成RDD</li>
-<li><strong>flatMap()</strong>将RDD的每一行按照参数定义的函数转化为多行，<em>lambda</em>定义了Python的匿名函数，函数输入是line，输出是line.split()；<strong>map()</strong>将RDD的每一行按照参数定义的函数转化为一行，(word, 1)表示一个键值对，word为key，1为value；<strong>reduceByKey()</strong>将RDD按照key分组后，按照参数定义的函数进行合并，此处函数的作用是是分组求和</li>
-<li><strong>collect()</strong>，将RDD的数据，从集群的各个节点收集回提交任务的机器，放在单机内存里</li>
-</ol>
-<h2 id="RDD-Operations和持久化"><a href="#RDD-Operations和持久化" class="headerlink" title="RDD Operations和持久化"></a>RDD Operations和持久化</h2><p>关于RDD的Operations可以分为两类，一类是<strong>transformation</strong>，作用是从一个RDD转变成新的RDD，如例子中的flatMap()，map()，reduceByKey()；一类是<strong>action</strong>，对RDD做计算，把结果返回给提交任务的机器，如例子中的collect()。值得注意的是，所有的transformation都是<em>lazy</em>机制，即transformation不会立刻执行，只是被程序记住要执行这个操作，直到碰到action时，才按照记录的操作顺序触发数据处理流程。</p>
-<p>每个action触发计算时，相关的transformation会重新计算；可以用<strong>persist()</strong>在内存中保存中间RDD，这样下次action触发时，就可以从persist后的RDD开始，节省计算时间。如果要释放空间，可以调用<strong>unpersist()</strong>。</p>
-<h2 id="大数据数据处理技术比较"><a href="#大数据数据处理技术比较" class="headerlink" title="大数据数据处理技术比较"></a>大数据数据处理技术比较</h2><p>个人认为，SQL是数据处理的典范。评价一个数据处理工具最好的方法就是拿工具提供的功能和SQL进行对比。下面是我个人对Hive、Spark和Hadoop三个技术的比较。</p>
-<table>
-<thead>
-<tr>
-<th><strong>Hive</strong></th>
-<th><strong>Spark</strong></th>
-<th><strong>Hadoop</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>where</td>
-<td><strong>filter()</strong></td>
-<td>Map</td>
-</tr>
-<tr>
-<td>join</td>
-<td><strong>join()</strong></td>
-<td>MapReduce</td>
-</tr>
-<tr>
-<td>group by</td>
-<td><strong>groupByKey()</strong></td>
-<td>MapReduce</td>
-</tr>
-<tr>
-<td>distribute by, sort by, cluster by</td>
-<td><strong>repartitionAndSortWithinPartitions(partitioner)</strong></td>
-<td>Shuffle</td>
-</tr>
-<tr>
-<td>distinct</td>
-<td><strong>distinct()</strong></td>
-<td>MapReduce</td>
-</tr>
-<tr>
-<td>udf</td>
-<td><strong>map()</strong></td>
-<td>Map</td>
-</tr>
-<tr>
-<td>udaf</td>
-<td><strong>reduce()</strong></td>
-<td>Map</td>
-</tr>
-<tr>
-<td>udtf</td>
-<td><strong>flatMap()</strong></td>
-<td>Map</td>
-</tr>
-<tr>
-<td>动态分区</td>
-<td>原生API不支持, 版本号1.5.2</td>
-<td>MapReduce</td>
-</tr>
-</tbody>
-</table>
-<p>Hadoop是Hive实现的基础，所有Hive撰写的SQL代码最终都会转化为底层的MapReduce作业。所以Hadoop是支持所有SQL需要的功能。问题在于，Hadoop就只提供了Map和Reduce的编程接口，这是非常底层的一个接口。本质上，Map和Reduce是一样的，就是一个自定义函数，告诉Hadoop怎么处理用户的数据；如果这个自定义函数不需要shuffle，那么就是Map；如果这个自定义函数之前需要shuffle，那么就是Reduce。</p>
-<p>然而，不管用户的数据长什么样子，数据处理的模式就那几种，基本都涵盖在SQL的关键字表达里。Hive简单来讲，就是在底层先用MapReduce实现了可复用的SQL各种关键字对应的数据处理模式，在顶层提供给用户一个类SQL的编程接口，在中间通过一个解析器把顶层用户撰写的SQL语句转变为对底层可复用的MapReduce代码的调用。</p>
-<p>Spark的批处理模式与Hadoop在理念上是一致的，也是MapReduce模型，也提供了shuffle机制；不同的是，用RDD替换了HDFS作为数据处理环节的媒介。另一方面，Spark与Hive类似，提供了比Hadoop MapReduce丰富得多的数据处理模式，即RDD的Operations，基本上与Hive SQL提供的功能相同。</p>
-<h2 id="Spark和Hadoop的shuffle比较"><a href="#Spark和Hadoop的shuffle比较" class="headerlink" title="Spark和Hadoop的shuffle比较"></a>Spark和Hadoop的shuffle比较</h2><p>此处需专门拉出一文讨论，可先参考我同事做的这个笔记<a href="http://xialeizhou.com/2015/12/08/Spark-Shuffle%E8%AF%A6%E8%A7%A3/" target="_blank" rel="external">Spark Shuffle详解</a>。总的来讲，我感觉是两个大区别：</p>
-<ul>
-<li>Map端：Hadoop现在是一个mapper输出一个文件；Spark是一个mapper输出R个文件，R为reducer的个数。</li>
-<li>Reduce端：Hadoop从Map端抓来属于自己分组的数据后，会做一次强制的merge sort；Spark从Map端抓来属于自己分组的数据后，不强制做sort。Hadoop强制做了merge sort的好处是，相同key的数据会被reducer一次性连续访问完，因此做reduce操作时只需record by record地聚合，而不用消耗内存；坏处是，并不是所有的reduce操作都需要按照key进行排序。Spark的优劣势反之，不排序的后果是在做reduce时，必须在内存开一个dict来存聚合的结果，对内存消耗大，可能撑爆内存。</li>
-</ul>
-<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>Spark在理念上和Hadoop如出一辙，都是基于MapReduce的思想，基于shuffle的。一方面，Spark实现了绝大部分数据处理会用到的MapReduce模式，提供了更丰富的语义接口供用户调用，使得用户在完成相同的数据处理流程时撰写的代码量大幅度减少。另一方面，Spark独创的RDD使中间结果能够放在内存中而不用写到HDFS，这样减少了IO时间的消耗，数据处理延时低，除了批处理应用场景外，还适合迭代式计算（Spark MLlib, Spark GraphX）、交互式数据处理（Spark SQL）、实时数据处理（Spark Streaming）。</p>
+        <h1 id="Shiny基础"><a href="#Shiny基础" class="headerlink" title="Shiny基础"></a>Shiny基础</h1><p>Shiny的作用是把你在R的分析代码包装为一个交互式网站，分享给不会或不愿直接接触R代码的朋友，让他也享受到用R进行数据分析的快感。一个最基本的shiny程序如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(shiny)</span><br><span class="line">ui &lt;- fluidPage(</span><br><span class="line">    numericInput(inputId = <span class="string">"n"</span>, <span class="string">"Smaple size"</span>, value=<span class="number">25</span>),</span><br><span class="line">    plotOutput(outputId = <span class="string">"hist"</span>)</span><br><span class="line">)</span><br><span class="line">server &lt;- <span class="keyword">function</span>(input, output) &#123;</span><br><span class="line">    output$hist &lt;- renderPlot(&#123;</span><br><span class="line">        hist(rnorm(input$n))</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line">shinyApp(ui=ui, server=server)</span><br></pre></td></tr></table></figure>
+<p>本文不对Shiny的基础知识进行过多的介绍，只记录在使用Shiny时几个重要的笔记。基础知识请参考官网的tutorial和article。</p>
+<h1 id="关于reactive-programming"><a href="#关于reactive-programming" class="headerlink" title="关于reactive programming"></a>关于reactive programming</h1><h2 id="理解reactive-expression-reactive"><a href="#理解reactive-expression-reactive" class="headerlink" title="理解reactive expression reactive({})"></a>理解reactive expression <strong>reactive({})</strong></h2><p>reative expression用于避免重复计算，适用于计算较慢的操作。第一次计算reactive expression后值会保留。下一次调用reactive expression时，它会检查它所依赖的输入是否变化，若变化了重新计算，若无变化直接返回保存的结果。</p>
+<p>reactive expression的input是UI input的值，或其他reactive expression，只能在其他reactive expression或render*函数调用reactive expression。</p>
+<h2 id="用isolate-删除依赖"><a href="#用isolate-删除依赖" class="headerlink" title="用isolate({})删除依赖"></a>用<strong>isolate({})</strong>删除依赖</h2><p>isolate的作用是让observer/endpoint能够访问一个reactive value或reactive expression，但不要依赖它。即她的值改变以后，并不会立刻触发observer/endpoint进行重算。一般地，我们会使用actionButton来作为触发isolate后的重算信号。actionButton每点击一次，会发送给server一个递增1的数字，初始化界面时值为0. 一个常用的模式是，在observer/endpoint中加入actionButton的依赖，同时将想要访问的reative value和reactive expression放到isolate里</p>
+<h1 id="输入组件不满足需求怎么办？"><a href="#输入组件不满足需求怎么办？" class="headerlink" title="输入组件不满足需求怎么办？"></a>输入组件不满足需求怎么办？</h1><p>可以使用HTML函数，然后用HTML来写。举个例子，我想有一个文本框，可以采用下面的代码：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">default_text &lt;- <span class="string">"Hallo Shiny"</span></span><br><span class="line">HTML(paste(<span class="string">'&lt;textarea id="sql_cmd" rows="10", cols="180"&gt;'</span>, default_text,<span class="string">'&lt;/textarea&gt;'</span>))</span><br></pre></td></tr></table></figure>
+<h1 id="想要根据用户的操作改变输入组件的状态"><a href="#想要根据用户的操作改变输入组件的状态" class="headerlink" title="想要根据用户的操作改变输入组件的状态"></a>想要根据用户的操作改变输入组件的状态</h1><p>R提供了update*函数来更新输入组件的状态。举个例子：<br><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 原始UI</span></span><br><span class="line">sliderInput(inputId=<span class="string">"eta_slider"</span>, label=<span class="string">"路线ETA范围"</span>, min=<span class="number">0</span>, max=<span class="number">10</span>, value=c(<span class="number">0</span>,<span class="number">5</span>)),</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更新UI</span></span><br><span class="line">updateSliderInput(session, <span class="string">"eta_slider"</span>, value = c(<span class="number">5</span>, <span class="number">10</span>),</span><br><span class="line">                      min = <span class="number">5</span>, max = <span class="number">10</span>)</span><br></pre></td></tr></table></figure></p>
+<h1 id="输出自定义的html组件"><a href="#输出自定义的html组件" class="headerlink" title="输出自定义的html组件"></a>输出自定义的html组件</h1><p>一开始我使用了textOutput，但是没法实现换行。那么怎么办呢？有两种方法，一种是使用verbatimTextOutput，一种是使用htmlOutput。示例代码如下：<br><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span>(shiny)</span><br><span class="line">runApp(</span><br><span class="line">  list(</span><br><span class="line">    ui = pageWithSidebar(</span><br><span class="line">      headerPanel(<span class="string">"multi-line test"</span>),</span><br><span class="line">      sidebarPanel(</span><br><span class="line">        p(<span class="string">"Demo Page."</span>)</span><br><span class="line">      ),</span><br><span class="line">      mainPanel(</span><br><span class="line">        verbatimTextOutput(<span class="string">"text"</span>),</span><br><span class="line">        htmlOutput(<span class="string">"text2"</span>)</span><br><span class="line">      )</span><br><span class="line">    ),</span><br><span class="line">    server = <span class="keyword">function</span>(input, output)&#123;</span><br><span class="line"></span><br><span class="line">      output$text &lt;- renderText(&#123;</span><br><span class="line">        paste(<span class="string">"hello"</span>, <span class="string">"world"</span>, sep=<span class="string">"\n"</span>)</span><br><span class="line">      &#125;)</span><br><span class="line"></span><br><span class="line">      output$text2 &lt;- renderUI(&#123;</span><br><span class="line">        HTML(paste(<span class="string">"hello"</span>, <span class="string">"world"</span>, sep=<span class="string">"&lt;br/&gt;"</span>))</span><br><span class="line">      &#125;)</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br><span class="line">  )</span><br></pre></td></tr></table></figure></p>
+<h1 id="DT表格响应行点击"><a href="#DT表格响应行点击" class="headerlink" title="DT表格响应行点击"></a>DT表格响应行点击</h1><p>希望点击表格的一列后，获得这列的值进行相应的处理。<br><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># UI</span></span><br><span class="line">DT::dataTableOutput(<span class="string">'tab'</span>)</span><br><span class="line">otherOutput(<span class="string">'example'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Server</span></span><br><span class="line">  output$tab &lt;- DT::renderDataTable(&#123;</span><br><span class="line">    final_df &lt;- <span class="keyword">...</span></span><br><span class="line">    DT::datatable(final_df,</span><br><span class="line">                  filter=<span class="string">'top'</span>,</span><br><span class="line">                  selection=<span class="string">'single'</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">output$example &lt;- renderOther(&#123;</span><br><span class="line">    <span class="comment"># 单击事件</span></span><br><span class="line">    s = input$tab_rows_selected</span><br><span class="line">     <span class="keyword">if</span>(is.null(s)) &#123;</span><br><span class="line">      s = c(<span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment"># 多选事件</span></span><br><span class="line">    s = input$tab_rows_selected</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -386,11 +310,9 @@ The main abstraction Spark provides is a resilient distributed dataset (RDD), wh
       
         <div class="post-tags">
           
-            <a href="/tags/Python/" rel="tag">#Python</a>
+            <a href="/tags/R语言/" rel="tag">#R语言</a>
           
-            <a href="/tags/Spark/" rel="tag">#Spark</a>
-          
-            <a href="/tags/大数据/" rel="tag">#大数据</a>
+            <a href="/tags/统计学/" rel="tag">#统计学</a>
           
         </div>
       
@@ -399,17 +321,13 @@ The main abstraction Spark provides is a resilient distributed dataset (RDD), wh
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/10/03/R数据分析进阶05：阿里云rodps/" rel="next" title="R数据分析进阶05：阿里云ODPS">
-                <i class="fa fa-chevron-left"></i> R数据分析进阶05：阿里云ODPS
+              <a href="/2016/04/23/R数据分析进阶10：空间数据可视化/" rel="next" title="R数据分析进阶10：空间数据可视化.md">
+                <i class="fa fa-chevron-left"></i> R数据分析进阶10：空间数据可视化.md
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2015/12/08/逐层解构时间序列ARIMA模型/" rel="prev" title="逐层解构时间序列ARIMA模型">
-                逐层解构时间序列ARIMA模型 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -528,7 +446,7 @@ The main abstraction Spark provides is a resilient distributed dataset (RDD), wh
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#RDD的概念"><span class="nav-number">1.</span> <span class="nav-text">RDD的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#入门例子：wordcount"><span class="nav-number">2.</span> <span class="nav-text">入门例子：wordcount</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RDD-Operations和持久化"><span class="nav-number">3.</span> <span class="nav-text">RDD Operations和持久化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大数据数据处理技术比较"><span class="nav-number">4.</span> <span class="nav-text">大数据数据处理技术比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spark和Hadoop的shuffle比较"><span class="nav-number">5.</span> <span class="nav-text">Spark和Hadoop的shuffle比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">6.</span> <span class="nav-text">小结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Shiny基础"><span class="nav-number">1.</span> <span class="nav-text">Shiny基础</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关于reactive-programming"><span class="nav-number">2.</span> <span class="nav-text">关于reactive programming</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#理解reactive-expression-reactive"><span class="nav-number">2.1.</span> <span class="nav-text">理解reactive expression reactive({})</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用isolate-删除依赖"><span class="nav-number">2.2.</span> <span class="nav-text">用isolate({})删除依赖</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#输入组件不满足需求怎么办？"><span class="nav-number">3.</span> <span class="nav-text">输入组件不满足需求怎么办？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#想要根据用户的操作改变输入组件的状态"><span class="nav-number">4.</span> <span class="nav-text">想要根据用户的操作改变输入组件的状态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#输出自定义的html组件"><span class="nav-number">5.</span> <span class="nav-text">输出自定义的html组件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DT表格响应行点击"><span class="nav-number">6.</span> <span class="nav-text">DT表格响应行点击</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
