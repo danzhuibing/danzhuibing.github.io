@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="R语言,数据分析," />
+  <meta name="keywords" content="R语言,统计学," />
 
 
 
@@ -57,22 +57,16 @@
 
 
 
-<meta name="description" content="本文只考虑基于数据框的操作，所指函数是ddply.
-基本思想plyr包数据打理模型是”分割-应用-结合“.ddply()函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。
-语法介绍1ddply(data, group_vars, summarize OR transform, new_var = fu">
+<meta name="description" content="Hello World1234567891011121314151617181920212223# 设置依赖的JVM环境和SPARK路径if (nchar(Sys.getenv(&quot;JAVA_HOME&quot;)) &amp;lt; 1) &amp;#123;  Sys.setenv(JAVA_HOME = &quot;YOUR_JAVA_HOME_PATH&quot;)&amp;#125;if (nchar(Sys.getenv(&quot;SPARK_HO">
 <meta property="og:type" content="article">
-<meta property="og:title" content="R数据分析进阶03：plyr">
-<meta property="og:url" content="http://yoursite.com/2015/09/01/R数据分析进阶03：plyr/index.html">
+<meta property="og:title" content="R数据分析进阶12：SparkR.md">
+<meta property="og:url" content="http://yoursite.com/2016/05/15/R数据分析进阶12：SparkR/index.html">
 <meta property="og:site_name" content="pytrafficR">
-<meta property="og:description" content="本文只考虑基于数据框的操作，所指函数是ddply.
-基本思想plyr包数据打理模型是”分割-应用-结合“.ddply()函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。
-语法介绍1ddply(data, group_vars, summarize OR transform, new_var = fu">
-<meta property="og:updated_time" content="2016-03-21T10:17:38.000Z">
+<meta property="og:description" content="Hello World1234567891011121314151617181920212223# 设置依赖的JVM环境和SPARK路径if (nchar(Sys.getenv(&quot;JAVA_HOME&quot;)) &amp;lt; 1) &amp;#123;  Sys.setenv(JAVA_HOME = &quot;YOUR_JAVA_HOME_PATH&quot;)&amp;#125;if (nchar(Sys.getenv(&quot;SPARK_HO">
+<meta property="og:updated_time" content="2016-05-15T07:18:39.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="R数据分析进阶03：plyr">
-<meta name="twitter:description" content="本文只考虑基于数据框的操作，所指函数是ddply.
-基本思想plyr包数据打理模型是”分割-应用-结合“.ddply()函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。
-语法介绍1ddply(data, group_vars, summarize OR transform, new_var = fu">
+<meta name="twitter:title" content="R数据分析进阶12：SparkR.md">
+<meta name="twitter:description" content="Hello World1234567891011121314151617181920212223# 设置依赖的JVM环境和SPARK路径if (nchar(Sys.getenv(&quot;JAVA_HOME&quot;)) &amp;lt; 1) &amp;#123;  Sys.setenv(JAVA_HOME = &quot;YOUR_JAVA_HOME_PATH&quot;)&amp;#125;if (nchar(Sys.getenv(&quot;SPARK_HO">
 
 
 
@@ -90,7 +84,7 @@
   };
 </script>
 
-  <title> R数据分析进阶03：plyr | pytrafficR </title>
+  <title> R数据分析进阶12：SparkR.md | pytrafficR </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -230,7 +224,7 @@
             
             
               
-                R数据分析进阶03：plyr
+                R数据分析进阶12：SparkR.md
               
             
           </h1>
@@ -242,8 +236,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-09-01T18:49:11+08:00" content="2015-09-01">
-              2015-09-01
+            <time itemprop="dateCreated" datetime="2016-05-15T15:18:00+08:00" content="2016-05-15">
+              2016-05-15
             </time>
           </span>
 
@@ -288,15 +282,13 @@
       
 
       
-        <p>本文只考虑基于数据框的操作，所指函数是ddply.</p>
-<h3 id="基本思想"><a href="#基本思想" class="headerlink" title="基本思想"></a>基本思想</h3><p>plyr包数据打理模型是”分割-应用-结合“.<br><strong>ddply()</strong>函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。</p>
-<h3 id="语法介绍"><a href="#语法介绍" class="headerlink" title="语法介绍"></a>语法介绍</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ddply(data, group_vars, summarize OR transform, new_var = <span class="keyword">function</span>(param_var))</span><br></pre></td></tr></table></figure>
-<ul>
-<li>group_vars: 用于作为分割基准的变量，有两种形式，一种是c(“var1”, “var2”)，一种是.(var1, var2)；如果取值为NULL，表示对整个数据框作用函数。</li>
-<li>summarize OR transform:  如果采用summarize，新的数据框，只会包含group_vars和new_var；如果采用transform，新的数据框会保留原始的数据框的所有列，new_var会在相同分组的不同行重复填上相同的结果。</li>
-<li>new_var = function(param_var)：允许使用多个函数。e.g. highestMargin = max(margin), lowestMargin = min(margin)</li>
-</ul>
-<h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p>请参考网上的这个优秀资料<br><a href="http://developer.51cto.com/art/201312/423612_all.htm" target="_blank" rel="external">http://developer.51cto.com/art/201312/423612_all.htm</a></p>
+        <h1 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello World"></a>Hello World</h1><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置依赖的JVM环境和SPARK路径</span></span><br><span class="line"><span class="keyword">if</span> (nchar(Sys.getenv(<span class="string">"JAVA_HOME"</span>)) &lt; <span class="number">1</span>) &#123;</span><br><span class="line">  Sys.setenv(JAVA_HOME = <span class="string">"YOUR_JAVA_HOME_PATH"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (nchar(Sys.getenv(<span class="string">"SPARK_HOME"</span>)) &lt; <span class="number">1</span>) &#123;</span><br><span class="line">  Sys.setenv(SPARK_HOME = <span class="string">"/xxx/spark-1.5.1-bin-hadoop2.3"</span>)</span><br><span class="line">&#125;</span><br><span class="line">.libPaths(c(file.path(Sys.getenv(<span class="string">"SPARK_HOME"</span>), <span class="string">"R"</span>, <span class="string">"lib"</span>), .libPaths()))</span><br><span class="line"></span><br><span class="line"><span class="keyword">library</span>(SparkR, lib.loc = c(file.path(Sys.getenv(<span class="string">"SPARK_HOME"</span>), <span class="string">"R"</span>, <span class="string">"lib"</span>)))</span><br><span class="line">sc &lt;- sparkR.init(master = <span class="string">"spark://xyz:7077"</span>, </span><br><span class="line">                  sparkEnvir = list(</span><br><span class="line">                    spark.app.name=<span class="string">"HalloFromRStudio"</span>,</span><br><span class="line">                    spark.driver.cores=<span class="string">"1"</span>,</span><br><span class="line">                    spark.driver.memory=<span class="string">"2g"</span>,</span><br><span class="line">                    spark.executor.memory=<span class="string">"2g"</span>,</span><br><span class="line">                    spark.executor.cores=<span class="string">"2"</span>,</span><br><span class="line">                    spark.cores.max=<span class="string">"8"</span></span><br><span class="line">                    )</span><br><span class="line">)</span><br><span class="line">sqlContext &lt;- sparkRSQL.init(sc)</span><br><span class="line">iris_DF &lt;- createDataFrame(sqlContext, iris)</span><br><span class="line">head(iris_DF)</span><br></pre></td></tr></table></figure>
+<h1 id="与Shiny结合"><a href="#与Shiny结合" class="headerlink" title="与Shiny结合"></a>与Shiny结合</h1><p><a href="https://segmentfault.com/a/1190000004448995" target="_blank" rel="external">https://segmentfault.com/a/1190000004448995</a></p>
+<h1 id="环境安装的问题"><a href="#环境安装的问题" class="headerlink" title="环境安装的问题"></a>环境安装的问题</h1><p>错误：Could not find the main class: org.apache.spark.launcher.Main</p>
+<p>问题分析，没有设置JAVA_HOME环境变量，解决方法如下：<br><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (nchar(Sys.getenv(<span class="string">"JAVA_HOME"</span>)) &lt; <span class="number">1</span>) &#123;</span><br><span class="line">  Sys.setenv(JAVA_HOME = <span class="string">"/home/shuiping.chen/odps_tool/jdks/jdk1.7.0_79"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>错误：org.apache.spark.SparkException: Job aborted due to stage failure: Task 0 in stage 1.0 failed 4 times, most recent failure: Lost task 0.3 in stage 1.0 (TID 4, 100.81.153.113): java.io.IOException: Cannot run program “Rscript”: error=2, No such file or directory</p>
+<p>问题分析，必须在/usr/bin中存在Rscript，否则找不到，解决方法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ln -s /usr/local/bin/Rscript /usr/bin/Rscript</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -313,7 +305,7 @@
           
             <a href="/tags/R语言/" rel="tag">#R语言</a>
           
-            <a href="/tags/数据分析/" rel="tag">#数据分析</a>
+            <a href="/tags/统计学/" rel="tag">#统计学</a>
           
         </div>
       
@@ -322,17 +314,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/08/15/R数据分析进阶02：日期时间处理/" rel="next" title="R数据分析进阶02：日期时间处理">
-                <i class="fa fa-chevron-left"></i> R数据分析进阶02：日期时间处理
+              <a href="/2016/05/06/R数据分析进阶11：Shiny打造定制化数据分析平台/" rel="next" title="R数据分析进阶11：Shiny打造定制化数据分析平台.md">
+                <i class="fa fa-chevron-left"></i> R数据分析进阶11：Shiny打造定制化数据分析平台.md
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2015/09/10/R数据分析进阶04：reshape2/" rel="prev" title="R数据分析进阶04：reshape2">
-                R数据分析进阶04：reshape2 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -451,7 +439,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本思想"><span class="nav-number">1.</span> <span class="nav-text">基本思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#语法介绍"><span class="nav-number">2.</span> <span class="nav-text">语法介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#案例"><span class="nav-number">3.</span> <span class="nav-text">案例</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Hello-World"><span class="nav-number">1.</span> <span class="nav-text">Hello World</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#与Shiny结合"><span class="nav-number">2.</span> <span class="nav-text">与Shiny结合</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#环境安装的问题"><span class="nav-number">3.</span> <span class="nav-text">环境安装的问题</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
