@@ -1,0 +1,30 @@
+---
+title: "R字符串处理"
+---
+
+# 前言
+本文使用第三方**stringr**库，用于处理R的字符串。
+
+# 基本字符串操作
+* `str_c()`：字符串拼接，默认拼接符为空字符串，并自动删除`NULL`输入
+* `str_length()`：字符串长度
+* `str_sub()`：截取子字符串，支持类python的负数选取模式
+* `str_trim()`：消除字符串两侧的空白
+
+# Pattern Matching
+注：[正则表达式可视化工具](https://regexper.com/)
+
+* `str_detect()`：是否包含正则表达式的模式
+* `str_subset()`：返回包含正则表达式模式的子集，即`str_detect()`为`TRUE`的子集
+* `str_locate()`：返回第一个满足正则表达式模式的子串的起始位置和结束位置，返回类型为data frame
+* `str_locate_all()`：返回所有满足正则表达式模式的子串的起始位置和结束位置，返回类型为list
+* `str_extract()`：抽出第一个符合正则表达式模式的具体内容，返回类型为vector
+* `str_extract_all()`：抽出所有符合正则表达式模式的具体内容，返回类型为list
+* `str_match()`：比`str_extract()`功能更复杂，除了返回完整的匹配内容外，还会输出每个分组的具体内容
+* `str_match_all()`：比`str_extract_all()`功能更复杂，除了返回完整的匹配内容外，还会输出每个分组的具体内容
+* `str_replace()`：将`str_extract()`的内容替换为目标字符串
+* `str_replace_all()`：将`str_extract_all()`的内容替换为目标字符串
+* `str_split()`：将字符串按照正则表示的pattern拆分为多个子串，返回类型为list
+* `str_split_fixed()`：将字符串按照正则表示的pattern拆分为多个固定子串，不足部分用空字符串填补，返回类型为matrix
+
+

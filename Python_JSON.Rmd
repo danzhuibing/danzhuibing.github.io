@@ -1,0 +1,15 @@
+---
+title: "Python JSON处理"
+---
+
+# 解析JSON
+``` {python, eval=F}
+import json
+
+json.loads(json_str)
+```
+
+# 输出JSON
+``` {python, eval=F}
+json.dumps(py_obj,separators=(',',':')) # 去除没用的空格，减少JSON字符串占用的空间
+```

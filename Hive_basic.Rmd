@@ -1,0 +1,115 @@
+---
+title: "Hive基础"
+author: "陈水平（csp19890128@qq.com）"
+---
+
+# 如何理解SQL与MapReduce之间的关系
+``` sql
+SELECT udtf_group_points(A.id,A.timestamp,A.x,A.y)
+AS (id,stime,etime,elapse,length,count,points)
+FROM (
+    SELECT id, timestamp,x,y
+    FROM car_point
+    DISTRIBUTE BY id
+    SORT BY id,timestamp
+)A;
+```
+轨迹切分是交通大数据基础架构的重要组成部分，功能是把GPS点切分为每个车辆一次有明确起点和终点的GPS点序列。上述SQL是轨迹切分业务的基本实现，业务逻辑封装在udtf中。请指出这个语句，哪些部分对应mapper，哪些部分对应partitioner，哪些部分对应reducer。
+
+# PV、UV统计
+需求：统计移动交通台每个城市、每个厂商的每5分钟的用户数（即UV）、访问次数（即PV）
+输入说明：
+
+| Field | Type | Comment|
+| ----- | -------- | -------- |
+| time | string | 时间，格式yyyy-mm-dd HH:MM:SS |
+| cpcode | string | 厂商 |
+| eid | string | 用户ID |
+| adcode | bigint | 城市编码 |
+| type | bigint | 服务类型 |
+| status | bigint | 服务返回状态 |
+
+要求输出：
+
+| Field | Type | Comment|
+| ----- | -------- | -------- |
+| time | string | 时间，格式yyyy-mm-dd HH:MM:SS |
+| cpcode | string | 厂商 |
+| adcode | bigint | 城市编码 |
+| user_view | bigint | 用户数 |
+| page_view| bigint | 访问次数 |
+
+注：统计时要求统计status值为0，type值为1或2，cpcode为字母、数字、下划线组成的字符串   
+
+参考答案： 
+
+```  sql
+SELECT from_unixtime(unix_timestamp(time)-pmod(unix_timestamp(time),300)) as time,
+             adcode,
+             cpcode,
+             count(distinct eid) as users,
+             count(eid) as request_count
+FROM traffic_logs
+WHERE cpcode regexp '^[a-zA-Z0-9_]+$' 
+and status = 0 
+and (type = 1 or type = 2)
+GROUP BY 
+from_unixtime(unix_timestamp(time)-pmod(unix_timestamp(time),300)),
+adcode,
+cpcode;
+```
+
+# 留存分析
+高德的数据能够得到每辆车经过的区域。现在我们对3个区域感兴趣，想求出以下数字：经过区域1的车数，同时经过区域1和2的车数，同时经过区域1、2、3的车数，怎么办？
+
+输入示例：
+
+| car | region |
+| ----- | -------- | 
+| 车辆1 |  1  |
+| 车辆2 |  2 |
+| 车辆1 |  2  |
+| 车辆3 |  1  |
+| 车辆1 |  3   |
+| 车辆3 |  2   |
+
+参考答案：
+
+建立一张编码表：
+| code | region |
+| ----- | -------- | 
+| 1 |  1  |
+| 10 |  2 |
+| 100 |  3  |
+
+
+然后执行SQL：
+``` sql
+select
+    sum(cnt1) as cnt1,
+    sum(cnt2) as cnt2,
+    sum(cnt3) as cnt3
+from (
+select
+    case when flag = 1 then 1
+    else 0 end as cnt1,
+    case when flag = 11 then 1
+    else 0 end as cnt2,
+    case when flag = 111 then 1
+    else 0 end as cnt3
+from(
+select 
+    a.car,
+    sum(b.code) as flag
+from 
+    car_region a
+join
+    code_region b
+on 
+    a.region = b.region
+group by
+      a.car
+) tmp
+) tmp2
+```
+

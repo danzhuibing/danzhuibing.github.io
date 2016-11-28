@@ -1,0 +1,61 @@
+---
+title: "Java JSON处理"
+---
+
+
+# 前言
+本文介绍第三方库**fastjson**，用于在Java中处理JSON数据。
+
+``` xml
+<dependency>
+     <groupId>com.alibaba</groupId>
+     <artifactId>fastjson</artifactId>
+     <version>1.2.20</version>
+</dependency>
+```
+
+# fromJSON
+对于数组形式的JSON，请使用`JSONArray.parseArray()`方法，不要使用`JSON.parseObject()`。
+
+``` {java, eval=F}
+String jsonListStr = "[1.1,2.2,3.3,4.4]";
+List<Double> objList = JSONArray.parseArray(jsonListStr, Double.class);
+```
+
+对于DataFrame形式的JSON，需要先建立一个`Java Bean`，然后再使用`JSONArray.parseArray()`。
+
+``` {java, eval=F}
+public class Person {
+    @JSONField(name="person_name")
+    private String personName;
+    private int age;
+    // Getter & Setter
+    ...
+}
+
+String jsonDF = "[{\"person_name\":\"Erik\", \"age\":43}, {\"person_name\":\"Anna\",\"age\": 32}]";
+List<Person> objList5 = JSONArray.parseArray(jsonDF, Person.class);
+```
+
+
+对于列式存储的DF类的JSON，也是需要建立一个Java Bean，然后再使用`JSON.parseObject()`方法解析。
+
+``` {java, eval=F}
+String jsonDFColumn = "{\"name\":[\"Erik\",\"Anna\"],\"age\":[43,32]}";
+PersonColumn personColumn = JSON.parseObject(jsonDFColumn, PersonColumn.class);
+```
+
+另外，fastjson还提供了泛型的反序列化，用于处理一些特殊需求。
+
+``` {java, eval=F}
+String jsonSpecial = "{\"1\":[1.1,2.2,3.3],\"2\":[4.4,5.5,6.6]}";
+Map<String, List<Double>> objMapList = JSON.parseObject(jsonSpecial, new TypeReference<Map<String, List<Double>>>(){});
+```
+
+
+# toJSON
+``` {java, eval=F}
+String jsonString = JSON.toJSONString(obj);
+```
+
+可以使用`@JSONField`进行序列化的定制。

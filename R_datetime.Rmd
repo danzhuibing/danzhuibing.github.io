@@ -1,0 +1,83 @@
+---
+title: "R日期时间处理"
+---
+
+# 前言
+本文使用第三方**lubridate**库，用于处理R的日期时间对象。在使用此库以前，需要对R自带的日期时间类型有所了解：R语言中，分别设计了两个日期时间类型：POSIXlt，对应字符串形式表达的日期时间；POSIXct，对应数字形式表达的日期时间。此外，还有一个专门针对日期的类型Date。
+
+- Date: 日期类型，年月日时分秒
+- POSIXct：以有符号整数形式存储，表示从1970-01-01到该时间点经过的秒数
+- POSIXlt：以字符串形式存储，包含年月日等，如”05/27/84” 对应格式 “%m/%d/%y”，”May 27 1984” 对应格式 “%B %d %Y”
+
+lubridate基于POSIXct构建。
+
+
+# 格式转换
+## 字符串转日期时间
+``` {R, eval=F}
+# 任意常见格式的日期时间字符串都能自动识别
+arrive <- ymd_hms("2011-06-04 12:00:00", tz = "Pacific/Auckland")
+
+# 年月日
+ymd("20110604")
+```
+
+## 时间戳转日期时间
+``` {R, eval=F}
+as.POSIXct(1307145600, origin="1970-01-01", tz="Pacific/Auckland")
+```
+
+## 日期时间转字符串
+``` {R, eval=F}
+as.character(arrive, format="%Y-%m-%d %H:%M:%S")
+```
+
+## 日期时间转时间戳
+```{R, eval=F}
+as.numeric(arrive)
+```
+
+
+# 日期时间属性
+```{R, eval=F}
+second(arrive)
+wday(arrive)
+wday(arrive, label=TRUE)
+```
+
+# 日期时间算术
+``` {R, eval=F}
+
+# 时间段
+minutes(2) ## period
+dminutes(2) ## duration
+
+
+# 加减运算
+ymd(20120101) + dyears(1) ## 二者输出有区别
+ymd(20120101) + years(1)
+
+meetings <- meeting + weeks(0:5)
+auckland / ddays(2)
+
+# 日期时间区间，前闭后开
+auckland <- interval(arrive, leave) 
+auckland
+
+jsm <- interval(ymd(20110720, tz = "Pacific/Auckland"), ymd(20110831, tz = "Pacific/Auckland"))
+jsm
+
+int_overlaps(jsm, auckland)
+setdiff(auckland, jsm)
+```
+
+# 时区
+``` {R, eval=F}
+# 时间戳不变，北京8点变为伦敦0点，同一时刻
+meeting <- ymd_hms("2011-07-01 09:00:00", tz = "Pacific/Auckland")
+with_tz(meeting, "America/Chicago") 
+
+# 时间戳改变，显示值不变，北京8点变为伦敦8点
+mistake <- force_tz(meeting, "America/Chicago")
+with_tz(mistake, "Pacific/Auckland") 
+```

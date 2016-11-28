@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>R日期时间处理</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">PYTRAFFICR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">大数据</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">R日期时间处理</h1>
+
+</div>
+
+
+<div class="section level1">
+<h1>前言</h1>
+<p>本文使用第三方<strong>lubridate</strong>库，用于处理R的日期时间对象。在使用此库以前，需要对R自带的日期时间类型有所了解：R语言中，分别设计了两个日期时间类型：POSIXlt，对应字符串形式表达的日期时间；POSIXct，对应数字形式表达的日期时间。此外，还有一个专门针对日期的类型Date。</p>
+<ul>
+<li>Date: 日期类型，年月日时分秒</li>
+<li>POSIXct：以有符号整数形式存储，表示从1970-01-01到该时间点经过的秒数</li>
+<li>POSIXlt：以字符串形式存储，包含年月日等，如”05/27/84” 对应格式 “%m/%d/%y”，”May 27 1984” 对应格式 “%B %d %Y”</li>
+</ul>
+<p>lubridate基于POSIXct构建。</p>
+</div>
+<div class="section level1">
+<h1>格式转换</h1>
+<div class="section level2">
+<h2>字符串转日期时间</h2>
+<pre class="r"><code># 任意常见格式的日期时间字符串都能自动识别
+arrive &lt;- ymd_hms(&quot;2011-06-04 12:00:00&quot;, tz = &quot;Pacific/Auckland&quot;)
+
+# 年月日
+ymd(&quot;20110604&quot;)</code></pre>
+</div>
+<div class="section level2">
+<h2>时间戳转日期时间</h2>
+<pre class="r"><code>as.POSIXct(1307145600, origin=&quot;1970-01-01&quot;, tz=&quot;Pacific/Auckland&quot;)</code></pre>
+</div>
+<div class="section level2">
+<h2>日期时间转字符串</h2>
+<pre class="r"><code>as.character(arrive, format=&quot;%Y-%m-%d %H:%M:%S&quot;)</code></pre>
+</div>
+<div class="section level2">
+<h2>日期时间转时间戳</h2>
+<pre class="r"><code>as.numeric(arrive)</code></pre>
+</div>
+</div>
+<div class="section level1">
+<h1>日期时间属性</h1>
+<pre class="r"><code>second(arrive)
+wday(arrive)
+wday(arrive, label=TRUE)</code></pre>
+</div>
+<div class="section level1">
+<h1>日期时间算术</h1>
+<pre class="r"><code># 时间段
+minutes(2) ## period
+dminutes(2) ## duration
+
+
+# 加减运算
+ymd(20120101) + dyears(1) ## 二者输出有区别
+ymd(20120101) + years(1)
+
+meetings &lt;- meeting + weeks(0:5)
+auckland / ddays(2)
+
+# 日期时间区间，前闭后开
+auckland &lt;- interval(arrive, leave) 
+auckland
+
+jsm &lt;- interval(ymd(20110720, tz = &quot;Pacific/Auckland&quot;), ymd(20110831, tz = &quot;Pacific/Auckland&quot;))
+jsm
+
+int_overlaps(jsm, auckland)
+setdiff(auckland, jsm)</code></pre>
+</div>
+<div class="section level1">
+<h1>时区</h1>
+<pre class="r"><code># 时间戳不变，北京8点变为伦敦0点，同一时刻
+meeting &lt;- ymd_hms(&quot;2011-07-01 09:00:00&quot;, tz = &quot;Pacific/Auckland&quot;)
+with_tz(meeting, &quot;America/Chicago&quot;) 
+
+# 时间戳改变，显示值不变，北京8点变为伦敦8点
+mistake &lt;- force_tz(meeting, &quot;America/Chicago&quot;)
+with_tz(mistake, &quot;Pacific/Auckland&quot;) </code></pre>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

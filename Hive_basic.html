@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="陈水平（csp19890128@qq.com）" />
+
+
+<title>Hive基础</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">PYTRAFFICR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">大数据</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Hive基础</h1>
+<h4 class="author"><em>陈水平（<a href="mailto:csp19890128@qq.com">csp19890128@qq.com</a>）</em></h4>
+
+</div>
+
+
+<div id="sqlmapreduce" class="section level1">
+<h1>如何理解SQL与MapReduce之间的关系</h1>
+<pre class="sql"><code>SELECT udtf_group_points(A.id,A.timestamp,A.x,A.y)
+AS (id,stime,etime,elapse,length,count,points)
+FROM (
+    SELECT id, timestamp,x,y
+    FROM car_point
+    DISTRIBUTE BY id
+    SORT BY id,timestamp
+)A;</code></pre>
+<p>轨迹切分是交通大数据基础架构的重要组成部分，功能是把GPS点切分为每个车辆一次有明确起点和终点的GPS点序列。上述SQL是轨迹切分业务的基本实现，业务逻辑封装在udtf中。请指出这个语句，哪些部分对应mapper，哪些部分对应partitioner，哪些部分对应reducer。</p>
+</div>
+<div id="pvuv" class="section level1">
+<h1>PV、UV统计</h1>
+<p>需求：统计移动交通台每个城市、每个厂商的每5分钟的用户数（即UV）、访问次数（即PV） 输入说明：</p>
+<table>
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Type</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>time</td>
+<td>string</td>
+<td>时间，格式yyyy-mm-dd HH:MM:SS</td>
+</tr>
+<tr class="even">
+<td>cpcode</td>
+<td>string</td>
+<td>厂商</td>
+</tr>
+<tr class="odd">
+<td>eid</td>
+<td>string</td>
+<td>用户ID</td>
+</tr>
+<tr class="even">
+<td>adcode</td>
+<td>bigint</td>
+<td>城市编码</td>
+</tr>
+<tr class="odd">
+<td>type</td>
+<td>bigint</td>
+<td>服务类型</td>
+</tr>
+<tr class="even">
+<td>status</td>
+<td>bigint</td>
+<td>服务返回状态</td>
+</tr>
+</tbody>
+</table>
+<p>要求输出：</p>
+<table>
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Type</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>time</td>
+<td>string</td>
+<td>时间，格式yyyy-mm-dd HH:MM:SS</td>
+</tr>
+<tr class="even">
+<td>cpcode</td>
+<td>string</td>
+<td>厂商</td>
+</tr>
+<tr class="odd">
+<td>adcode</td>
+<td>bigint</td>
+<td>城市编码</td>
+</tr>
+<tr class="even">
+<td>user_view</td>
+<td>bigint</td>
+<td>用户数</td>
+</tr>
+<tr class="odd">
+<td>page_view</td>
+<td>bigint</td>
+<td>访问次数</td>
+</tr>
+</tbody>
+</table>
+<p>注：统计时要求统计status值为0，type值为1或2，cpcode为字母、数字、下划线组成的字符串</p>
+<p>参考答案：</p>
+<pre class="sql"><code>SELECT from_unixtime(unix_timestamp(time)-pmod(unix_timestamp(time),300)) as time,
+             adcode,
+             cpcode,
+             count(distinct eid) as users,
+             count(eid) as request_count
+FROM traffic_logs
+WHERE cpcode regexp &#39;^[a-zA-Z0-9_]+$&#39; 
+and status = 0 
+and (type = 1 or type = 2)
+GROUP BY 
+from_unixtime(unix_timestamp(time)-pmod(unix_timestamp(time),300)),
+adcode,
+cpcode;</code></pre>
+</div>
+<div class="section level1">
+<h1>留存分析</h1>
+<p>高德的数据能够得到每辆车经过的区域。现在我们对3个区域感兴趣，想求出以下数字：经过区域1的车数，同时经过区域1和2的车数，同时经过区域1、2、3的车数，怎么办？</p>
+<p>输入示例：</p>
+<table>
+<thead>
+<tr class="header">
+<th>car</th>
+<th>region</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>车辆1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>车辆2</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>车辆1</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>车辆3</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>车辆1</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>车辆3</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p>参考答案：</p>
+<p>建立一张编码表： | code | region | | —– | ——– | | 1 | 1 | | 10 | 2 | | 100 | 3 |</p>
+<p>然后执行SQL：</p>
+<pre class="sql"><code>select
+    sum(cnt1) as cnt1,
+    sum(cnt2) as cnt2,
+    sum(cnt3) as cnt3
+from (
+select
+    case when flag = 1 then 1
+    else 0 end as cnt1,
+    case when flag = 11 then 1
+    else 0 end as cnt2,
+    case when flag = 111 then 1
+    else 0 end as cnt3
+from(
+select 
+    a.car,
+    sum(b.code) as flag
+from 
+    car_region a
+join
+    code_region b
+on 
+    a.region = b.region
+group by
+      a.car
+) tmp
+) tmp2</code></pre>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

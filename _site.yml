@@ -1,0 +1,8 @@
+name: "PYTRAFFICR"
+output_dir: "."
+navbar:
+  title: "PYTRAFFICR"
+  left:
+    - text: "大数据"
+      href: index.html
+      

@@ -1,0 +1,20 @@
+---
+title: "R JSON处理"
+---
+
+# 前言
+本文介绍第三方库**jsonlite**，用于在R中处理JSON数据。
+
+# fromJSON
+我们使用`fromJSON`解析JSON字符串，一般而言，JSON都可以被转变为R的list结构。对于几种常见形式的JSON，jsonlite默认将其转化为比list更紧凑的数据格式：vector、data.frame、matrix。
+
+| JSON structure | Example JSON data | Simplifies to R class | Argument in fromJSON |
+| --- | --- | --- | --- |
+| Array of primitives | `["Amsterdam", "Rotterdam", "Ulrecht", "Den Haag"]` | Atomic Vector | simplifyVector |
+| Array of objects | `[{"name":"Erik", "age":43}, {"name":"Anna","age": 32}]` | Data Frame | simplifyDataFrame |
+| Array of arrays | `[[1,2,3],[4,5,6]]` | Matrix | simplifyMatrix |
+
+对于DataFrame而言，我们有时候希望是按照列式传输，即`json_str <- '{"name":["Erik","Anna"],"age":[43,32]}'`，这样相比于行式传输能够节省大量空间，这个时候，我们用代码`as.data.frame(jsonlite::fromJSON(json_str))`可以将其快速转为DataFrame格式。
+
+# toJSON
+默认情况下，会删除空格等没必要的空间。如果想打印出来更好看，可以指定参数`pretty=TRUE`。其他可以指定的参数有日期、POSIXt、复数、Factor、控制等的输出选项。

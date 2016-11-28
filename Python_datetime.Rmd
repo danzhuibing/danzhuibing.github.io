@@ -1,0 +1,59 @@
+---
+title: "Python日期时间处理"
+---
+
+
+# 前言
+本文使用标准库**datetime**，用于处理Python的日期时间对象。datetime库对时区的支持不是很友好，具体内容请看官方的综述：
+
+> There are two kinds of date and time objects: “naive” and “aware”.  
+An aware object has sufficient knowledge of applicable algorithmic and political time adjustments, such as time zone and daylight saving time information, to locate itself relative to other aware objects. An aware object is used to represent a specific moment in time that is not open to interpretation.  
+A naive object does not contain enough information to unambiguously locate itself relative to other date/time objects. Whether a naive object represents Coordinated Universal Time (UTC), local time, or time in some other timezone is purely up to the program, just like it’s up to the program whether a particular number represents metres, miles, or mass. Naive objects are easy to understand and to work with, at the cost of ignoring some aspects of reality.  
+For applications requiring aware objects, datetime and time objects have an optional time zone information attribute, tzinfo, that can be set to an instance of a subclass of the abstract tzinfo class. These tzinfo objects capture information about the offset from UTC time, the time zone name, and whether Daylight Saving Time is in effect. Note that no concrete tzinfo classes are supplied by the datetime module. Supporting timezones at whatever level of detail is required is up to the application. The rules for time adjustment across the world are more political than rational, and there is no standard suitable for every application.  
+
+# 格式转换
+## 字符串转日期时间
+``` {python, eval=F}
+import datetime
+# 任意常见格式的日期时间字符串都能自动识别
+dt = datetime.strptime("2011-06-04 12:00:00", "%Y-%m-%d %H:%M:%S")
+
+# 年月日
+dt = datetime.datetime.strptime("20110604", "%Y%m%d")
+```
+
+## 时间戳转日期时间
+``` {python, eval=F}
+dt = datetime.datetime.utcfromtimestamp(1307145600) # 返回UTC日期时间，tzinfo = None
+dt = datetime.datetime.fromtimestamp(1307145600) # 返回本地日期时间
+```
+
+## 日期时间转字符串
+``` {python, eval=F}
+dt_str = datetime.datetime.strftime(dt, "%Y-%m-%d %H:%M:%S")
+```
+
+## 日期时间转时间戳
+```{python, eval=F}
+import time
+ts = int(time.mktime(dt.timetuple()))
+```
+
+
+# 日期时间属性
+```{python, eval=F}
+dt.second
+dt.weekday()
+```
+
+# 日期时间算术
+``` {python, eval=F}
+# 时间段
+td = datetime.timedelta(minutes=2)
+
+# 加减运算
+dt + td
+
+td.seconds
+td.days
+```

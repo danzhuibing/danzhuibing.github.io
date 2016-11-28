@@ -1,0 +1,105 @@
+---
+title: "Java日期时间处理"
+
+---
+
+# 前言
+本文使用第三方**Joda-Time**库，用于处理Java的日期时间对象。
+``` {xml}
+<!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
+<dependency>
+    <groupId>joda-time</groupId>
+    <artifactId>joda-time</artifactId>
+    <version>2.9.4</version>
+</dependency>
+```
+
+
+# 格式转换
+## 字符串转日期时间
+``` {java, eval=F}
+// 标准格式的年月日时分秒
+DateTime dt1 = new DateTime("2016-11-21T20:34:30");
+
+// 任意格式的年月日时分秒
+DateTimeFormatter format = DateTimeFormat.forPattern("yyyyMMddHHmmss");
+DateTime.parse("20161121203800", format).toDate()
+
+// 年月日
+LocalDate localDate = new LocalDate("2016-11-21");
+// 时分秒
+LocalTime localTime = new LocalTime("20:34:30");
+DateTimeFormatter format2 = DateTimeFormat.forPattern("HHmmss");
+LocalTime localTime2 = LocalTime.parse("203800", format2);
+```
+
+## 时间戳转日期时间
+``` {java, eval=F}
+DateTime dt1 = new DateTime(Long.parseLong("1476722000000")); // 毫秒数，long
+```
+
+## 日期时间转字符串
+``` {java, eval=F}
+DateTime dateTime = new DateTime();  
+String s = dateTime.toString("yyyy-MM-dd HH:mm:ss");  
+```
+
+## 日期时间转时间戳
+```{java, eval=F}
+DateTime dateTime = new DateTime();  
+dateTime.getMillis();
+```
+
+
+# 日期时间属性
+```{java, eval=F}
+DateTime dt = new DateTime();
+int day = dt.getDayOfMonth();
+int week = dt.getDayOfWeek();
+int hour = dt.getHourOfDay();
+int min = dt.getMinuteOfHour();
+
+if(week == DateTimeConstants.SUNDAY) {
+  System.out.println("星期日");
+}
+```
+
+# 日期时间算术
+``` {java, eval=F}
+// 加减运算
+DateTime dt = new DateTime();
+DateTime yesterday = dt.minusDays(1);
+DateTime after3month = dt.plusMonths(3);
+
+// 比较运算
+DateTime dt1 = new DateTime("2012-02-01");
+DateTime dt2 = new DateTime("2012-05-01");
+boolean b1 = d1.isAfter(d2);
+boolean b2 = d1.isBeforeNow();
+boolean b3 = d2.isEqualNow();
+
+// 时间段
+Duration d = new Duration(dt1, dt2); // Duration就是两个时间戳的差，精确的毫秒值
+long time = d.getMillis();
+
+Period p = new Period(dt1, dt2, PeriodType.days()); // Period不是精确时间，比如一个月，可能是31天，可能是28天
+int days = p.getDays();
+
+
+// 日期时间区间，前闭后开
+Interval i = new Interval(dt1, dt2); // Interval是两个datetime表示的时段
+boolean contained = i.contains(new DateTime("2012-03-01"));
+```
+
+# 时区
+``` {java, eval=F}
+// 设置默认时区
+DateTimeZone.setDefault(DateTimeZone.forID("Asia/Tokyo"));  
+
+// 时区转换
+DateTime dt = new DateTime();
+DateTime dtLondon = dt.withZone(DateTimeZone.forID("Europe/London")); // 时间戳不变，北京8点变为伦敦0点，同一时刻
+
+DateTime dt = new DateTime();
+dtLondonSameTime = dt.withZoneRetainFields(DateTimeZone.forID("Europe/London")); // 时间戳改变，显示值不变，北京8点变为伦敦8点
+```

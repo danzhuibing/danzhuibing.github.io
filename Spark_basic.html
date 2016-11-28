@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="陈水平（csp19890128@qq.com）" />
+
+
+<title>Spark基础</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">PYTRAFFICR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">大数据</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Spark基础</h1>
+<h4 class="author"><em>陈水平（<a href="mailto:csp19890128@qq.com">csp19890128@qq.com</a>）</em></h4>
+
+</div>
+
+
+<div id="spark-rddsparkhadoop" class="section level1">
+<h1>Spark RDD概念及Spark与Hadoop的区别</h1>
+<p>RDD是Spark的核心。关于它的定义，简单来说，就是能够保存在内存里的分布式数据集。官方定义如下：</p>
+<blockquote>
+<p>The main abstraction Spark provides is a <strong>resilient distributed dataset (RDD)</strong>, which is a collection of elements partitioned across the nodes of the cluster that can be operated on in parallel.<br />
+出处：<em>Spark Programming Guide</em></p>
+</blockquote>
+<p>对于Hadoop而言，分布式数据集是存储在文件系统HDFS上的，这样的坏处：数据处理往往需要多个MapReduce环节，下一个环节很可能依赖于上一个环节的输出；由于没有分布式内存机制，Hadoop必须把上一个环节MapReduce的输出结果写到硬盘HDFS上，下一个环节再从HDFS上读取。因此磁盘IO将会花费大量的时间。这种模式对于迭代式计算，如机器学习，非常不便。</p>
+<p>Spark创造的RDD机制可以很好地解决这个问题。一般而言，Spark的流程如下：首先，从HDFS读取数据创建RDD；然后对RDD进行各种数据转换与处理的操作（可以简单理解为若干个Hadoop的MapReduce操作），直到得到满意的结果；最后，将结果写到HDFS，或者输出至屏幕。</p>
+<p>如果把Spark的这个过程和Hadoop作对比，最大的区别就是用RDD替代了HDFS作为不同数据处理环节的媒介；当然，还有一个重要的区别，Hadoop只提供了Map和Reduce两种操作，Spark提供了更加灵活的操作方法，后面会有更详细的阐述。</p>
+</div>
+<div id="spark-wordcount" class="section level1">
+<h1>Spark WordCount代码解析</h1>
+<pre class="python"><code>from pyspark import SparkContext
+sc = SparkContext(&quot;local&quot;, &quot;wordcount&quot;)
+textFile = sc.textFile(&quot;YOUR_SPARK_HOME/README.md&quot;)
+wordCounts = textFile.flatMap(lambda line: line.split()).map(lambda word: (word, 1)).reduceByKey(lambda a, b: a+b)
+print wordCounts.collect()</code></pre>
+<p>请阅读上述代码，解读SparkContext、textFile、flatMap、map、reduceByKey、collect，指出哪些是transformation，哪些是action，并描述<strong>transformation</strong>和<strong>action</strong>的区别。 <strong>参考答案</strong></p>
+<p>代码剖析如下：</p>
+<ol style="list-style-type: decimal">
+<li>导入Python使用的Spark包</li>
+<li>初始化Spark环境，“local”表示程序用单机模拟Spark，“wordcount”是Spark程序的名字，这个名字会显示在Spark的集群管理页面</li>
+<li><strong>textFile()</strong>用于从文件系统读取数据，生成RDD</li>
+<li><strong>flatMap()</strong>将RDD的每一行按照参数定义的函数转化为多行，<em>lambda</em>定义了Python的匿名函数，函数输入是line，输出是line.split()；<strong>map()</strong>将RDD的每一行按照参数定义的函数转化为一行，(word, 1)表示一个键值对，word为key，1为value；<strong>reduceByKey()</strong>将RDD按照key分组后，按照参数定义的函数进行合并，此处函数的作用是是分组求和</li>
+<li><strong>collect()</strong>，将RDD的数据，从集群的各个节点收集回提交任务的机器</li>
+</ol>
+<p>transformation输入是RDD，输出是RDD；action输入是RDD，输出不是RDD。以上操作collect为action，其余为transformation。RDD的操作不会立刻执行，只有碰到action才会触发任务。</p>
+</div>
+<div id="rdd" class="section level1">
+<h1>常用的RDD操作汇总</h1>
+<div class="figure">
+<img src="images/spark_basic_rdd_operations.png" />
+
+</div>
+</div>
+<div id="-vs-" class="section level1">
+<h1>宽依赖 VS 窄依赖</h1>
+<p>TBD</p>
+</div>
+<div class="section level1">
+<h1>资源配置参数解读</h1>
+<pre class="shell"><code>#!/bin/sh
+export JAVA_HOME=$YOUR-JAVA-DIR/jdk1.7.0_67
+SPARK_HOME=$YOUR-SPARK-DIR/spark-1.5.1-bin-hadoop2.3
+
+MASTER=spark://XXX:7077,YYY:7077
+#MASTER=local[*]
+
+mode=client
+#mode=cluster
+
+port=5081
+
+driver_mem=&quot;3g&quot;
+
+executor_mem=&quot;4g&quot;
+executor_cores=2
+total_executor_cores=24
+
+cur_dir=$(cd `dirname $0`;pwd)
+
+command=&quot;$SPARK_HOME/bin/spark-submit \
+    --master $MASTER \
+    --deploy-mode $mode \
+    --driver-memory $driver_mem \
+    --total-executor-cores $total_executor_cores  \
+    --executor-cores $executor_cores  \
+    --executor-memory $executor_mem \
+    --py-files $cur_dir/read_conf.py,$cur_dir/logger.py \
+    --conf spark.ui.port=$port \
+    --conf spark.driver.maxResultSize=2g \
+    --conf spark.file.transferTo=false \
+    --conf spark.eventLog.enabled=true \
+    --conf spark.eventLog.dir=hdfs://xx.xxx.xxx.xx:5000/user/xxxx/spark \
+    word_count.py \
+    $*&quot;
+
+echo $command
+$command</code></pre>
+<p>已知集群配置情况如下：4台机器，每台机器8个核，每台机器32G内存。请问上述Spark应用有多少个executor，每个executor占用多少CPU和内存？driver的client mode和cluster mode有什么区别？</p>
+<p><strong>参考答案</strong></p>
+<p>application提交后，一共会占据24个核（即每台机器6个核）；每个executor占用2个核，因此每台机器启动3个executor；每个executor占用4G内存，因此每台机器占用12G内存。</p>
+<p>client mode下driver运行在本地机器；cluster mode下driver运行在Spark集群中，driver的资源开销都会算到集群上。</p>
+</div>
+<div class="section level1">
+<h1>并发调试原理</h1>
+<p>RDD的action操作会触发一个Job。Spark的job根据宽窄依赖会被拆分为若干个stage，每个stage包含了若干个task，task内部是串行处理数据，因此task的个数是决定程序性能的最重要参数。</p>
+<p>task的个数与stage中上一个RDD的partition个数相同。而一个RDD的partition个数与被它依赖的RDD的partition个数相同。如果一个RDD没有父RDD，比如从textFile得到，那么一般情况是一个HDFS block生成一个partition，默认是256M一个partition。如果通过parallelize，有个参数进行partition的设定。</p>
+<p>要知道partition的个数，可以通过接口rdd.partitions().size()获得。</p>
+<p>过少的task个数会导致聚集操作时，每个task的内存压力很大，因为过少的task意味着过少的partition，所以意味着过大的数据量。类似join的操作会在内存生成hash-map用于分组或者排序，如果这个task对应的数据不能轻易塞进内存中，一方面会导致GC压力，另一方面会引发数据落盘，带来磁盘IO。</p>
+<p>如何增加partition个数？如果是从HDFS读取的数据，可以使用repartition，或者缩小HDFS block的size，或者修改InputFormat。</p>
+<p>如果是从其他stage引入获得的partition，在引发stage边界的操作会接受一个numPartitions的参数，通过实验的方法来确定它的最优值，不停地将partition的个数从上次实验的partition个数乘以1.5，直到性能不再提升位置。</p>
+</div>
+<div class="section level1">
+<h1>资源配置与并发调试经验总结</h1>
+<p>首先确定内存。Spark使用两种类型的内存，一是数据缓存，二是计算。数据缓存就是用户调用cache()方法存储在内存中的数据，一般占比50%。计算分为两类，一类是用户定义的计算，另一类是spark自行的shuffle计算，经验上来讲分别占比约为30%和20%。</p>
+<p>确定数据cahce内存的最好方法是创建RDD并缓存，然后去Spark Application网页界面的Storage查看：The best way to size the amount of memory consumption a dataset will require is to create an RDD, put it into cache, and look at the “Storage” page in the web UI. The page will tell you how much memory the RDD is occupying.</p>
+<p>RDD Cache的内存占用量乘以2得到需要申请的内存总数。每个CPU处理5G内存，于是可以得到CPU核数。每个CPU处理2-3个task。task数取决于partition数。</p>
+</div>
+<div id="spark-streaming" class="section level1">
+<h1>Spark Streaming原理</h1>
+<p><a href="https://github.com/lw-lin/CoolplaySpark/tree/master/Spark%20Streaming%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E7%B3%BB%E5%88%97">腾讯-广点通教程</a></p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
