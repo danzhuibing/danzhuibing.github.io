@@ -1,0 +1,12 @@
+---
+output:
+  html_document:
+    theme: cosmo
+    highlight: textmate
+---
+
+本系列文章介绍R的编程基础。
+
++ [日期时间处理-R篇](R_datetime.html)
++ [JSON处理-R篇](R_JSON.html)
++ [字符串处理-R篇](R_string.html)

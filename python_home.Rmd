@@ -1,0 +1,11 @@
+---
+output:
+  html_document:
+    theme: cosmo
+    highlight: textmate
+---
+
+本系列文章介绍Python的编程基础。
+
++ [日期时间处理-Python篇](Python_datetime.html)
++ [JSON处理-Python篇](Python_JSON.html)
