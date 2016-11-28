@@ -6,7 +6,7 @@ output:
     toc: true
     toc_float: 
       collapsed: false
-    theme: journal
+    theme: cosmo
     highlight: textmate
     number_sections: true
     

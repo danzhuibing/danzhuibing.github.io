@@ -1,5 +1,14 @@
 ---
 title: "R JSON处理"
+output:
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: 
+      collapsed: false
+    theme: cosmo
+    highlight: textmate
+    number_sections: true
 ---
 
 # 前言

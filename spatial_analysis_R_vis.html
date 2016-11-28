@@ -15,14 +15,17 @@
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet"
-      href="site_libs/highlight/default.css"
+      href="site_libs/highlight/textmate.css"
       type="text/css" />
 <script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
@@ -159,8 +162,119 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: -22px; }
+.code-folding-btn.collapsed { margin-bottom: 4px; }
+</style>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+  padding-left: 10px;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -180,6 +294,21 @@ $(document).ready(function () {
         <li>
   <a href="index.html">大数据</a>
 </li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+<li>
+  <a href="java_home.html">Java</a>
+</li>
+<li>
+  <a href="spatial_home.html">空间分析</a>
+</li>
+<li>
+  <a href="about.html">关于作者</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -190,6 +319,14 @@ $(document).ready(function () {
 
 <div class="fluid-row" id="header">
 
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">R空间分析：可视化</h1>
@@ -198,7 +335,7 @@ $(document).ready(function () {
 
 
 <div class="section level1">
-<h1>前言</h1>
+<h1><span class="header-section-number">1</span> 前言</h1>
 <p>很多朋友说在R里没法使用高德地图，这里给出一个基于leaflet包的解决方法。</p>
 <pre class="r"><code>library(leaflet)
 
@@ -218,22 +355,22 @@ m</code></pre>
 <p>当然，除了告诉大家怎么在R里调用高德地图外，本文还想做的深入一些，尝试对空间可视化的基础知识做一个简单的介绍。</p>
 </div>
 <div class="section level1">
-<h1>空间数据基础知识</h1>
+<h1><span class="header-section-number">2</span> 空间数据基础知识</h1>
 <div id="shp" class="section level2">
-<h2>shp文件</h2>
+<h2><span class="header-section-number">2.1</span> shp文件</h2>
 <p>空间数据最常用的格式是shp，主要由三个文件组成：shp文件用于存储位置几何信息，dbf文件用于存储attribute，shx用于存储位置几何信息与attribute的对照表。位置几何信息主要有以下几类：points，multipoints，lines，polygons等。</p>
 </div>
 <div id="wktwkb" class="section level2">
-<h2>WKT与WKB</h2>
+<h2><span class="header-section-number">2.2</span> WKT与WKB</h2>
 <p>WKT(Well-known text)是开放地理空间联盟OGC（Open GIS Consortium ）制定的一种文本标记语言，用于表示矢量几何对象、空间参照系统及空间参照系统之间的转换。举例如下： - 点（Point）：“POINT(1 1)” - 线（Line）：“LINESTRING(0 0,1 1,2 2)” - 多边形（Polygon）：“POLYGON((0 0,3 0,3 3,0 3,0 0),(1 1,2 1,2 2,1 2,1 1))”</p>
 <p>WKB(well-known binary) 是WKT的二进制表示形式，解决了WKT表达方式冗余的问题，便于传输和在数据库中存储相同的信息.</p>
 </div>
 </div>
 <div id="r" class="section level1">
-<h1>R的空间数据处理与可视化</h1>
+<h1><span class="header-section-number">3</span> R的空间数据处理与可视化</h1>
 <p>空间数据处理与可视化，需要解决三个问题，一是怎么在R中表示空间数据，二是怎么对空间对象进行计算；三是怎么在R中绘制空间数据/地图。sp用于解决第一个问题，rgeos用于解决第二个问题，leaflet用于解决第二个问题。</p>
 <div id="sp" class="section level2">
-<h2>sp</h2>
+<h2><span class="header-section-number">3.1</span> sp</h2>
 <p>sp包的功能是在R中提供对象表示shp文件。SpatialPoints，SpatialMultiPoints，SpatialLines，SpatialPolygons等用于表示位置几何信息。attribute一般以表格形式存在，所以sp包用dataframe对齐进行表示。为前面提到的SpatialXXX添加dataframe后得到诸如SpatialPointsDataFrame，SpatialMutilPointsDataFrame，SpatialLinesDataFrame，SpatialPolygonsDataFrame等类。在这些类中，位置几何信息与attribute的对照关系通过Spatial类的ID与dataframe的rownames进行匹配得到。</p>
 <p>SpatialXXDataFrame的结构示意图如下：</p>
 <div class="figure">
@@ -283,7 +420,7 @@ Sldf &lt;- splines2splinesdf(Sl, link_coors, &quot;link_id&quot;)
 str(Sldf)</code></pre>
 </div>
 <div id="rgeos" class="section level2">
-<h2>rgeos</h2>
+<h2><span class="header-section-number">3.2</span> rgeos</h2>
 <p>空间处理，主要用来做一些空间运算，比如计算两个空间对象的位置关系：相交，重叠，包含等等。再比如，根据空间对象创建新的空间对象。此外，rgeos还能够完成WKT与sp对象的相互转换。</p>
 <pre class="r"><code>library(rgeos)
 
@@ -293,7 +430,7 @@ dilated_buffer_wkt &lt;- readWKT(writeWKT(dilated_buffer, byid = FALSE))
 eroded_buffer &lt;- gBuffer(dilated_buffer, byid=TRUE, width=-0.0001, capStyle=&quot;SQUARE&quot;)</code></pre>
 </div>
 <div id="leaflet" class="section level2">
-<h2>leaflet</h2>
+<h2><span class="header-section-number">3.3</span> leaflet</h2>
 <p>我们继续上面的例子，将空间对象绘制到高德地图上。</p>
 <pre class="r"><code>library(leaflet)
 factpal &lt;- colorFactor(c(rgb(1,0,0,1),rgb(0, 1, 0, 1)), domain=c(&quot;congest&quot;, &quot;uncongest&quot;))
@@ -331,6 +468,8 @@ m</code></pre>
 
 
 
+</div>
+</div>
 
 </div>
 

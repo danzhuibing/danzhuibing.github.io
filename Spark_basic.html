@@ -9,21 +9,23 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="陈水平（csp19890128@qq.com）" />
 
 
 <title>Spark基础</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet"
-      href="site_libs/highlight/default.css"
+      href="site_libs/highlight/textmate.css"
       type="text/css" />
 <script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
@@ -160,8 +162,119 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: -22px; }
+.code-folding-btn.collapsed { margin-bottom: 4px; }
+</style>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+  padding-left: 10px;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -181,6 +294,21 @@ $(document).ready(function () {
         <li>
   <a href="index.html">大数据</a>
 </li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+<li>
+  <a href="java_home.html">Java</a>
+</li>
+<li>
+  <a href="spatial_home.html">空间分析</a>
+</li>
+<li>
+  <a href="about.html">关于作者</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -191,16 +319,23 @@ $(document).ready(function () {
 
 <div class="fluid-row" id="header">
 
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Spark基础</h1>
-<h4 class="author"><em>陈水平（<a href="mailto:csp19890128@qq.com">csp19890128@qq.com</a>）</em></h4>
 
 </div>
 
 
 <div id="spark-rddsparkhadoop" class="section level1">
-<h1>Spark RDD概念及Spark与Hadoop的区别</h1>
+<h1><span class="header-section-number">1</span> Spark RDD概念及Spark与Hadoop的区别</h1>
 <p>RDD是Spark的核心。关于它的定义，简单来说，就是能够保存在内存里的分布式数据集。官方定义如下：</p>
 <blockquote>
 <p>The main abstraction Spark provides is a <strong>resilient distributed dataset (RDD)</strong>, which is a collection of elements partitioned across the nodes of the cluster that can be operated on in parallel.<br />
@@ -211,7 +346,7 @@ $(document).ready(function () {
 <p>如果把Spark的这个过程和Hadoop作对比，最大的区别就是用RDD替代了HDFS作为不同数据处理环节的媒介；当然，还有一个重要的区别，Hadoop只提供了Map和Reduce两种操作，Spark提供了更加灵活的操作方法，后面会有更详细的阐述。</p>
 </div>
 <div id="spark-wordcount" class="section level1">
-<h1>Spark WordCount代码解析</h1>
+<h1><span class="header-section-number">2</span> Spark WordCount代码解析</h1>
 <pre class="python"><code>from pyspark import SparkContext
 sc = SparkContext(&quot;local&quot;, &quot;wordcount&quot;)
 textFile = sc.textFile(&quot;YOUR_SPARK_HOME/README.md&quot;)
@@ -229,18 +364,18 @@ print wordCounts.collect()</code></pre>
 <p>transformation输入是RDD，输出是RDD；action输入是RDD，输出不是RDD。以上操作collect为action，其余为transformation。RDD的操作不会立刻执行，只有碰到action才会触发任务。</p>
 </div>
 <div id="rdd" class="section level1">
-<h1>常用的RDD操作汇总</h1>
+<h1><span class="header-section-number">3</span> 常用的RDD操作汇总</h1>
 <div class="figure">
 <img src="images/spark_basic_rdd_operations.png" />
 
 </div>
 </div>
 <div id="-vs-" class="section level1">
-<h1>宽依赖 VS 窄依赖</h1>
+<h1><span class="header-section-number">4</span> 宽依赖 VS 窄依赖</h1>
 <p>TBD</p>
 </div>
 <div class="section level1">
-<h1>资源配置参数解读</h1>
+<h1><span class="header-section-number">5</span> 资源配置参数解读</h1>
 <pre class="shell"><code>#!/bin/sh
 export JAVA_HOME=$YOUR-JAVA-DIR/jdk1.7.0_67
 SPARK_HOME=$YOUR-SPARK-DIR/spark-1.5.1-bin-hadoop2.3
@@ -285,7 +420,7 @@ $command</code></pre>
 <p>client mode下driver运行在本地机器；cluster mode下driver运行在Spark集群中，driver的资源开销都会算到集群上。</p>
 </div>
 <div class="section level1">
-<h1>并发调试原理</h1>
+<h1><span class="header-section-number">6</span> 并发调试原理</h1>
 <p>RDD的action操作会触发一个Job。Spark的job根据宽窄依赖会被拆分为若干个stage，每个stage包含了若干个task，task内部是串行处理数据，因此task的个数是决定程序性能的最重要参数。</p>
 <p>task的个数与stage中上一个RDD的partition个数相同。而一个RDD的partition个数与被它依赖的RDD的partition个数相同。如果一个RDD没有父RDD，比如从textFile得到，那么一般情况是一个HDFS block生成一个partition，默认是256M一个partition。如果通过parallelize，有个参数进行partition的设定。</p>
 <p>要知道partition的个数，可以通过接口rdd.partitions().size()获得。</p>
@@ -294,18 +429,20 @@ $command</code></pre>
 <p>如果是从其他stage引入获得的partition，在引发stage边界的操作会接受一个numPartitions的参数，通过实验的方法来确定它的最优值，不停地将partition的个数从上次实验的partition个数乘以1.5，直到性能不再提升位置。</p>
 </div>
 <div class="section level1">
-<h1>资源配置与并发调试经验总结</h1>
+<h1><span class="header-section-number">7</span> 资源配置与并发调试经验总结</h1>
 <p>首先确定内存。Spark使用两种类型的内存，一是数据缓存，二是计算。数据缓存就是用户调用cache()方法存储在内存中的数据，一般占比50%。计算分为两类，一类是用户定义的计算，另一类是spark自行的shuffle计算，经验上来讲分别占比约为30%和20%。</p>
 <p>确定数据cahce内存的最好方法是创建RDD并缓存，然后去Spark Application网页界面的Storage查看：The best way to size the amount of memory consumption a dataset will require is to create an RDD, put it into cache, and look at the “Storage” page in the web UI. The page will tell you how much memory the RDD is occupying.</p>
 <p>RDD Cache的内存占用量乘以2得到需要申请的内存总数。每个CPU处理5G内存，于是可以得到CPU核数。每个CPU处理2-3个task。task数取决于partition数。</p>
 </div>
 <div id="spark-streaming" class="section level1">
-<h1>Spark Streaming原理</h1>
+<h1><span class="header-section-number">8</span> Spark Streaming原理</h1>
 <p><a href="https://github.com/lw-lin/CoolplaySpark/tree/master/Spark%20Streaming%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E7%B3%BB%E5%88%97">腾讯-广点通教程</a></p>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 

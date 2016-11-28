@@ -1,6 +1,14 @@
 ---
 title: "Hive基础"
-author: "陈水平（csp19890128@qq.com）"
+output:
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: 
+      collapsed: false
+    theme: cosmo
+    highlight: textmate
+    number_sections: true
 ---
 
 # 如何理解SQL与MapReduce之间的关系

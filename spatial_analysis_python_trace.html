@@ -15,14 +15,17 @@
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet"
-      href="site_libs/highlight/default.css"
+      href="site_libs/highlight/textmate.css"
       type="text/css" />
 <script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
@@ -159,8 +162,119 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: -22px; }
+.code-folding-btn.collapsed { margin-bottom: 4px; }
+</style>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+  padding-left: 10px;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -180,6 +294,21 @@ $(document).ready(function () {
         <li>
   <a href="index.html">大数据</a>
 </li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+<li>
+  <a href="java_home.html">Java</a>
+</li>
+<li>
+  <a href="spatial_home.html">空间分析</a>
+</li>
+<li>
+  <a href="about.html">关于作者</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -190,6 +319,14 @@ $(document).ready(function () {
 
 <div class="fluid-row" id="header">
 
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">python空间分析：轨迹业务</h1>
@@ -198,7 +335,7 @@ $(document).ready(function () {
 
 
 <div class="section level1">
-<h1>背景</h1>
+<h1><span class="header-section-number">1</span> 背景</h1>
 <p>轨迹数据保留了用户一次出行沿途的GPS点位置信息。每个GPS点位置包含时间、经度和纬度三个基本属性。这三个属性用逗号分隔；不同的GPS位置用分号分隔，就得到下面的输入示例：</p>
 <pre class="python"><code>points = &#39;&#39;&#39;
 20161106165349,119.2885460,25.4171540;20161106165912,119.2885460,25.4171540;20161106165930,119.2885460,25.4171540;20161106170000,119.2885460,25.4171540;20161106170029,119.2885460,25.4171540;20161106170100,119.2885460,25.4171540;20161106170130,119.2885460,25.4171540;20161106170200,119.2885460,25.4171540;20161106170231,119.2885460,25.4171540;20161106170300,119.2885460,25.4171540;20161106170330,119.2885460,25.4171540;20161106170400,119.2885460,25.4171540;20161106170430,119.2908380,25.4181370;20161106170500,119.2920300,25.4203220;20161106170530,119.2925880,25.4214560;20161106170610,119.2927860,25.4218030;20161106170630,119.2928550,25.4219040;20161106170700,119.2928550,25.4219040;20161106170730,119.2930080,25.4222340;20161106170800,119.2935200,25.4228450;20161106170830,119.2945430,25.4245290;20161106170900,119.2951090,25.4267990;20161106170930,119.2951240,25.4268470;20161106171000,119.2951240,25.4275560;20161106171030,119.2953920,25.4294770;20161106171100,119.2957670,25.4320860;20161106171130,119.2962030,25.4350270;20161106171206,119.2965840,25.4378050;20161106171230,119.2968440,25.4393410;20161106171300,119.2968830,25.4398210;20161106171330,119.2970960,25.4412800;20161106171400,119.2975700,25.4435210;20161106171430,119.2983420,25.4461810;20161106171500,119.2991370,25.4489750;20161106171530,119.2999320,25.4518470;20161106171600,119.3007810,25.4548080;20161106171630,119.3010860,25.4572950;20161106171700,119.3010860,25.4572950;20161106171730,119.3010860,25.4572950;20161106171800,119.3010100,25.4579070;20161106171830,119.3004300,25.4594850;20161106171900,119.2994050,25.4615110;20161106171947,119.2977550,25.4637580;20161106172000,119.2951800,25.4657440;20161106172030,119.2932790,25.4672380;20161106172100,119.2922930,25.4680120;20161106172130,119.2909870,25.4689680;20161106172200,119.2893060,25.4708560;20161106172230,119.2882300,25.4745260;20161106172300,119.2873740,25.4777130;20161106172330,119.2852050,25.4798720;20161106172415,119.2827230,25.4812570;20161106172433,119.2810810,25.4822050;20161106172500,119.2790350,25.4833780;20161106172530,119.2767740,25.4846610;20161106172600,119.2747140,25.4858740;20161106172630,119.2737050,25.4875460;20161106172703,119.2728740,25.4891190;20161106172730,119.2712710,25.4906880;20161106172800,119.2692710,25.4924350;20161106172830,119.2672100,25.4946220;20161106172900,119.2653790,25.4974120;20161106172930,119.2637300,25.5002110;20161106173000,119.2617310,25.5016330;20161106173030,119.2590300,25.5023440;20161106173100,119.2561610,25.5040770;20161106173130,119.2538190,25.5056800;20161106173200,119.2525370,25.5065300;20161106173230,119.2516680,25.5055860;20161106173300,119.2499050,25.5037600;20161106173330,119.2474340,25.5011300;20161106173400,119.2449640,25.4984700;20161106173431,119.2426450,25.4959910;20161106173501,119.2407010,25.4939140;20161106173530,119.2395040,25.4922270;20161106173600,119.2376590,25.4894020;20161106173630,119.2352560,25.4869400;20161106173700,119.2324140,25.4849530;20161106173730,119.2298220,25.4830750;20161106173800,119.2262170,25.4811830;20161106173830,119.2223380,25.4820910;20161106173901,119.2192370,25.4848500;20161106173930,119.2173330,25.4877430;20161106174000,119.2155430,25.4895540;20161106174053,119.2125500,25.4915880
@@ -211,7 +348,7 @@ $(document).ready(function () {
 <p>轨迹数据经过地图匹配后转化为道路的一次通车。对于道路而言，它没必要知道整条轨迹的信息，只需要关注在它附近的那一部分轨迹，因此在以道路为研究对象的工作中，通常需要有一套算法将完整轨迹按照每隔几分钟的模式切成几个小段输出，这样可以减少存储与计算空间，提高工程性能。本文希望对上述轨迹实现以下功能：截取出轨迹在某个时刻t前后20分钟的子段，每隔10分钟截取一次。</p>
 </div>
 <div class="section level1">
-<h1>业务实现</h1>
+<h1><span class="header-section-number">2</span> 业务实现</h1>
 <p>首先，我们需要能够把时间按照某个时刻对齐，在这个业务中，我们需要按照十分钟对齐。</p>
 <pre class="python"><code>#! -*- coding=utf-8 -*-
 
@@ -294,7 +431,7 @@ for item in ret_list:
 </code></pre>
 </div>
 <div class="section level1">
-<h1>小结</h1>
+<h1><span class="header-section-number">3</span> 小结</h1>
 <ul>
 <li>业务
 <ul>
@@ -311,6 +448,8 @@ for item in ret_list:
 
 
 
+</div>
+</div>
 
 </div>
 

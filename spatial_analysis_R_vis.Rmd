@@ -1,5 +1,14 @@
 ---
 title: "R空间分析：可视化"
+output:
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: 
+      collapsed: false
+    theme: cosmo
+    highlight: textmate
+    number_sections: true
 ---
 # 前言
 很多朋友说在R里没法使用高德地图，这里给出一个基于leaflet包的解决方法。

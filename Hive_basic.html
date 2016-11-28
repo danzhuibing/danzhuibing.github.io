@@ -9,21 +9,23 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="陈水平（csp19890128@qq.com）" />
 
 
 <title>Hive基础</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet"
-      href="site_libs/highlight/default.css"
+      href="site_libs/highlight/textmate.css"
       type="text/css" />
 <script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
@@ -160,8 +162,119 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: -22px; }
+.code-folding-btn.collapsed { margin-bottom: 4px; }
+</style>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+  padding-left: 10px;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -181,6 +294,21 @@ $(document).ready(function () {
         <li>
   <a href="index.html">大数据</a>
 </li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+<li>
+  <a href="java_home.html">Java</a>
+</li>
+<li>
+  <a href="spatial_home.html">空间分析</a>
+</li>
+<li>
+  <a href="about.html">关于作者</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -191,16 +319,23 @@ $(document).ready(function () {
 
 <div class="fluid-row" id="header">
 
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Hive基础</h1>
-<h4 class="author"><em>陈水平（<a href="mailto:csp19890128@qq.com">csp19890128@qq.com</a>）</em></h4>
 
 </div>
 
 
 <div id="sqlmapreduce" class="section level1">
-<h1>如何理解SQL与MapReduce之间的关系</h1>
+<h1><span class="header-section-number">1</span> 如何理解SQL与MapReduce之间的关系</h1>
 <pre class="sql"><code>SELECT udtf_group_points(A.id,A.timestamp,A.x,A.y)
 AS (id,stime,etime,elapse,length,count,points)
 FROM (
@@ -212,7 +347,7 @@ FROM (
 <p>轨迹切分是交通大数据基础架构的重要组成部分，功能是把GPS点切分为每个车辆一次有明确起点和终点的GPS点序列。上述SQL是轨迹切分业务的基本实现，业务逻辑封装在udtf中。请指出这个语句，哪些部分对应mapper，哪些部分对应partitioner，哪些部分对应reducer。</p>
 </div>
 <div id="pvuv" class="section level1">
-<h1>PV、UV统计</h1>
+<h1><span class="header-section-number">2</span> PV、UV统计</h1>
 <p>需求：统计移动交通台每个城市、每个厂商的每5分钟的用户数（即UV）、访问次数（即PV） 输入说明：</p>
 <table>
 <thead>
@@ -309,7 +444,7 @@ adcode,
 cpcode;</code></pre>
 </div>
 <div class="section level1">
-<h1>留存分析</h1>
+<h1><span class="header-section-number">3</span> 留存分析</h1>
 <p>高德的数据能够得到每辆车经过的区域。现在我们对3个区域感兴趣，想求出以下数字：经过区域1的车数，同时经过区域1和2的车数，同时经过区域1、2、3的车数，怎么办？</p>
 <p>输入示例：</p>
 <table>
@@ -379,6 +514,8 @@ group by
 
 
 
+</div>
+</div>
 
 </div>
 

@@ -1,27 +1,15 @@
 ---
 output:
   html_document:
-    theme: journal
+    theme: cosmo
+    highlight: textmate
 ---
 
-* 空间分析
-    + [python空间分析：通车数业务](spatial_analysis_python_car_cnt.html)
-    + [R空间分析：可视化](spatial_analysis_R_vis.html)
-    + [python空间分析：轨迹业务](spatial_analysis_python_trace.html)
-    
-* 编程基础
-    + [日期时间处理-Java篇](Java_datetime.html)
-    + [日期时间处理-R篇](R_datetime.html)
-    + [日期时间处理-Python篇](Python_datetime.html)
-    + [JSON处理-Java篇](Java_JSON.html)
-    + [JSON处理-R篇](R_JSON.html)
-    + [JSON处理-Python篇](Python_JSON.html)
-    + [字符串处理-R篇](R_string.html)
+本系列文章介绍大数据基础。
 
-* 大数据框架
-    + [Spark基础](Spark_basic.html)
-    + [Hive基础](Hive_basic.html)
-    + [Hadoop基础](Hadoop_basic.html)
-    + [Storm基础](Storm_basic.html)
++ [Hadoop基础](Hadoop_basic.html)
++ [Hive基础](Hive_basic.html)
++ [Storm基础](Storm_basic.html)
++ [Spark基础](Spark_basic.html)
 
     
