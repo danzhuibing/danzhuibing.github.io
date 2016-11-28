@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>R空间分析：可视化</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">PYTRAFFICR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">大数据</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">R空间分析：可视化</h1>
+
+</div>
+
+
+<div class="section level1">
+<h1>前言</h1>
+<p>很多朋友说在R里没法使用高德地图，这里给出一个基于leaflet包的解决方法。</p>
+<pre class="r"><code>library(leaflet)
+
+# 添加高德地图
+m &lt;- leaflet() %&gt;%
+  addTiles(
+    &#39;http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&amp;size=1&amp;scale=1&amp;style=8&amp;x={x}&amp;y={y}&amp;z={z}&#39;,
+    tileOptions(tileSize=256, minZoom=9, maxZoom=17),
+    attribution = &#39;&amp;copy; &lt;a href=&quot;http://ditu.amap.com/&quot;&gt;高德地图&lt;/a&gt;&#39;,
+  ) %&gt;% 
+  setView(116.40,39.90, zoom = 10)
+m</code></pre>
+<div class="figure">
+<img src="images/spatial_analysis_R_vis_amap.png" />
+
+</div>
+<p>当然，除了告诉大家怎么在R里调用高德地图外，本文还想做的深入一些，尝试对空间可视化的基础知识做一个简单的介绍。</p>
+</div>
+<div class="section level1">
+<h1>空间数据基础知识</h1>
+<div id="shp" class="section level2">
+<h2>shp文件</h2>
+<p>空间数据最常用的格式是shp，主要由三个文件组成：shp文件用于存储位置几何信息，dbf文件用于存储attribute，shx用于存储位置几何信息与attribute的对照表。位置几何信息主要有以下几类：points，multipoints，lines，polygons等。</p>
+</div>
+<div id="wktwkb" class="section level2">
+<h2>WKT与WKB</h2>
+<p>WKT(Well-known text)是开放地理空间联盟OGC（Open GIS Consortium ）制定的一种文本标记语言，用于表示矢量几何对象、空间参照系统及空间参照系统之间的转换。举例如下： - 点（Point）：“POINT(1 1)” - 线（Line）：“LINESTRING(0 0,1 1,2 2)” - 多边形（Polygon）：“POLYGON((0 0,3 0,3 3,0 3,0 0),(1 1,2 1,2 2,1 2,1 1))”</p>
+<p>WKB(well-known binary) 是WKT的二进制表示形式，解决了WKT表达方式冗余的问题，便于传输和在数据库中存储相同的信息.</p>
+</div>
+</div>
+<div id="r" class="section level1">
+<h1>R的空间数据处理与可视化</h1>
+<p>空间数据处理与可视化，需要解决三个问题，一是怎么在R中表示空间数据，二是怎么对空间对象进行计算；三是怎么在R中绘制空间数据/地图。sp用于解决第一个问题，rgeos用于解决第二个问题，leaflet用于解决第二个问题。</p>
+<div id="sp" class="section level2">
+<h2>sp</h2>
+<p>sp包的功能是在R中提供对象表示shp文件。SpatialPoints，SpatialMultiPoints，SpatialLines，SpatialPolygons等用于表示位置几何信息。attribute一般以表格形式存在，所以sp包用dataframe对齐进行表示。为前面提到的SpatialXXX添加dataframe后得到诸如SpatialPointsDataFrame，SpatialMutilPointsDataFrame，SpatialLinesDataFrame，SpatialPolygonsDataFrame等类。在这些类中，位置几何信息与attribute的对照关系通过Spatial类的ID与dataframe的rownames进行匹配得到。</p>
+<p>SpatialXXDataFrame的结构示意图如下：</p>
+<div class="figure">
+<img src="images/spatial_analysis_R_vis_sp.png" alt="出处：http://neondataskills.org/R/" />
+<p class="caption">出处：<a href="http://neondataskills.org/R/" class="uri">http://neondataskills.org/R/</a></p>
+</div>
+<p>下面举一个例子，怎么从dataframe数据变为sp对象。</p>
+<pre class="r"><code>library(splitstackshape)
+library(sp)
+library(dplyr)
+library(tidyr)
+
+# 自定义函数
+points2spline &lt;- function(df, id_field, lng_field, lat_field){
+  df &lt;- as.data.frame(df)
+  data &lt;- as.matrix(df[,c(lng_field, lat_field)])
+  id = df[1, id_field]
+  Lines(list(Line(data)), ID=id)
+}
+
+splines2splinesdf &lt;- function(splines,  data, id_field)  {
+  ids &lt;- data.frame(names(splines))
+  colnames(ids) &lt;- id_field
+  join_name &lt;- dplyr::inner_join(ids, data)
+  row.names(join_name ) &lt;- join_name[, id_field]
+  splinesdf &lt;- SpatialLinesDataFrame(splines, data=join_name)
+  proj4string(splinesdf ) &lt;- CRS(&quot;+init=epsg:4326&quot;) # 设置投影坐标系，leaflet可以不用设置
+  return(splinesdf)
+}
+
+# 准备数据
+link_id &lt;- c(&quot;road_one&quot;, &quot;road_two&quot;)
+coors &lt;- c(&quot;116.44469451904297,39.890071868896484:116.44451141357422,39.891361236572266&quot;, &quot;116.44499969482422,39.887630462646484:116.44469451904297,39.890071868896484&quot;)
+status &lt;- c(&quot;congest&quot;, &quot;uncongest&quot;)
+
+link_coors &lt;- data.frame(link_id, coors, status)
+lon_lat_df &lt;- cSplit(link_coors %&gt;% select(link_id, coors), 
+       c(&quot;coors&quot;), sep=&quot;:&quot;, direction=&quot;long&quot;) %&gt;% 
+  separate(coors, c(&quot;lng&quot;, &quot;lat&quot;),  sep=&quot;,&quot;, convert=TRUE)
+
+# data.frame转化为sp
+link_list &lt;- split(lon_lat_df, lon_lat_df$link_id)
+names(link_list) &lt;- NULL
+Sl &lt;- SpatialLines(plyr::llply(link_list, points2spline, &quot;link_id&quot;, &quot;lng&quot;, &quot;lat&quot;))
+Sldf &lt;- splines2splinesdf(Sl, link_coors, &quot;link_id&quot;)
+
+str(Sldf)</code></pre>
+</div>
+<div id="rgeos" class="section level2">
+<h2>rgeos</h2>
+<p>空间处理，主要用来做一些空间运算，比如计算两个空间对象的位置关系：相交，重叠，包含等等。再比如，根据空间对象创建新的空间对象。此外，rgeos还能够完成WKT与sp对象的相互转换。</p>
+<pre class="r"><code>library(rgeos)
+
+# 创建外扩与内缩buffer，演示WKT的读写
+dilated_buffer &lt;- gBuffer(Sldf, byid=TRUE, width=0.0002, capStyle=&quot;FLAT&quot;)
+dilated_buffer_wkt &lt;- readWKT(writeWKT(dilated_buffer, byid = FALSE))
+eroded_buffer &lt;- gBuffer(dilated_buffer, byid=TRUE, width=-0.0001, capStyle=&quot;SQUARE&quot;)</code></pre>
+</div>
+<div id="leaflet" class="section level2">
+<h2>leaflet</h2>
+<p>我们继续上面的例子，将空间对象绘制到高德地图上。</p>
+<pre class="r"><code>library(leaflet)
+factpal &lt;- colorFactor(c(rgb(1,0,0,1),rgb(0, 1, 0, 1)), domain=c(&quot;congest&quot;, &quot;uncongest&quot;))
+
+m &lt;- leaflet() %&gt;%
+  addTiles(
+    &#39;http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&amp;size=1&amp;scale=1&amp;style=8&amp;x={x}&amp;y={y}&amp;z={z}&#39;,
+    tileOptions(tileSize=256, minZoom=9, maxZoom=17),
+    attribution = &#39;&amp;copy; &lt;a href=&quot;http://ditu.amap.com/&quot;&gt;高德地图&lt;/a&gt;&#39;,
+    group=&quot;高德地图&quot;
+  ) %&gt;%
+  setView(116.40,39.90, zoom = 10)  %&gt;%
+  addPolylines(color=~factpal(status), weight=3,opacity=1,  data=Sldf, group=&quot;实时路况&quot;) %&gt;%
+  addPolygons(data=dilated_buffer_wkt, group=&quot;空间计算&quot;) %&gt;% 
+  addPolygons(data=eroded_buffer, color=&quot;black&quot;, group=&quot;空间计算&quot;) %&gt;%
+  addLayersControl(
+    overlayGroups = c(&quot;高德地图&quot;, &quot;实时路况&quot;, &quot;空间计算&quot;),
+    options = layersControlOptions(collapsed = FALSE)
+  ) %&gt;%
+  addLegend(&quot;bottomleft&quot;, pal = factpal, values = Sldf@data$status,
+            title = &quot;实时交通&quot;, 
+            opacity = 1
+  ) %&gt;%
+  fitBounds(Sldf@bbox[&quot;x&quot;, &quot;min&quot;] - 0.001, Sldf@bbox[&quot;y&quot;, &quot;min&quot;] - 0.001, 
+            Sldf@bbox[&quot;x&quot;, &quot;max&quot;] + 0.001, Sldf@bbox[&quot;y&quot;, &quot;max&quot;] + 0.001
+  )
+
+m</code></pre>
+<div class="figure">
+<img src="images/spatial_analysis_R_vis_buffer.png" />
+
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>python空间分析：轨迹业务</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">PYTRAFFICR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">大数据</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">python空间分析：轨迹业务</h1>
+
+</div>
+
+
+<div class="section level1">
+<h1>背景</h1>
+<p>轨迹数据保留了用户一次出行沿途的GPS点位置信息。每个GPS点位置包含时间、经度和纬度三个基本属性。这三个属性用逗号分隔；不同的GPS位置用分号分隔，就得到下面的输入示例：</p>
+<pre class="python"><code>points = &#39;&#39;&#39;
+20161106165349,119.2885460,25.4171540;20161106165912,119.2885460,25.4171540;20161106165930,119.2885460,25.4171540;20161106170000,119.2885460,25.4171540;20161106170029,119.2885460,25.4171540;20161106170100,119.2885460,25.4171540;20161106170130,119.2885460,25.4171540;20161106170200,119.2885460,25.4171540;20161106170231,119.2885460,25.4171540;20161106170300,119.2885460,25.4171540;20161106170330,119.2885460,25.4171540;20161106170400,119.2885460,25.4171540;20161106170430,119.2908380,25.4181370;20161106170500,119.2920300,25.4203220;20161106170530,119.2925880,25.4214560;20161106170610,119.2927860,25.4218030;20161106170630,119.2928550,25.4219040;20161106170700,119.2928550,25.4219040;20161106170730,119.2930080,25.4222340;20161106170800,119.2935200,25.4228450;20161106170830,119.2945430,25.4245290;20161106170900,119.2951090,25.4267990;20161106170930,119.2951240,25.4268470;20161106171000,119.2951240,25.4275560;20161106171030,119.2953920,25.4294770;20161106171100,119.2957670,25.4320860;20161106171130,119.2962030,25.4350270;20161106171206,119.2965840,25.4378050;20161106171230,119.2968440,25.4393410;20161106171300,119.2968830,25.4398210;20161106171330,119.2970960,25.4412800;20161106171400,119.2975700,25.4435210;20161106171430,119.2983420,25.4461810;20161106171500,119.2991370,25.4489750;20161106171530,119.2999320,25.4518470;20161106171600,119.3007810,25.4548080;20161106171630,119.3010860,25.4572950;20161106171700,119.3010860,25.4572950;20161106171730,119.3010860,25.4572950;20161106171800,119.3010100,25.4579070;20161106171830,119.3004300,25.4594850;20161106171900,119.2994050,25.4615110;20161106171947,119.2977550,25.4637580;20161106172000,119.2951800,25.4657440;20161106172030,119.2932790,25.4672380;20161106172100,119.2922930,25.4680120;20161106172130,119.2909870,25.4689680;20161106172200,119.2893060,25.4708560;20161106172230,119.2882300,25.4745260;20161106172300,119.2873740,25.4777130;20161106172330,119.2852050,25.4798720;20161106172415,119.2827230,25.4812570;20161106172433,119.2810810,25.4822050;20161106172500,119.2790350,25.4833780;20161106172530,119.2767740,25.4846610;20161106172600,119.2747140,25.4858740;20161106172630,119.2737050,25.4875460;20161106172703,119.2728740,25.4891190;20161106172730,119.2712710,25.4906880;20161106172800,119.2692710,25.4924350;20161106172830,119.2672100,25.4946220;20161106172900,119.2653790,25.4974120;20161106172930,119.2637300,25.5002110;20161106173000,119.2617310,25.5016330;20161106173030,119.2590300,25.5023440;20161106173100,119.2561610,25.5040770;20161106173130,119.2538190,25.5056800;20161106173200,119.2525370,25.5065300;20161106173230,119.2516680,25.5055860;20161106173300,119.2499050,25.5037600;20161106173330,119.2474340,25.5011300;20161106173400,119.2449640,25.4984700;20161106173431,119.2426450,25.4959910;20161106173501,119.2407010,25.4939140;20161106173530,119.2395040,25.4922270;20161106173600,119.2376590,25.4894020;20161106173630,119.2352560,25.4869400;20161106173700,119.2324140,25.4849530;20161106173730,119.2298220,25.4830750;20161106173800,119.2262170,25.4811830;20161106173830,119.2223380,25.4820910;20161106173901,119.2192370,25.4848500;20161106173930,119.2173330,25.4877430;20161106174000,119.2155430,25.4895540;20161106174053,119.2125500,25.4915880
+&#39;&#39;&#39;</code></pre>
+<p>这个输入对应的轨迹打到地图上的效果如下：</p>
+<div class="figure">
+<img src="images/spatial_analysis_python_trace.png" />
+
+</div>
+<p>轨迹数据经过地图匹配后转化为道路的一次通车。对于道路而言，它没必要知道整条轨迹的信息，只需要关注在它附近的那一部分轨迹，因此在以道路为研究对象的工作中，通常需要有一套算法将完整轨迹按照每隔几分钟的模式切成几个小段输出，这样可以减少存储与计算空间，提高工程性能。本文希望对上述轨迹实现以下功能：截取出轨迹在某个时刻t前后20分钟的子段，每隔10分钟截取一次。</p>
+</div>
+<div class="section level1">
+<h1>业务实现</h1>
+<p>首先，我们需要能够把时间按照某个时刻对齐，在这个业务中，我们需要按照十分钟对齐。</p>
+<pre class="python"><code>#! -*- coding=utf-8 -*-
+
+import datetime
+
+min_interval = 10
+
+def align10min(t):
+    return t - datetime.timedelta(minutes=t.minute % min_interval, seconds=t.second)</code></pre>
+<p>其次，我们需要一个业务结构，能够表示按10分钟对齐的子轨迹，我们通过定义一个类来实现。</p>
+<pre class="python"><code>class GroupMiniTrace(object):
+    def __init__(self, tm, mini_trace):
+        self.tm = tm
+        self.mini_trace = mini_trace</code></pre>
+<p>这样的话，我们就可以把points字段的每个GPS点按照10分钟对齐，属于同一个10分钟的GPS点拼接起来得到子轨迹，再创建一个<code>GroupMiniTrace</code>对象保存这些信息。剩下的问题就是确定何时输出和输出多少。</p>
+<p>何时输出，业务需求里是每10分钟输出一次。我们可以把它做得灵活一些，接受一个<code>step</code>变量，取值为1时，每10分钟输出一次，取值为2时，每20分钟输出一次，以此类推。</p>
+<p>输出多少，业务需求是输出前后各20分钟的子轨迹。我们用<code>lead</code>表示往前输出的分组数，用<code>lag</code>表示往后输出的分组数，那么业务需求可以翻译为输出<code>lead=2</code>和<code>lag=1</code>的<code>GroupMiniTrace</code>对象。</p>
+<p>继续深入分析这个业务可以发现，因为轨迹的GPS点是按照时间排序的，我们并不需要保存所有的<code>GroupMiniTrace</code>，而可以边生成边输出。每次输出，我们需要保存最多<code>lead+lag+1</code>个<code>GroupMiniTrace</code>对象，一旦超过这个大小，老的数据就可以丢弃了。因此我们只需要保持这么一个类似进程池或线程池的“数据池”即可。那么，<strong>怎么在python中创建一个数据池呢</strong>？答案是<code>collection</code>包中的<code>deque</code>。创建<code>deque</code>时可以指定一个<code>maxlen</code>参数，就会保存一个大小为<code>maxlen</code>的数据池。</p>
+<pre class="python"><code>def split_trace(self, points, lead, lag, step):
+    ret_list = []
+    point_list = points.rstrip().split(&quot;;&quot;)
+    # 记录当前时刻应输出的时刻
+    forward_tm = None
+    # 维护之前分组的数据，数组长度应保持为lead+lag+1
+    pred_string = deque(maxlen=lead+lag+1)
+    # 维护当前10分钟分组的数据
+    cur_list = []
+    cur_group = None
+
+    for item in point_list:
+        info_list = item.rstrip().split(&quot;,&quot;)
+        tm = datetime.datetime.strptime(info_list[0], &quot;%Y%m%d%H%M%S&quot;)
+
+        if forward_tm == None:
+            # 处理初始条件
+            forward_tm = align10min(tm)
+            cur_group = align10min(tm)
+
+        if align10min(tm) == cur_group:
+            # 分组内部状态更新
+            cur_list.append(item)
+        else:
+            # 一个分组结束，处理状态
+            cur_string = &quot;:&quot;.join(cur_list)
+            if cur_string != &quot;&quot;:
+                cur_mini_trace = GroupMiniTrace(cur_group, cur_string)
+                pred_string.append(cur_mini_trace)
+
+            if cur_group - forward_tm &gt;= datetime.timedelta(minutes=lag * min_interval):
+                # 一个输出条件满足，处理输出和状态更新
+                forward_string = &quot;:&quot;.join([tt.mini_trace  for tt in pred_string if tt.tm &gt;=  forward_tm - datetime.timedelta(minutes = lead * min_interval) and tt.tm &lt;= forward_tm + datetime.timedelta(minutes = lag*min_interval)])
+                if forward_string != &quot;&quot;:
+                    ret_list.append(GroupMiniTrace(forward_tm, forward_string))
+                # self.forward(dscode, id, stime, etime, datetime.datetime.strftime(forward_tm, &quot;%Y%m%d%H%M%S&quot;), forward_string, dt, adcode)
+                forward_tm += datetime.timedelta(minutes=step * min_interval)  # 下一个输出时刻
+            cur_group = align10min(tm)
+            cur_list = [item]
+
+    if len(cur_list) &gt; 0:
+        # 处理最后一组记录
+        cur_string = &quot;:&quot;.join(cur_list)
+        if cur_string != &quot;&quot;:
+            cur_mini_trace = GroupMiniTrace(cur_group, cur_string)
+            pred_string.append(cur_mini_trace)
+        while cur_group &gt;= forward_tm:
+            forward_string = &quot;:&quot;.join([tt.mini_trace for tt in pred_string if tt.tm &gt;= forward_tm - datetime.timedelta(
+            minutes=lead * min_interval) and tt.tm &lt;= forward_tm + datetime.timedelta(minutes=lag * min_interval)])
+            if forward_string != &quot;&quot;:
+                ret_list.append(GroupMiniTrace(forward_tm, forward_string))
+            forward_tm += datetime.timedelta(minutes=step * min_interval)  # 下一个输出时刻
+
+    return ret_list
+    
+lead = 2
+lag = 1
+step = 1
+ret_list = split_trace(points, lead, lag, step)
+for item in ret_list:
+    print datetime.datetime.strftime(item.tm, &quot;%Y%m%d%H%M%S&quot;), item.mini_trace
+</code></pre>
+</div>
+<div class="section level1">
+<h1>小结</h1>
+<ul>
+<li>业务
+<ul>
+<li>轨迹数据：一次出行的所有GPS点位置信息，每个GPS点由时间、经度、纬度三个关键字段组成；</li>
+<li>以道路为研究对象时，每个道路只需要关心自己周围的轨迹点，因此往往需要取出某个时刻前后若干分钟的子轨迹进行研究。</li>
+</ul></li>
+<li>技术
+<ul>
+<li>时刻对齐</li>
+<li>数据池</li>
+</ul></li>
+</ul>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

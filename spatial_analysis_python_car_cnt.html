@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>python空间分析：通车数业务</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">PYTRAFFICR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">大数据</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">python空间分析：通车数业务</h1>
+
+</div>
+
+
+<div class="section level1">
+<h1>背景</h1>
+<p>我们对一条道路的每一天有一个通车数的观测值。举一条虚拟的比较偏僻的道路为例，它从2015年1月至今的通车数曲线如下图所示：</p>
+<div class="figure">
+<img src="images/spatial_analysis_python_car_cnt.png" />
+
+</div>
+<p>从上图可以看出，正常情况下这条路的每日通车数在三四十，2015年11月底应该是进行了封闭施工修路，导致通车数骤然减少，且这种修路的状况一直持续至今。这条路是某些起终点的捷径，因为修路，一年以来，一些用户不得不绕道行车，浪费了不少时间。现在，我们很关心什么时候这条路施工结束恢复通车，这样可以让这些用户节省不少出行时间。</p>
+<p>我们将每个月每天的通车数观测值存为了一个json字符串。每个月的json字符串用#进行拼接，得到如下的输入字符串：</p>
+<pre class="python"><code>link_content = &#39;&#39;&#39;
+{&quot;20151001&quot;:46,&quot;20151002&quot;:29,&quot;20151003&quot;:42,&quot;20151004&quot;:32,&quot;20151005&quot;:43,&quot;20151006&quot;:35,&quot;20151007&quot;:37,&quot;20151008&quot;:37,&quot;20151009&quot;:33,&quot;20151010&quot;:30,&quot;20151011&quot;:60,&quot;20151012&quot;:30,&quot;20151013&quot;:31,&quot;20151014&quot;:28,&quot;20151015&quot;:42,&quot;20151016&quot;:35,&quot;20151017&quot;:33,&quot;20151018&quot;:46,&quot;20151019&quot;:33,&quot;20151020&quot;:42,&quot;20151021&quot;:33,&quot;20151022&quot;:48,&quot;20151023&quot;:30,&quot;20151024&quot;:33,&quot;20151025&quot;:38,&quot;20151026&quot;:40,&quot;20151027&quot;:37,&quot;20151028&quot;:45,&quot;20151029&quot;:41,&quot;20151030&quot;:38,&quot;20151031&quot;:39}#{&quot;20150101&quot;:16,&quot;20150102&quot;:13,&quot;20150103&quot;:13,&quot;20150104&quot;:11,&quot;20150105&quot;:5,&quot;20150106&quot;:9,&quot;20150107&quot;:11,&quot;20150108&quot;:14,&quot;20150109&quot;:9,&quot;20150110&quot;:11,&quot;20150111&quot;:12,&quot;20150112&quot;:16,&quot;20150113&quot;:6,&quot;20150114&quot;:10,&quot;20150115&quot;:7,&quot;20150116&quot;:7,&quot;20150117&quot;:11,&quot;20150118&quot;:10,&quot;20150119&quot;:8,&quot;20150120&quot;:4,&quot;20150121&quot;:7,&quot;20150122&quot;:13,&quot;20150123&quot;:14,&quot;20150124&quot;:15,&quot;20150125&quot;:16,&quot;20150126&quot;:7,&quot;20150127&quot;:10,&quot;20150128&quot;:16,&quot;20150129&quot;:10,&quot;20150130&quot;:16,&quot;20150131&quot;:17}#{&quot;20160901&quot;:5,&quot;20160902&quot;:11,&quot;20160903&quot;:3,&quot;20160904&quot;:5,&quot;20160905&quot;:2,&quot;20160906&quot;:5,&quot;20160907&quot;:6,&quot;20160908&quot;:7,&quot;20160909&quot;:2,&quot;20160910&quot;:7,&quot;20160911&quot;:1,&quot;20160912&quot;:7,&quot;20160913&quot;:3,&quot;20160914&quot;:1,&quot;20160915&quot;:6,&quot;20160916&quot;:3,&quot;20160917&quot;:3,&quot;20160918&quot;:1,&quot;20160919&quot;:4,&quot;20160920&quot;:5,&quot;20160921&quot;:5,&quot;20160922&quot;:1,&quot;20160923&quot;:3,&quot;20160924&quot;:3,&quot;20160925&quot;:5,&quot;20160927&quot;:8,&quot;20160928&quot;:2,&quot;20160929&quot;:4,&quot;20160930&quot;:3}#{&quot;20150601&quot;:27,&quot;20150602&quot;:22,&quot;20150603&quot;:22,&quot;20150604&quot;:22,&quot;20150605&quot;:35,&quot;20150606&quot;:31,&quot;20150607&quot;:42,&quot;20150608&quot;:27,&quot;20150609&quot;:28,&quot;20150610&quot;:37,&quot;20150611&quot;:35,&quot;20150612&quot;:29,&quot;20150613&quot;:34,&quot;20150614&quot;:38,&quot;20150615&quot;:31,&quot;20150616&quot;:21,&quot;20150617&quot;:39,&quot;20150618&quot;:19,&quot;20150619&quot;:38,&quot;20150620&quot;:38,&quot;20150621&quot;:40,&quot;20150622&quot;:20,&quot;20150623&quot;:26,&quot;20150624&quot;:25,&quot;20150625&quot;:40,&quot;20150626&quot;:31,&quot;20150627&quot;:34,&quot;20150628&quot;:32,&quot;20150629&quot;:26,&quot;20150630&quot;:35}#{&quot;20161001&quot;:4,&quot;20161002&quot;:5,&quot;20161003&quot;:5,&quot;20161004&quot;:4,&quot;20161005&quot;:3,&quot;20161006&quot;:6,&quot;20161007&quot;:2,&quot;20161008&quot;:1,&quot;20161009&quot;:6,&quot;20161010&quot;:3,&quot;20161011&quot;:4,&quot;20161012&quot;:5,&quot;20161013&quot;:1,&quot;20161014&quot;:4,&quot;20161015&quot;:3,&quot;20161016&quot;:5,&quot;20161017&quot;:2,&quot;20161018&quot;:4,&quot;20161019&quot;:8,&quot;20161020&quot;:2,&quot;20161021&quot;:2,&quot;20161022&quot;:2,&quot;20161023&quot;:5,&quot;20161024&quot;:3,&quot;20161025&quot;:2,&quot;20161026&quot;:5,&quot;20161027&quot;:5,&quot;20161028&quot;:8,&quot;20161029&quot;:10,&quot;20161030&quot;:5,&quot;20161031&quot;:1}#{&quot;20150701&quot;:22,&quot;20150702&quot;:24,&quot;20150703&quot;:28,&quot;20150704&quot;:33,&quot;20150705&quot;:34,&quot;20150706&quot;:23,&quot;20150707&quot;:39,&quot;20150708&quot;:19,&quot;20150709&quot;:33,&quot;20150710&quot;:21,&quot;20150711&quot;:31,&quot;20150712&quot;:36,&quot;20150713&quot;:31,&quot;20150714&quot;:34,&quot;20150715&quot;:30,&quot;20150716&quot;:36,&quot;20150717&quot;:35,&quot;20150718&quot;:43,&quot;20150719&quot;:36,&quot;20150720&quot;:16,&quot;20150721&quot;:27,&quot;20150722&quot;:32,&quot;20150723&quot;:27,&quot;20150724&quot;:29,&quot;20150725&quot;:31,&quot;20150726&quot;:46,&quot;20150727&quot;:29,&quot;20150728&quot;:28,&quot;20150729&quot;:35,&quot;20150730&quot;:28,&quot;20150731&quot;:35}#{&quot;20160201&quot;:1,&quot;20160202&quot;:1,&quot;20160203&quot;:1,&quot;20160206&quot;:3,&quot;20160207&quot;:1,&quot;20160209&quot;:1,&quot;20160210&quot;:3,&quot;20160211&quot;:3,&quot;20160212&quot;:2,&quot;20160213&quot;:2,&quot;20160215&quot;:1,&quot;20160216&quot;:2,&quot;20160217&quot;:3,&quot;20160219&quot;:2,&quot;20160220&quot;:1,&quot;20160221&quot;:1,&quot;20160222&quot;:3,&quot;20160223&quot;:3,&quot;20160224&quot;:2,&quot;20160225&quot;:2,&quot;20160226&quot;:4,&quot;20160227&quot;:7,&quot;20160228&quot;:1}#{&quot;20150201&quot;:21,&quot;20150202&quot;:11,&quot;20150203&quot;:13,&quot;20150204&quot;:8,&quot;20150205&quot;:23,&quot;20150206&quot;:14,&quot;20150207&quot;:14,&quot;20150208&quot;:18,&quot;20150209&quot;:6,&quot;20150210&quot;:11,&quot;20150211&quot;:7,&quot;20150212&quot;:15,&quot;20150213&quot;:17,&quot;20150214&quot;:13,&quot;20150215&quot;:15,&quot;20150216&quot;:8,&quot;20150217&quot;:12,&quot;20150218&quot;:12,&quot;20150219&quot;:5,&quot;20150220&quot;:11,&quot;20150221&quot;:7,&quot;20150222&quot;:6,&quot;20150223&quot;:5,&quot;20150224&quot;:7,&quot;20150225&quot;:7,&quot;20150226&quot;:5,&quot;20150227&quot;:9,&quot;20150228&quot;:8}#{&quot;20160301&quot;:1,&quot;20160302&quot;:1,&quot;20160303&quot;:2,&quot;20160304&quot;:2,&quot;20160305&quot;:1,&quot;20160307&quot;:1,&quot;20160309&quot;:1,&quot;20160310&quot;:3,&quot;20160313&quot;:1,&quot;20160314&quot;:2,&quot;20160315&quot;:2,&quot;20160316&quot;:2,&quot;20160317&quot;:2,&quot;20160318&quot;:1,&quot;20160319&quot;:1,&quot;20160320&quot;:1,&quot;20160321&quot;:2,&quot;20160322&quot;:2,&quot;20160324&quot;:1,&quot;20160326&quot;:2,&quot;20160327&quot;:3,&quot;20160329&quot;:1,&quot;20160330&quot;:2}#{&quot;20150801&quot;:34,&quot;20150802&quot;:37,&quot;20150803&quot;:33,&quot;20150804&quot;:37,&quot;20150805&quot;:41,&quot;20150806&quot;:16,&quot;20150807&quot;:40,&quot;20150808&quot;:42,&quot;20150809&quot;:30,&quot;20150810&quot;:42,&quot;20150811&quot;:45,&quot;20150812&quot;:40,&quot;20150813&quot;:39,&quot;20150814&quot;:47,&quot;20150815&quot;:49,&quot;20150816&quot;:51,&quot;20150817&quot;:37,&quot;20150818&quot;:46,&quot;20150819&quot;:30,&quot;20150820&quot;:44,&quot;20150821&quot;:36,&quot;20150822&quot;:44,&quot;20150823&quot;:47,&quot;20150824&quot;:46,&quot;20150825&quot;:40,&quot;20150826&quot;:40,&quot;20150827&quot;:28,&quot;20150828&quot;:40,&quot;20150829&quot;:26,&quot;20150830&quot;:67,&quot;20150831&quot;:54}#{&quot;20150401&quot;:6,&quot;20150402&quot;:8,&quot;20150403&quot;:6,&quot;20150404&quot;:4,&quot;20150405&quot;:4,&quot;20150406&quot;:10,&quot;20150407&quot;:8,&quot;20150408&quot;:9,&quot;20150409&quot;:9,&quot;20150410&quot;:10,&quot;20150411&quot;:7,&quot;20150412&quot;:14,&quot;20150413&quot;:12,&quot;20150414&quot;:10,&quot;20150415&quot;:7,&quot;20150416&quot;:6,&quot;20150417&quot;:10,&quot;20150418&quot;:8,&quot;20150419&quot;:12,&quot;20150420&quot;:6,&quot;20150421&quot;:9,&quot;20150422&quot;:5,&quot;20150423&quot;:12,&quot;20150424&quot;:8,&quot;20150425&quot;:14,&quot;20150426&quot;:14,&quot;20150427&quot;:7,&quot;20150428&quot;:7,&quot;20150429&quot;:10,&quot;20150430&quot;:4}#{&quot;20160101&quot;:2,&quot;20160102&quot;:1,&quot;20160104&quot;:1,&quot;20160105&quot;:1,&quot;20160106&quot;:5,&quot;20160108&quot;:1,&quot;20160109&quot;:3,&quot;20160110&quot;:2,&quot;20160111&quot;:1,&quot;20160112&quot;:3,&quot;20160113&quot;:2,&quot;20160114&quot;:4,&quot;20160115&quot;:1,&quot;20160117&quot;:3,&quot;20160118&quot;:1,&quot;20160119&quot;:4,&quot;20160120&quot;:1,&quot;20160121&quot;:2,&quot;20160122&quot;:2,&quot;20160123&quot;:1,&quot;20160124&quot;:1,&quot;20160125&quot;:1,&quot;20160126&quot;:2,&quot;20160127&quot;:2,&quot;20160128&quot;:3,&quot;20160129&quot;:2,&quot;20160131&quot;:1}#{&quot;20150301&quot;:13,&quot;20150302&quot;:10,&quot;20150303&quot;:23,&quot;20150304&quot;:14,&quot;20150305&quot;:15,&quot;20150306&quot;:6,&quot;20150307&quot;:1,&quot;20150308&quot;:10,&quot;20150309&quot;:7,&quot;20150310&quot;:4,&quot;20150311&quot;:7,&quot;20150312&quot;:7,&quot;20150313&quot;:9,&quot;20150314&quot;:4,&quot;20150315&quot;:7,&quot;20150316&quot;:5,&quot;20150317&quot;:7,&quot;20150318&quot;:8,&quot;20150319&quot;:3,&quot;20150320&quot;:13,&quot;20150321&quot;:5,&quot;20150322&quot;:13,&quot;20150323&quot;:6,&quot;20150324&quot;:7,&quot;20150325&quot;:8,&quot;20150326&quot;:9,&quot;20150327&quot;:6,&quot;20150328&quot;:11,&quot;20150329&quot;:8,&quot;20150330&quot;:6,&quot;20150331&quot;:8}#{&quot;20160502&quot;:2,&quot;20160503&quot;:1,&quot;20160504&quot;:3,&quot;20160505&quot;:1,&quot;20160506&quot;:1,&quot;20160508&quot;:1,&quot;20160509&quot;:3,&quot;20160510&quot;:1,&quot;20160511&quot;:1,&quot;20160513&quot;:1,&quot;20160515&quot;:4,&quot;20160516&quot;:1,&quot;20160517&quot;:2,&quot;20160518&quot;:1,&quot;20160519&quot;:3,&quot;20160520&quot;:2,&quot;20160521&quot;:2,&quot;20160522&quot;:6,&quot;20160523&quot;:3,&quot;20160524&quot;:1,&quot;20160525&quot;:2,&quot;20160526&quot;:3,&quot;20160527&quot;:3,&quot;20160528&quot;:1,&quot;20160529&quot;:2}#{&quot;20160601&quot;:1,&quot;20160602&quot;:1,&quot;20160603&quot;:1,&quot;20160604&quot;:1,&quot;20160605&quot;:3,&quot;20160606&quot;:2,&quot;20160607&quot;:2,&quot;20160608&quot;:3,&quot;20160609&quot;:1,&quot;20160610&quot;:3,&quot;20160611&quot;:2,&quot;20160612&quot;:3,&quot;20160614&quot;:4,&quot;20160615&quot;:3,&quot;20160616&quot;:2,&quot;20160617&quot;:3,&quot;20160618&quot;:3,&quot;20160619&quot;:2,&quot;20160620&quot;:3,&quot;20160621&quot;:3,&quot;20160622&quot;:1,&quot;20160623&quot;:3,&quot;20160624&quot;:2,&quot;20160626&quot;:2,&quot;20160627&quot;:4}#{&quot;20160401&quot;:1,&quot;20160402&quot;:1,&quot;20160403&quot;:4,&quot;20160404&quot;:1,&quot;20160405&quot;:1,&quot;20160406&quot;:2,&quot;20160407&quot;:2,&quot;20160408&quot;:1,&quot;20160409&quot;:1,&quot;20160410&quot;:3,&quot;20160412&quot;:1,&quot;20160414&quot;:3,&quot;20160416&quot;:1,&quot;20160417&quot;:1,&quot;20160419&quot;:1,&quot;20160420&quot;:1,&quot;20160422&quot;:1,&quot;20160424&quot;:1,&quot;20160425&quot;:2,&quot;20160426&quot;:1}#{&quot;20151202&quot;:1,&quot;20151203&quot;:1,&quot;20151204&quot;:3,&quot;20151205&quot;:1,&quot;20151206&quot;:1,&quot;20151207&quot;:1,&quot;20151208&quot;:1,&quot;20151209&quot;:3,&quot;20151210&quot;:1,&quot;20151212&quot;:1,&quot;20151213&quot;:1,&quot;20151215&quot;:1,&quot;20151216&quot;:1,&quot;20151217&quot;:1,&quot;20151218&quot;:2,&quot;20151219&quot;:3,&quot;20151220&quot;:1,&quot;20151221&quot;:1,&quot;20151223&quot;:2,&quot;20151225&quot;:2,&quot;20151226&quot;:4,&quot;20151227&quot;:3,&quot;20151228&quot;:1,&quot;20151229&quot;:5,&quot;20151230&quot;:1}#{&quot;20151101&quot;:45,&quot;20151102&quot;:37,&quot;20151103&quot;:38,&quot;20151104&quot;:46,&quot;20151105&quot;:28,&quot;20151106&quot;:49,&quot;20151107&quot;:38,&quot;20151108&quot;:43,&quot;20151109&quot;:41,&quot;20151110&quot;:34,&quot;20151111&quot;:29,&quot;20151112&quot;:28,&quot;20151113&quot;:47,&quot;20151114&quot;:46,&quot;20151115&quot;:46,&quot;20151116&quot;:45,&quot;20151117&quot;:41,&quot;20151118&quot;:42,&quot;20151119&quot;:28,&quot;20151120&quot;:38,&quot;20151121&quot;:39,&quot;20151122&quot;:38,&quot;20151123&quot;:32,&quot;20151124&quot;:26,&quot;20151125&quot;:11,&quot;20151126&quot;:6,&quot;20151127&quot;:2,&quot;20151129&quot;:2}#{&quot;20160801&quot;:2,&quot;20160803&quot;:1,&quot;20160804&quot;:3,&quot;20160805&quot;:1,&quot;20160807&quot;:1,&quot;20160808&quot;:1,&quot;20160809&quot;:2,&quot;20160810&quot;:3,&quot;20160811&quot;:5,&quot;20160812&quot;:1,&quot;20160813&quot;:2,&quot;20160814&quot;:4,&quot;20160815&quot;:2,&quot;20160816&quot;:3,&quot;20160817&quot;:1,&quot;20160818&quot;:4,&quot;20160819&quot;:1,&quot;20160820&quot;:1,&quot;20160821&quot;:3,&quot;20160822&quot;:1,&quot;20160823&quot;:3,&quot;20160824&quot;:2,&quot;20160825&quot;:3,&quot;20160826&quot;:3,&quot;20160827&quot;:3,&quot;20160829&quot;:2,&quot;20160830&quot;:2,&quot;20160831&quot;:5}#{&quot;20150501&quot;:11,&quot;20150502&quot;:11,&quot;20150503&quot;:11,&quot;20150504&quot;:8,&quot;20150505&quot;:3,&quot;20150506&quot;:5,&quot;20150507&quot;:5,&quot;20150508&quot;:6,&quot;20150509&quot;:13,&quot;20150510&quot;:14,&quot;20150511&quot;:19,&quot;20150512&quot;:11,&quot;20150513&quot;:11,&quot;20150514&quot;:5,&quot;20150515&quot;:12,&quot;20150516&quot;:6,&quot;20150517&quot;:12,&quot;20150518&quot;:11,&quot;20150519&quot;:19,&quot;20150520&quot;:19,&quot;20150521&quot;:20,&quot;20150522&quot;:16,&quot;20150523&quot;:17,&quot;20150524&quot;:18,&quot;20150525&quot;:15,&quot;20150526&quot;:24,&quot;20150527&quot;:16,&quot;20150528&quot;:18,&quot;20150529&quot;:14,&quot;20150530&quot;:32,&quot;20150531&quot;:19}#{&quot;20160701&quot;:3,&quot;20160702&quot;:2,&quot;20160703&quot;:4,&quot;20160704&quot;:3,&quot;20160705&quot;:2,&quot;20160706&quot;:1,&quot;20160708&quot;:1,&quot;20160709&quot;:2,&quot;20160710&quot;:2,&quot;20160711&quot;:1,&quot;20160713&quot;:1,&quot;20160714&quot;:2,&quot;20160715&quot;:1,&quot;20160716&quot;:4,&quot;20160717&quot;:1,&quot;20160718&quot;:1,&quot;20160719&quot;:1,&quot;20160720&quot;:1,&quot;20160721&quot;:1,&quot;20160722&quot;:1,&quot;20160724&quot;:1,&quot;20160726&quot;:1,&quot;20160728&quot;:1}#{&quot;20150901&quot;:48,&quot;20150902&quot;:40,&quot;20150903&quot;:35,&quot;20150904&quot;:31,&quot;20150905&quot;:43,&quot;20150906&quot;:38,&quot;20150907&quot;:31,&quot;20150908&quot;:36,&quot;20150909&quot;:25,&quot;20150910&quot;:29,&quot;20150911&quot;:41,&quot;20150912&quot;:31,&quot;20150913&quot;:33,&quot;20150914&quot;:39,&quot;20150915&quot;:23,&quot;20150916&quot;:27,&quot;20150917&quot;:34,&quot;20150918&quot;:38,&quot;20150919&quot;:40,&quot;20150920&quot;:48,&quot;20150921&quot;:45,&quot;20150922&quot;:38,&quot;20150923&quot;:33,&quot;20150924&quot;:37,&quot;20150925&quot;:43,&quot;20150926&quot;:56,&quot;20150927&quot;:48,&quot;20150928&quot;:39,&quot;20150929&quot;:34,&quot;20150930&quot;:43}
+&#39;&#39;&#39;</code></pre>
+<p>我们希望根据上面的输入获得这条路正常状态下的通车数参照值，以便我们判断什么时候修路结束。为此，我们需要设计一套简明的规则，识别这组观测中连续多天处于异常低点的日期。</p>
+</div>
+<div class="section level1">
+<h1>问题拆解</h1>
+<div class="section level2">
+<h2>解析字符串</h2>
+<p>首先，我们将输入字符串转化为python的dict。这里面的一个需要记住的技巧是*<strong>如何将多个dict合并为一个dict</strong>：</p>
+<pre class="python"><code>import json
+
+def parse_link_content(link_content, sep = &quot;#&quot;):
+    ret_dict = {}
+    dt_content = link_content.strip().split(sep)
+    for item in dt_content:
+        dt_dict = json.loads(item)
+        ret_dict.update(dt_dict) # 将多个dict合并为一个dict
+    return ret_dict
+
+link_dict = parse_link_content(link_content)</code></pre>
+</div>
+<div class="section level2">
+<h2>填充缺失值</h2>
+<p>为了节省存储空间，如果一条道路某一天没有通车，这一天的观测值是缺失的。本文的例子缺失值较少，只有几十天。真实世界中，有不少道路大部分时候是没有通车的，因此需要填补缺失值，才能在数据层面上对道路的通车情况进行描述，也便于可视化作图。为了填充缺失的那几天的观测值，我们首先要解决<strong>如何对dict的内容按照key排序</strong>。</p>
+<pre class="python"><code>sort_list = sorted(link_dict.items(), key=lambda d: d[0]) # 对dict的内容按照key排序</code></pre>
+<p>接下来，我们来填充缺失那些天的数据。</p>
+<pre class="python"><code>import datetime
+
+def fill_missing(sort_list):
+    ret_list = []
+    pred_dt = None
+    for item in sort_list:
+        dt = datetime.datetime.strptime(item[0], &quot;%Y%m%d&quot;)
+        if pred_dt == None:
+            ret_list.append(item)
+            pred_dt = dt
+        else:
+            fill_size = (dt - pred_dt).days - 1
+            for i in range(fill_size):
+                fill_dt = pred_dt + datetime.timedelta(days=(i+1))
+                ret_list.append((datetime.datetime.strftime(fill_dt, &quot;%Y%m%d&quot;), 0))
+            ret_list.append(item)
+            pred_dt = dt
+    return ret_list
+
+fill_list = fill_missing(sort_list)</code></pre>
+</div>
+<div class="section level2">
+<h2>获取参照值</h2>
+<p>道路每天的通车数正常状况下是比较平稳的。为了排除封路的影响，我们想取出95分位的通车数<code>ref_cnt</code>作为正常通车数的基本参照。<strong>对一个list进行分位数计算</strong>，最便捷的方法是使用numpy库。</p>
+<pre class="python"><code>import numpy as np
+
+def strip_tm(fill_list):
+    return [d[1] for d in fill_list]
+
+def get_percentile(strip_list, percentile):
+    np_list = np.array(strip_list)
+    return np.percentile(np_list, percentile) # 分位数计算
+    
+ref_cnt = get_percentile(strip_tm(fill_list), 95)</code></pre>
+<p>封路的判别实际上是比较有难度的。其中一个困难是，封路的时候通车数并不为0，这个与我们的直觉是相悖的。这个现象的原因有很多，可能是工程车辆、行人或自行车开着导航进入这条道路提供的通车数；可能是这条道路的一半处于封闭状态，大量轨迹在中间掉头；可能是旁边有一条临近的平行道路，GPS点的定位精度不够，有些点漂到了这条封闭的道路上，让我们误以为这条道路上仍有通车。为此，我们只能通过设定阈值来判定是否封路，而不能根据流量是否为0来判断。</p>
+<p>根据经验和观察，我们设计以下简单的策略来获取状态变迁的日期：以<code>0.1 * ref_cnt</code>为封路参照值<code>close_ref_cnt</code>，以<code>0.5 * ref_cnt</code>为开通参照值<code>open_ref_cnt</code>。我们设计的简单策略是：连续三天的通车数低于<code>close_ref_cnt</code>，报封路；连续三天的通车数高于<code>open_ref_cnt</code>时报开通。</p>
+<pre class="python"><code>def simple_close_judge(fill_list, close_ref_value, open_ref_value):
+    cum_close_cnt = 0
+    cum_open_cnt = 0
+    state = 0
+    for i, item in enumerate(fill_list):
+        tm, cnt = item
+        if state == 0:
+            if cnt &lt; close_ref_value:
+                cum_close_cnt += 1
+            elif cnt &gt;= close_ref_value:
+                cum_close_cnt = 0
+            if cum_close_cnt &gt;= 3:
+                state = 1
+                cum_open_cnt = 0
+                print fill_list[i-2][0] + &#39; close&#39;
+        elif state == 1:
+            if cnt &gt;= open_ref_value:
+                cum_open_cnt += 1
+            elif cnt &lt; open_ref_value:
+                cum_open_cnt = 0
+            if cum_open_cnt &gt;= 3:
+                state = 0
+                cum_close_cnt = 0
+                print fill_list[i-2][0] + &#39;open&#39;
+
+close_ref_cnt = ref_cnt * 0.1
+open_ref_cnt = ref_cnt * 0.5
+simple_close_judge(fill_list, close_ref_cnt, open_ref_cnt)</code></pre>
+<p>就这个例子，我们的程序会检测到2015-11-27日为封路开始日期，之前为道路开通状态，之后为封闭状态，封闭状态持续至2016-10-31。所以我们可以基于2015-01-01至2015-11-27的历史数据统计出道路开通状态的通车数参照值，当这条路的通车数再次达到这个水平时，说明开通了。</p>
+</div>
+</div>
+<div class="section level1">
+<h1>小结</h1>
+<ul>
+<li>业务</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>道路通车数：空间分析重要的数据资产，基于它可以做很多有关道路状态的判别业务，新增、开通、封路、施工等；</li>
+<li>通车数的可信度：封路时通车数流量不为0，原因有很多；能否设计出高效的通车数置信度算法，是提高通车数数据分析业务准确率的关键。</li>
+</ol>
+<ul>
+<li>技术</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>python多个dict合并为1个dict；</li>
+<li>python字典按照key或者value进行排序；</li>
+<li>numpy计算分位数</li>
+</ol>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
