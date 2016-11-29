@@ -1,0 +1,46 @@
+---
+title: "R数据分析进阶02：日期时间处理"
+output:
+  html_document:
+    code_folding: show
+    highlight: textmate
+    toc: yes
+    toc_float:
+      collapsed: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE, cache=TRUE)
+```
+
+### 前言
+在文件中，日期时间数据存在的形式有两种：字符串和Unix时间戳
+对应到R语言中，分别设计了两个日期时间类型：POSIXlt，对应字符串形式表达的日期时间；POSIXct，对应数字形式表达的日期时间。此外，还有一个专门针对日期的类型Date。
+- Date: 日期类型，年月日时分秒
+- POSIXct：以有符号整数形式存储，表示从1970-01-01到该时间点经过的秒数
+- POSIXlt：以字符串形式存储，包含年月日等，如"05/27/84" 对应格式 "%m/%d/%y"，"May 27 1984" 对应格式 "%B %d %Y"
+
+### 字符串转日期时间
+``` {r}
+test_date <- as.Date("19890306", format="%Y%m%d")
+test_dt <- as.POSIXlt("2015-12-05 10:03:31", format="%Y-%m-%d %H:%M:%S")
+test_dt_stamp <- as.POSIXct("2015-12-05 10:03:31", format="%Y-%m-%d %H:%M:%S")
+test_dt <- strptime("2015-12-05 10:03:31", format="%Y-%m-%d %H:%M:%S") #等价于as.POSIXlt
+```
+
+### 日期时间转字符串
+``` {r}
+as.character(test_dt, format="%Y/%m/%d %H:%M")
+strftime(test_date, format="%Y/%m/%d")
+```
+
+### 时间戳转化为日期时间与字符串
+``` {r}
+as.Date(as.POSIXct(1413993610, origin="1970-01-01"), tz="UTC-8") #as.Date的tz默认为GMT时区
+as.character(as.POSIXct(1413993610, origin="1970-01-01"), tz="UTC-8") #as.character的tz默认为本地时区
+```
+
+### 日期时间与字符串转化为时间戳
+``` {r}
+as.numeric(as.POSIXct("2014/10/23", format="%Y/%m/%d"))
+```

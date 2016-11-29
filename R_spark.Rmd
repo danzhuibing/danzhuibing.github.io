@@ -1,0 +1,67 @@
+---
+title: "R使用Spark"
+output:
+  html_document:
+    code_folding: show
+    highlight: textmate
+    toc: yes
+    toc_float:
+      collapsed: no
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+
+## Hello World
+
+``` {r}
+# 设置依赖的JVM环境和SPARK路径
+if (nchar(Sys.getenv("JAVA_HOME")) < 1) {
+  Sys.setenv(JAVA_HOME = "YOUR_JAVA_HOME_PATH")
+}
+if (nchar(Sys.getenv("SPARK_HOME")) < 1) {
+  Sys.setenv(SPARK_HOME = "/xxx/spark-1.5.1-bin-hadoop2.3")
+}
+.libPaths(c(file.path(Sys.getenv("SPARK_HOME"), "R", "lib"), .libPaths()))
+
+library(SparkR, lib.loc = c(file.path(Sys.getenv("SPARK_HOME"), "R", "lib")))
+sc <- sparkR.init(master = "spark://xyz:7077", 
+                  sparkEnvir = list(
+                    spark.app.name="HalloFromRStudio",
+                    spark.driver.cores="1",
+                    spark.driver.memory="2g",
+                    spark.executor.memory="2g",
+                    spark.executor.cores="2",
+                    spark.cores.max="8"
+                    )
+)
+sqlContext <- sparkRSQL.init(sc)
+iris_DF <- createDataFrame(sqlContext, iris)
+head(iris_DF)
+```
+
+## 与Shiny结合
+> https://segmentfault.com/a/1190000004448995
+
+
+## 环境安装的问题
+错误：Could not find the main class: org.apache.spark.launcher.Main
+
+问题分析，没有设置JAVA_HOME环境变量，解决方法如下：
+``` R
+if (nchar(Sys.getenv("JAVA_HOME")) < 1) {
+  Sys.setenv(JAVA_HOME = "/home/shuiping.chen/odps_tool/jdks/jdk1.7.0_79")
+}
+```
+
+错误：org.apache.spark.SparkException: Job aborted due to stage failure: Task 0 in stage 1.0 failed 4 times, most recent failure: Lost task 0.3 in stage 1.0 (TID 4, 100.81.153.113): java.io.IOException: Cannot run program "Rscript": error=2, No such file or directory
+
+问题分析，必须在/usr/bin中存在Rscript，否则找不到，解决方法如下：
+
+
+``` {shell}
+sudo ln -s /usr/local/bin/Rscript /usr/bin/Rscript
+```

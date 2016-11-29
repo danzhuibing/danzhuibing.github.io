@@ -1,8 +1,6 @@
 ---
 title: "Shiny时间序列可视化"
 output:
-  pdf_document:
-    toc: yes
   html_document:
     code_folding: show
     highlight: textmate

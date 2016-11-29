@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>R数据分析进阶01：数据读取与处理</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/textmate.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: -22px; }
+.code-folding-btn.collapsed { margin-bottom: 4px; }
+</style>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+  padding-left: 10px;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">PYTRAFFICR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">首页</a>
+</li>
+<li>
+  <a href="bigdata_home.html">大数据</a>
+</li>
+<li>
+  <a href="ml_home.html">机器学习</a>
+</li>
+<li>
+  <a href="spatial_home.html">空间分析</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+<li>
+  <a href="java_home.html">Java</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">R数据分析进阶01：数据读取与处理</h1>
+
+</div>
+
+
+<div class="section level3">
+<h3>数据读取</h3>
+<pre class="r"><code>read.table(file_name, sep, header, colClasses)</code></pre>
+<p><strong>read.table()</strong>从文本读取数据，存为数据框。 - <em>file_name</em>: 文件名，不指定路径时，在工作目录下查找；使用getwd()函数可以查看当前的工作目录，使用setwd()可以设置当前工作目录 - <em>sep</em>: 分隔符，e.g. sep=“,” - <em>header</em>: 第一行是数据时设置为False/F，是列名时设置为True/T. - <em>colClasses</em>: 读取过程中，不指定该参数，R将按照默认规则指定列的数据类型；如果默认规则不满足要求，可以用colClasses自行指定，e.g. <em>colClasses=c(“factor”, “numeric”,“character”)</em></p>
+<pre class="r"><code>colnames(df) &lt;- c(&quot;name1&quot;, &quot;name2&quot;, &quot;name3&quot;)</code></pre>
+<p>如果文本数据不包含header，可以在读入数据后，用colnames函数自行指定列名，参数df为数据框变量名。</p>
+</div>
+<div id="join" class="section level3">
+<h3>数据join</h3>
+<pre class="r"><code>merge(df1, df2, by.x, by.y, all.x, all.y)</code></pre>
+<p>R通过<strong>merge()</strong>函数实现SQL的join功能。 - <em>df1</em>: 数据框1 - <em>df2</em>: 数据框2 - <em>by.x</em>: 数据框1的合并基准列，e.g. by.x=c(“col1”, “col2”) - <em>by.y</em>: 数据框2的合并基准列，同上 - <em>all.x</em>: 设置为True时，所有数据框1包含的记录都保留 - <em>all.y</em>: 设置为True时，所有数据框2包含的记录都保留 因此，all.x=False &amp; all.y=False相当于inner join，all.x=True &amp; all.y=False相当于left join，all.x=False &amp; all.y=True相当于right join，all.x=True &amp; all.y=True相当于outter join。</p>
+</div>
+<div class="section level3">
+<h3>数据排序</h3>
+<pre class="r"><code>oder([-]df$col)</code></pre>
+<p>R语言通过<strong>order()</strong>函数实现SQL的order by功能。参数是数据框排序的字段名，返回值是按字段明排序后的数据框行号组成的向量，参数前面加负号（-）表示降序排列；将该向量传递给该数据框，即可获得该数据框按照该字段排序后的新结果，e.g.</p>
+<pre class="r"><code>new_data &lt;- df[order(-df$col)]</code></pre>
+<p>排序后的行名仍为原来数据框的行名，可以用<strong>rownames()</strong>重新定义。</p>
+</div>
+<div class="section level3">
+<h3>添加新列</h3>
+<p>最简单的方法举例：</p>
+<pre class="r"><code>df$new_col &lt;- df$old_col1*df$old_col2</code></pre>
+<p>为了不一直重复写“df$”，可以使用<strong>transform()</strong>函数，举例如下：</p>
+<pre class="r"><code>df &lt;- transform(df, new_col=old_col1*old_col2)</code></pre>
+</div>
+<div id="excel" class="section level3">
+<h3>输出到Excel</h3>
+<pre class="r"><code>output_var &lt;- c(&quot;col1&quot;,
+                &quot;col2&quot;,
+                &quot;col3&quot;
+)
+output_df &lt;- df[output_var]
+Sys.setenv(JAVA_HOME=&quot;C:\\Program Files\\Java\\jre8&quot;)
+library(xlsx)
+write.xlsx(output_df, &quot;test.xlsx&quot;, col.names=TRUE, row.names=FALSE, sheetName=&quot;Sheet1&quot;, append=FALSE
+)</code></pre>
+<p><em>output_var</em>指定要输出的列，<em>Sys.setenv(JAVA_HOME=“C:\Program Files\Java\jre8”)</em> 指定xlsx库需要依赖的JAVA环境变量地址，<strong>write.xlsx()</strong>将数据集导出为excel文件格式。</p>
+</div>
+<div class="section level3">
+<h3>剪贴板交互</h3>
+<pre class="r"><code># 读取剪贴板的内容
+df &lt;- read.table(&quot;clipboard&quot;)
+# 写内容到剪贴板
+write.table(df, &quot;clipboard&quot;)</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

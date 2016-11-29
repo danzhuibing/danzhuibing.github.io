@@ -1,0 +1,92 @@
+---
+title: "R数据分析进阶01：数据读取与处理"
+output:
+  html_document:
+    code_folding: show
+    highlight: textmate
+    toc: yes
+    toc_float:
+      collapsed: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+### 数据读取
+``` {r}
+read.table(file_name, sep, header, colClasses)
+```
+
+**read.table()**从文本读取数据，存为数据框。
+- *file_name*: 文件名，不指定路径时，在工作目录下查找；使用getwd()函数可以查看当前的工作目录，使用setwd()可以设置当前工作目录
+- *sep*: 分隔符，e.g. sep=","
+- *header*: 第一行是数据时设置为False/F，是列名时设置为True/T.
+- *colClasses*: 读取过程中，不指定该参数，R将按照默认规则指定列的数据类型；如果默认规则不满足要求，可以用colClasses自行指定，e.g. *colClasses=c("factor", "numeric","character")*
+
+``` {r}
+colnames(df) <- c("name1", "name2", "name3")
+```
+
+如果文本数据不包含header，可以在读入数据后，用colnames函数自行指定列名，参数df为数据框变量名。
+
+### 数据join
+``` r
+merge(df1, df2, by.x, by.y, all.x, all.y)
+```
+R通过**merge()**函数实现SQL的join功能。
+- *df1*: 数据框1
+- *df2*: 数据框2
+- *by.x*: 数据框1的合并基准列，e.g. by.x=c("col1", "col2")
+- *by.y*: 数据框2的合并基准列，同上
+- *all.x*: 设置为True时，所有数据框1包含的记录都保留
+- *all.y*: 设置为True时，所有数据框2包含的记录都保留
+因此，all.x=False & all.y=False相当于inner join，all.x=True & all.y=False相当于left join，all.x=False & all.y=True相当于right join，all.x=True & all.y=True相当于outter join。
+
+### 数据排序
+``` {r}
+oder([-]df$col)
+```
+
+R语言通过**order()**函数实现SQL的order by功能。参数是数据框排序的字段名，返回值是按字段明排序后的数据框行号组成的向量，参数前面加负号（-）表示降序排列；将该向量传递给该数据框，即可获得该数据框按照该字段排序后的新结果，e.g. 
+
+``` {r} 
+new_data <- df[order(-df$col)]
+```
+
+排序后的行名仍为原来数据框的行名，可以用**rownames()**重新定义。
+
+### 添加新列
+最简单的方法举例：
+
+``` {r}
+df$new_col <- df$old_col1*df$old_col2
+```
+
+为了不一直重复写“df$”，可以使用**transform()**函数，举例如下：
+``` r
+df <- transform(df, new_col=old_col1*old_col2)
+```
+
+### 输出到Excel
+``` {r}
+output_var <- c("col1",
+                "col2",
+                "col3"
+)
+output_df <- df[output_var]
+Sys.setenv(JAVA_HOME="C:\\Program Files\\Java\\jre8")
+library(xlsx)
+write.xlsx(output_df, "test.xlsx", col.names=TRUE, row.names=FALSE, sheetName="Sheet1", append=FALSE
+)
+```
+
+*output_var*指定要输出的列，*Sys.setenv(JAVA_HOME="C:\\Program Files\\Java\\jre8")* 指定xlsx库需要依赖的JAVA环境变量地址，**write.xlsx()**将数据集导出为excel文件格式。
+
+### 剪贴板交互
+``` {r}
+# 读取剪贴板的内容
+df <- read.table("clipboard")
+# 写内容到剪贴板
+write.table(df, "clipboard")
+```

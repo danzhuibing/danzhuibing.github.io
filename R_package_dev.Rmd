@@ -1,0 +1,199 @@
+---
+title: "R包发布-以线性回归为例"
+output:
+  html_document:
+    code_folding: show
+    highlight: textmate
+    toc: yes
+    toc_float:
+      collapsed: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+
+参考文献
+> Friedrich Leisch, "Createing R Packages: A Tutorial", 2009
+
+# 自行实现线性回归模型的参数估计
+``` {r}
+# 线性回归模型：y = X'beta + epsilon
+# 最小二乘法：beta_est = (X'X)^-1X'y
+## 直接求逆的数值计算不好，采用QR分解求逆
+## qr函数用于获得QR分解
+## solve.qr(qx, y)用于求解y = X'beta_est的beta_est
+## chol2inv(qr)用于求解(X'X)^-1
+# 参数检验t分布的自由度: 观测数-特征数-1，1是截距，即观测数-列数
+# 参数估计的协方差矩阵：VAR(beta_est) = VAR(y) * (X'X)^-1
+linmodEst <- function(x, y) {
+  qx <- qr(x)
+  coef <- solve.qr(qx, y)
+  df <- nrow(x) - ncol(x)
+  sigma2 <- sum((y - x%*%coef)^2)/df
+  vcov <- sigma2 * chol2inv(qx$qr)
+  colnames(vcov) <- rownames(vcov) <- colnames(x)
+  list(coefficients = coef,
+    vcov = vcov,
+    sigma = sqrt(sigma2),
+    df = df)
+}
+```
+# 面向对象编程：S3模式
+``` {r}
+# 面向对象编程
+# 通过generic function和method dispatch实现多态
+# the same function performs different computations depending on the classes of its arguments.
+## 定义generic function
+linmod <- function(x, ...) UseMethod("linmod")
+## 添加默认方法，在方法的最后将返回值的class参数设置为linmod
+linmod.default <- function(x, y, ...)
+{
+  x <- as.matrix(x)
+  y <- as.numeric(y)
+ 
+  est <- linmodEst(x, y)
+ 
+  est$fitted.values <- as.vector(x %*% est$coefficients)
+  est$residuals <- y - est$fitted.values
+  est$call <- match.call()
+  class(est) <- "linmod"
+  est
+}
+## print函数发现输入参数类型是linmod，会调用print.linmod函数
+print.linmod <- function(x, ...)
+{
+  cat("Call:\n")
+  print(x$call)
+  cat("\nCoefficients:\n")
+  print(x$coefficients)
+}
+## summary函数发现输入参数类型是linmod，会调用summary.linmod函数
+summary.linmod <- function(object, ...)
+{
+  se <- sqrt(diag(object$vcov))
+  tval <- coef(object) / se
+  TAB <- cbind(Estimate = coef(object),
+               StdErr = se,
+               t.value = tval,
+               p.value = 2*pt(-abs(tval), df=object$df)
+               )
+  res <- list(call=object$call,
+              coefficients=TAB)
+  class(res) <- "summary.linmod"
+  res
+}
+## print发现summary返回的类型是summary.linmod，会调用print.summary.linmod
+## printCoefmat是内置的用来输出矩阵参数的方法，排版比较好看
+print.summary.linmod <- function(x, ...)
+{
+  cat("Call:\n")
+  print(x$call)
+  cat("\n")
+ 
+  printCoefmat(x$coefficients, P.value=TRUE, has.Pvalue=TRUE)
+}
+```
+# 怎么支持formula格式的参数
+``` {r}
+# R语言建模为什么可以接受formula的输入？
+## 输入参数是y~x1+x2+x3的formula
+## 首先会调用model.frame方法，从输入数据中提取出formula指定的列
+## 然后基于model.frame来构造X和y
+linmod.formula <- function(formula, data=list(), ...)
+{
+  mf <- model.frame(formula=formula, data=data)
+  x <- model.matrix(attr(mf, "terms"), data=mf)
+  y <- model.response(mf)
+  est <- linmod.default(x, y, ...)
+  est$call <- match.call()
+  est$formula <- formula
+  est
+}
+# 预测模块
+predict.linmod <- function(object, newdata=NULL, ...)
+{
+  if(is.null(newdata))
+    y <- fitted(object)
+  else {
+    if(!is.null(object$formula)){
+      x <- model.matrix(object$formula, newdata)
+    }
+    else {
+      x <- newdata
+    }
+    y <- as.vector(x %*% coef(object))
+  }
+  y
+}
+```
+# 怎么发布R包
+首先在R里执行
+
+``` {r}
+package.skeleton(name="linmod", code_files="linmod.R")
+```
+
+修改DESCRIPTION文件
+
+``` {text}
+Package: linmod 
+Title: Linear Regression 
+Version: 1.0 
+Date: 2008-05-13 
+Author: Friedrich Leisch 
+Maintainer: Friedrich Leisch <Friedrich.Leisch@R-project.org> 
+Description: This is a demo package for the tutorial "Creating R  Packages" to Compstat 2008 in Porto. 
+Suggests: MASS 
+License: GPL-2
+```
+
+修改man目录下的文件为1个：
+
+``` {r}
+\name{linmod} 
+\alias{linmod} 
+\alias{linmod.default} 
+\alias{linmod.formula} 
+\alias{print.linmod} 
+\alias{predict.linmod} 
+\alias{summary.linmod} 
+\alias{print.summary.linmod} 
+\title{Linear Regression} 
+\description{Fit a linear regression model.} 
+\usage{
+linmod(x, ...)
+\method{linmod}{default}(x, y, ...) 
+\method{linmod}{formula}(formula, data = list(), ...) 
+\method{print}{linmod}(x, ...) 
+\method{summary}{linmod}(object, ...) 
+\method{predict}{linmod}(object, newdata=NULL, ...) } 
+\arguments{
+ \item{x}{ a numeric design matrix for the model. }  
+ \item{y}{ a numeric vector of responses. }  
+ \item{formula}{ a symbolic description of the model to be fit. }  
+ \item{data}{ an optional data frame containing the variables in the model. }  
+ \item{object}{ an object of class \code{"linmod"}, i.e., a fitted model. }  
+ \item{\dots}{ not used. }
+} 
+\value{An object of class \code{logreg}, basically a list including elements  
+\item{coefficients}{  a named vector of coefficients }  
+\item{vcov}{ covariance matrix of coefficients }  
+\item{fitted.values}{ fitted values }
+\item{residuals}{ residuals } }
+\author{Friedrich Leisch} 
+\examples{ 
+data(cats, package="MASS") 
+mod1 <- linmod(Hwt~Bwt*Sex, data=cats) 
+mod1
+summary(mod1) 
+} 
+\keyword{regression}
+```
+
+在shell中执行
+
+``` {shell}
+R CMD INSTALL linmod
+```

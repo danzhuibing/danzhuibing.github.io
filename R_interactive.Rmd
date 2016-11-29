@@ -1,0 +1,108 @@
+---
+title: "数据分析交互化"
+output:
+  html_document:
+    code_folding: show
+    highlight: textmate
+    toc: yes
+    toc_float:
+      collapsed: no
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+
+# DT包：查看矩阵或数据框的内容
+
+``` {r}
+library(DT)
+datatable(iris, options = list(pageLength = 5))
+```
+
+DT包提供大量UI定制功能，即修改展示的HTML、CSS和js。
+
+``` {r}
+m = matrix(
+    c('<b>Bold</b>', 
+        '<em>Emphasize</em>', 
+        '<a href="#" onclick="alert(\'Hello\');">Hello</a>', 
+         '<a href="#" onclick="alert(\'World\');">World</a>'
+    ), 2
+)
+colnames(m) = c('<span style="color:red">Column 1</span>', '<em>Column 2</em>')
+datatable(m) # 默认不处理HTML标签
+datatable(m, escape = FALSE) # 处理HTML标签
+```
+
+# tidyr包：reshape2的替代者，功能更纯粹
+R将整洁数据定义为：每个变量的数据存储在自身的列中，每个观测值的数据存储在其自身的行中。整洁数据是进行数据再加工的基础。
+
+考虑本系列04的例子。对于melt，tidyr用**gather**进行替代。
+
+``` {r}
+table1 <- gather(table2,  道路等级, 日均覆盖里程,  one_of(c("高速覆盖里程", "快速路覆盖里程", "主要道路覆盖里程")))
+```
+
+最后一个参数指定要gather的列，x:y表示从x到y的列，-z表示不包括z列。还可以使用dplyr包的select的option表达式进行列的选取，示例代码使用了one_of表达式。
+
+对于cast, tidyr用**spread**进行替代。
+
+``` {r}
+table2 <- spread(table1, 道路等级, 日均覆盖里程)
+```
+
+此外，tidyr还提供了**separate**将一列按分隔符分割为多列，**unite**将多列按指定分隔符合并为一列。
+
+# dplyr包：plyr包的替代者，专门面对数据框，将ddplyr转变为更易用的接口
+首先dplyr提供了一个符号**%>%**，该符号将左边的对象作为第一个参数传递到右边的函数中，这样就实现类似unix管道的编程风格，代码更易读。
+
+dplyr很好地解决了base包中的几个数据处理的痛点，具体可以参考本系列01。
+
+首先，dplyr可以方便地抽取数据框的子集。抽取行的子集函数有**filter**，**distinct**，**sample_frac**，**sample_n**，**slice**，**top_n**。抽取列的子集函数是**select**，可通过列名或选项函数进行选择，常见的选项函数有**contains(".")**，**ends_with("Length")**，**starts_with("Sepal")**，**everything()**，**matches(".t.")**，**num_range("x", 1:5)**，**one_of(c("Species", "Genus"))**。
+
+其次，dplyr还提供了函数**arrange**，方便按照某一列进行**数据排序**。
+
+``` {r}
+arrange(mtcars, mpg) # 从低到高
+arrange(mtcars, desc(mpg)) # 从高到低
+```
+
+然后，dplyr可以方便地进行数据集的合并，取代merge函数。
+``` {r}
+left_join(a, b, by="x1")
+right_join(a, b, by="x1")
+inner_join(a, b, by="x1")
+outer_join(a, b, by="x1")
+semi_join(a, b, by="x1") # 数据集a中能与数据集b匹配的记录
+anti_join(a, b, by="x1") # 数据集a中雨数据集b不匹配的记录
+```
+dplyr还提供了intersection、union和setdiff用于获得两个数据集的交集、并集和差集。
+
+最后，dplyr可以方便地进行数据集的拼接。**bind_rows(y, z)**将数据集z按行拼接到数据集y中，**bind_cols(y, z)**将数据集z按列拼接到数据集y中。
+
+本系列03介绍plyr时，知道这个包最主要地是用来做分组处理，dplyr对此功能进行了升级，详述如下。
+
+dplyr可以方便地对数据框进行概述，相当于ddply中的summarize。**summarise(iris, avg=mean(Sepal.Length))**将数据概括为单行结果输出；**summarise_each(iris, funs(mean))**对每一列运行概述函数。支持的概述函数有**first**，**last**，**nth**，**n**，**n_distinct**，**min**，**max**，**mean**，**median**，**var**，**sd**。
+
+dplyr可以方便地创建新变量，相当于ddply中的transform。**mutate(iris, sepal=Sepal.Length+Sepal.Width)**计算并添加一个或多个新列。**mutate_each(iris, funs(min_rank))**对每一列运行窗口函数。常见的窗口函数有**row_number**，**min_rank**，**percent_rank**，**cumsum**等。
+
+dplyr提供了一个分组函数**group_by**，把分组依据相同的数据组合成行，相当于ddply中的group_vars。**ungroup**用于移出数据框的分组信息。配合上管道符号，可以方便地进行分组概述和分组计算。
+
+``` {r}
+iris %>% group_by(Species) %>% summarise(...)
+iris %>% group_by(Species) %>% mutate(...)
+```
+
+# plotly包：让ggplot2的静态图片变得可交互
+
+``` {r}
+library(plotly)
+p <- ggplot(data = diamonds, aes(x = cut, fill = clarity)) +
+            geom_bar(position = "dodge")
+ggplotly(p)
+```
+
+plotly支持facet，不过当facet的图形超过9个以后，legend处会出现bug。

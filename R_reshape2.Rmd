@@ -1,0 +1,80 @@
+---
+title: "R数据分析进阶04：reshape2"
+output:
+  html_document:
+    code_folding: show
+    highlight: textmate
+    toc: yes
+    toc_float:
+      collapsed: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval=FALSE)
+```
+
+本文只考虑数据框的相关操作，主要是两个函数**melt()**和**dcast()**。
+
+讲义需要的案例：
+
+**表1：长形式**
+
+| 车辆  | 道路等级 | 日均覆盖里程 |
+| ----- | -------- | ------------ |
+| 车辆1 | 高速     | 100          |
+| 车辆2 | 高速     | 111          |
+| 车辆1 | 快速路   | 125          |
+| 车辆2 | 快速路   | 110          |
+| 车辆1 | 主要道路 | 30           |
+| 车辆2 | 主要道路 | 76           |
+
+**表2：宽形式**
+
+| 车辆  | 高速覆盖里程 | 快速路覆盖里程 | 主要道路覆盖里程 |
+| ----- | ------------ | -------------- | ---------------- |
+| 车辆1 | 100          | 125            | 30               |
+| 车辆2 | 111          | 110            | 76               |
+
+### melt
+**使用场景**：当数据框的几个列可以被归纳为某一个大类别时：比如列1为高速路，列2为快速路，列3为主要道路，这三列可以归结为一列道路等级。
+**案例**：将表2变为表1
+**语法介绍**
+
+``` {r}
+melt(data, id.vars, measure.vars, 
+        variable.name="variable", ... , 
+        na.rm=FALSE, value.name="value")
+```
+
+- id.vars：每个变量在结果中占一列
+- measure.vars：被当成观测值的列变量，列变量名称和值分别组成"variable"和"value"两列
+
+**案例应用**
+
+``` {r}
+table1 <- melt(table2, id.vars=c("车辆"), 
+        measure.vars=c("高速覆盖里程", 
+                "快速路覆盖里程", 
+                "主要道路覆盖里程"), 
+        variable.name="道路等级", 
+        value.name="日均覆盖里程")
+```
+
+
+### dcast
+**使用场景**：数据框的某一个列可以拆分为多个小类别时：比如道路等级可以拆分为三列：高速路，快速路，主要道路；函数还需要指定拆出来的三列的值来自哪里。
+**案例**：将表1变为表2
+**语法介绍**
+
+``` {r}
+dcast(data, formula, ..., value.var = guess_value(data))
+```
+
+- formula: 以~为分割，左边的变量在整形后依然作为变量，右边的变量的取值拆为新的变量名，e.g. diet + chick ~ time
+- value.var: 新的变量名下的取值，需要加双引号
+
+**案例应用**
+``` {r}
+table2 <- dcast(table1, 车辆~道路等级，
+        value.var="日均覆盖里程")
+```

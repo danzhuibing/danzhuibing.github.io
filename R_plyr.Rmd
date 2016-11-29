@@ -1,0 +1,28 @@
+---
+title: "R数据分析进阶03：plyr"
+output:
+  html_document:
+    code_folding: show
+    highlight: textmate
+    toc: yes
+    toc_float:
+      collapsed: no
+---
+
+
+本文只考虑基于数据框的操作，所指函数是ddply.
+
+### 基本思想
+plyr包数据打理模型是”分割-应用-结合“.
+**ddply()**函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。
+
+### 语法介绍
+``` r
+ddply(data, group_vars, summarize OR transform, new_var = function(param_var)) 
+```
+- group_vars: 用于作为分割基准的变量，有两种形式，一种是c("var1", "var2")，一种是.(var1, var2)；如果取值为NULL，表示对整个数据框作用函数。
+- summarize OR transform:  如果采用summarize，新的数据框，只会包含group_vars和new_var；如果采用transform，新的数据框会保留原始的数据框的所有列，new_var会在相同分组的不同行重复填上相同的结果。
+- new_var = function(param_var)：允许使用多个函数。e.g. highestMargin = max(margin), lowestMargin = min(margin)
+
+### 案例
+请参考网上的这个[优秀资料](http://developer.51cto.com/art/201312/423612_all.html)

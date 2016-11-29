@@ -13,8 +13,19 @@ output:
 + [R数据打理-dplyr与tidyr](dplyr-tidyr-cheatsheet.pdf)
 + [R统计绘图-ggplot2](ggplot2-cheatsheet.pdf)
 + [统计绘图-ggplot2实践](R_ggplot2.html)
++ [数据分析体验升级-交互化](R_interactive.html)
 + [R网站开发-shiny](shiny-cheatsheet.pdf)
 + [用shiny实现Excel数据透视图](R_shiny_ts_viewer.html)
 + [R空间可视化](spatial_analysis_R_vis.html)
 + [R文档生成-rmarkdown](rmarkdown-cheatsheet-2.0.pdf)
++ [R使用阿里云ODPS](R_ODPS.html)
++ [R使用Spark](R_spark.html)
++ [R包发布-线性回归为例](R_package_dev.html)
+
+不推荐使用的过期技术，仅供查阅。
+
++ [R数据分析进阶01：数据读取与处理](R_read_preprocess.html)
++ [R数据分析进阶02：日期时间处理](R_datetime_old.html)
++ [R数据分析进阶03：plyr](R_plyr.html)
++ [R数据分析进阶04：reshape2](R_reshape2.html)
 

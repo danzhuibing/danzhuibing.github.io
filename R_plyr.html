@@ -11,7 +11,7 @@
 
 
 
-<title></title>
+<title>R数据分析进阶03：plyr</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,6 +19,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet"
@@ -159,8 +162,119 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: -22px; }
+.code-folding-btn.collapsed { margin-bottom: 4px; }
+</style>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
 
 
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+  padding-left: 10px;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -208,39 +322,44 @@ $(document).ready(function () {
 
 <div class="fluid-row" id="header">
 
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
+
+<h1 class="title toc-ignore">R数据分析进阶03：plyr</h1>
 
 </div>
 
 
-<p>本系列文章介绍R的编程基础。</p>
+<p>本文只考虑基于数据框的操作，所指函数是ddply.</p>
+<div class="section level3">
+<h3>基本思想</h3>
+<p>plyr包数据打理模型是”分割-应用-结合“. <strong>ddply()</strong>函数输入一个数据框，返回一个数据框——这就是ddply()函数前两个字母”dd“的含义：输入一个data frame，输出一个data frame。</p>
+</div>
+<div class="section level3">
+<h3>语法介绍</h3>
+<pre class="r"><code>ddply(data, group_vars, summarize OR transform, new_var = function(param_var)) </code></pre>
 <ul>
-<li><a href="R_datetime.html">日期时间处理-R篇</a></li>
-<li><a href="R_JSON.html">JSON处理-R篇</a></li>
-<li><a href="R_string.html">字符串处理-R篇</a></li>
-<li><a href="dplyr-tidyr-cheatsheet.pdf">R数据打理-dplyr与tidyr</a></li>
-<li><a href="ggplot2-cheatsheet.pdf">R统计绘图-ggplot2</a></li>
-<li><a href="R_ggplot2.html">统计绘图-ggplot2实践</a></li>
-<li><a href="R_interactive.html">数据分析体验升级-交互化</a></li>
-<li><a href="shiny-cheatsheet.pdf">R网站开发-shiny</a></li>
-<li><a href="R_shiny_ts_viewer.html">用shiny实现Excel数据透视图</a></li>
-<li><a href="spatial_analysis_R_vis.html">R空间可视化</a></li>
-<li><a href="rmarkdown-cheatsheet-2.0.pdf">R文档生成-rmarkdown</a></li>
-<li><a href="R_ODPS.html">R使用阿里云ODPS</a></li>
-<li><a href="R_spark.html">R使用Spark</a></li>
-<li><a href="R_package_dev.html">R包发布-线性回归为例</a></li>
+<li>group_vars: 用于作为分割基准的变量，有两种形式，一种是c(“var1”, “var2”)，一种是.(var1, var2)；如果取值为NULL，表示对整个数据框作用函数。</li>
+<li>summarize OR transform: 如果采用summarize，新的数据框，只会包含group_vars和new_var；如果采用transform，新的数据框会保留原始的数据框的所有列，new_var会在相同分组的不同行重复填上相同的结果。</li>
+<li>new_var = function(param_var)：允许使用多个函数。e.g. highestMargin = max(margin), lowestMargin = min(margin)</li>
 </ul>
-<p>不推荐使用的过期技术，仅供查阅。</p>
-<ul>
-<li><a href="R_read_preprocess.html">R数据分析进阶01：数据读取与处理</a></li>
-<li><a href="R_datetime_old.html">R数据分析进阶02：日期时间处理</a></li>
-<li><a href="R_plyr.html">R数据分析进阶03：plyr</a></li>
-<li><a href="R_reshape2.html">R数据分析进阶04：reshape2</a></li>
-</ul>
+</div>
+<div class="section level3">
+<h3>案例</h3>
+<p>请参考网上的这个<a href="http://developer.51cto.com/art/201312/423612_all.html">优秀资料</a></p>
+</div>
 
 
 
+</div>
+</div>
 
 </div>
 
