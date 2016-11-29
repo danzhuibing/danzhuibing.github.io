@@ -3,20 +3,21 @@ output_dir: "."
 navbar:
   title: "PYTRAFFICR"
   left:
-    - text: "大数据"
+    - text: "首页"
       href: index.html
+    - text: "大数据"
+      href: bigdata_home.html
     - text: "机器学习"
       href: ml_home.html
+    - text: "空间分析"
+      href: spatial_home.html
     - text: "Python"
       href: python_home.html
     - text: "R"
       href: r_home.html
     - text: "Java"
       href: java_home.html
-    - text: "空间分析"
-      href: spatial_home.html
-    - text: "关于作者"
-      href: about.html
+
 output:
   html_document:
     theme: cosmo

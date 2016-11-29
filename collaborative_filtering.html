@@ -282,10 +282,16 @@ div.tocify {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">大数据</a>
+  <a href="index.html">首页</a>
+</li>
+<li>
+  <a href="bigdata_home.html">大数据</a>
 </li>
 <li>
   <a href="ml_home.html">机器学习</a>
+</li>
+<li>
+  <a href="spatial_home.html">空间分析</a>
 </li>
 <li>
   <a href="python_home.html">Python</a>
@@ -295,12 +301,6 @@ div.tocify {
 </li>
 <li>
   <a href="java_home.html">Java</a>
-</li>
-<li>
-  <a href="spatial_home.html">空间分析</a>
-</li>
-<li>
-  <a href="about.html">关于作者</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -436,7 +436,7 @@ def sim_pearson(prefs, person1, person2):
 </div>
 </div>
 <div class="section level2">
-<h2>对比基于用户与基于物品的协同过滤</h2>
+<h2>小结</h2>
 <p>基于物品的协同过滤在大数据集上速度更快，因为物品是相对静态的数据，其相似性可以事先计算好，然后再实时调用。而用户数据是动态数据，每时每刻都在产生，所以事先计算好的用户相似度无法捕捉用户的最新行为，容易过时，因此在实践上往往是相似度与推荐都实时计算，这样效率会比较低。</p>
 <p>另外，如果用户的打分行为比较少，即数据比较稀疏。这时候可能每个用户只有几个评分，但每个物品却有很多评分。那么按照用户为分组去计算相似性，效果会比较差；而以物品为分组去计算相似性就会好很多。因此稀疏数据集上，建议使用基于物品的协同过滤算法。</p>
 </div>

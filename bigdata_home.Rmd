@@ -1,0 +1,15 @@
+---
+output:
+  html_document:
+    theme: cosmo
+    highlight: textmate
+---
+
+本系列文章介绍大数据基础。
+
++ [Hadoop基础](Hadoop_basic.html)
++ [Hive基础](Hive_basic.html)
++ [Storm基础](Storm_basic.html)
++ [Spark基础](Spark_basic.html)
+
+    

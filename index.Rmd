@@ -5,11 +5,12 @@ output:
     highlight: textmate
 ---
 
-本系列文章介绍大数据基础。
+我是丹追兵，真名陈水平，毕业于德国亚琛工业大学，现在阿里巴巴移动事业群高德地图出行业务中心机器学习组做算法工程师。本文是我在大数据、算法、地图领域工作的学习笔记，包括以下几个序列：
 
-+ [Hadoop基础](Hadoop_basic.html)
-+ [Hive基础](Hive_basic.html)
-+ [Storm基础](Storm_basic.html)
-+ [Spark基础](Spark_basic.html)
++ 大数据：介绍Hadoop、Hive、Storm、Spark等基本框架
++ 机器学习：介绍常用的算法
++ 空间分析：介绍地图领域GPS数据处理业务
++ Python：介绍Python编程基础
++ R：介绍R编程基础
++ Java：介绍Java编程基础
 
-    
