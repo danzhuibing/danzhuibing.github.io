@@ -5,6 +5,8 @@ navbar:
   left:
     - text: "大数据"
       href: index.html
+    - text: "机器学习"
+      href: ml_home.html
     - text: "Python"
       href: python_home.html
     - text: "R"
@@ -15,4 +17,7 @@ navbar:
       href: spatial_home.html
     - text: "关于作者"
       href: about.html
-      
+output:
+  html_document:
+    theme: cosmo
+    highlight: textmate

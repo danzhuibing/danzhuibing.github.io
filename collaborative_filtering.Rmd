@@ -1,0 +1,150 @@
+---
+title: "协同过滤"
+output: 
+  html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
+---
+
+
+## 数据输入
+数据可能来自于人们购买的物品，以及有关这些物品的评价信息，这些评价可能会被表达成“是/否”之类的投票，或者是从1到5的评价值。
+
+这些数据可以用python的嵌套字典轻松表达。
+
+``` {python, eval=F}
+prefs = {'Lisa Rose': {'Lady in the Water': 2.5, 'Snakes on a Plane': 3.5}, 
+           'Claudia Puig': {'Snakes on a Plane': 3, 'Just My Luck': 3.0},
+           ...
+}
+```
+
+## 相似性描述
+### 欧几里得距离
+``` {python, eval=F}
+def sim_distance(prefs, person1, person2):
+  inter_squares = [pow(prefs[person1][item] - prefs[person2][item], 2) for item in prefs[person1] if item in prefs[person2]]
+  if len(inter_squares) == 0:
+    return 0
+  sum_squares = sum(inter_squares)
+  return 1/(1+sqrt(sum_squares)) # 对分母加1，防止除零错误
+```
+
+### 皮尔逊相关系数
+皮尔逊相关系数是判断两组数据与某一条直线的拟合程度。它的计算公式如下：
+
+$$\rho_{xy} = \frac{cov(X, Y)}{\sigma_x\sigma_y} = \frac{E(X-\mu_x)E(Y-\mu_y)}{\sigma_x\sigma_y}$$
+
+从数学公式上看，皮尔逊相关系数等于两个序列的协方差与各自标准差乘积的商。我们可以看到用户的每个评分都会减去自身的均值，这样可以有效地处理那些倾向于给高分或者给低分的用户带来的干扰。
+
+我们可以使用**numpy**完成皮尔逊相关系数的计算。
+
+``` {python, eval=F}
+import numpy as np
+
+def sim_pearson(prefs, person1, person2):
+  common_items = set(prefs[person1].keys()).intersection(set(prefs[person2].keys()))
+  if len(common_items) == 0:
+    return 0
+  
+  rate1 = [prefs[person1][item] for item in common_items]
+  rate2 = [prefs[person2][item] for item in common_items]
+  return np.correlate(rate1, rate2)
+```
+
+## 获取最相似的人
+``` {python, eval=F}
+def top_match(prefs, person, n=5, similarity=sim_pearson):
+  scores = [(similarity(prefs, person, other), other) for other in prefs if other != person]
+  scores.sort() # 升序排列
+  return scores[-n:]
+```
+
+
+## 推荐物品
+``` {python, eval=F}
+def get_recommendation(prefs, person, similarity=sim_pearson):
+  totals = {}
+  simSums = {}
+  for other in prefs:
+    if other == person: continue
+    sim = similarity(prefs, person, other)
+    if sim <= 0 :continue
+    for item in prefs[other]:
+      if item not in prefs[person] or prefs[person][item] == 0:
+        totals.setdefault(item, 0)
+        totals[item] += prefs[other][item]*sim
+        simSums.setdefault(item, 0)
+        simSums[item] += sim
+    # 归一化
+    rankings = [(total/simSums[item], item) for item, total in totals.items()]
+    ranking.sort()
+    ranking.reverse()
+    return rankings
+```
+
+## 寻找物品的相似物品
+只需要将prefs里的人和物对换位置，就可以继续使用上面的方法了。
+
+``` {python, eval=F}
+def transform_prefs(prefs):
+  result = {}
+  for person in prefs:
+    for item in prefs[person]:
+      result.setdefault(item, {})
+      result[item][person] = prefs[person][item]
+  return result
+```
+
+寻找相似的人，可以让我们根据群体的购买历史，为用户推荐产品。寻找相似的物品，可以让零售商找到购买某些商品的潜在客户，这对于他们处理清仓商品制定市场营销计划时是有帮助的。
+
+## 基于物品的协同过滤
+前面的方法都是**基于用户的协同过滤**，即使用来自每一位用户的全部评分来构造数据集。这种方法对于数量以千计的用户或物品规模或许是没问题的，但对于有着上百万客户和商品的大型网站而言，将一个用户与所有其他用户进行比较，再对每位用户评分过的商品进行权值计算，其速度可能是无法忍受的。
+
+基于物品的协同过滤思想如下：为每件物品预先计算好最为相近的其他物品；当需要为一位用户做推荐时，可以查看它曾经评过分的物品，根据这些物品去物品相似数据集里计算相似物品的加权平均分，排序后输出与这些已经评分物品最为相近的其他物品。
+
+### 构造物品相似集
+
+``` {python, eval=F}
+def calculate_similar_items(prefs, n=10):
+  result = {}
+  itemPrefs = transformPrefs(prefs)
+  c = 0
+  for item in itemPrefs:
+    c += 1
+    if c %1000 == 0: print "%d / %d" % (c, len(itemPrefs))
+    scores = top_matches(itemPrefs, item, n=n, similarity=sim_distance)
+    result[item] = scores
+  return result
+```
+
+### 推荐物品
+``` {python, eval=F}
+def get_recommendation_item(prefs, itemMatch, user):
+  userRatings = prefs[user]
+  scores = {}
+  totalSim = {}
+  
+  for item, rating in userRatings.items():
+    for similarity, item2 in itemMatch.items():
+      if item2 in userRatings: continue
+      scores.setdefault(item2, 0)
+      scores[item2] += similarity*rating
+      totalSim.setdefault(item2, 0)
+      totalSim[item2] += similarity
+      
+    rankings = [(score/totalSim[item], item) for item, score in scores.items()]
+    rankings.sort()
+    rankings.reverse()
+    return rankings
+```
+
+## 小结
+基于物品的协同过滤在大数据集上速度更快，因为物品是相对静态的数据，其相似性可以事先计算好，然后再实时调用。而用户数据是动态数据，每时每刻都在产生，所以事先计算好的用户相似度无法捕捉用户的最新行为，容易过时，因此在实践上往往是相似度与推荐都实时计算，这样效率会比较低。
+
+另外，如果用户的打分行为比较少，即数据比较稀疏。这时候可能每个用户只有几个评分，但每个物品却有很多评分。那么按照用户为分组去计算相似性，效果会比较差；而以物品为分组去计算相似性就会好很多。因此稀疏数据集上，建议使用基于物品的协同过滤算法。
+
+
+
+
