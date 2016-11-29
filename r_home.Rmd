@@ -10,4 +10,11 @@ output:
 + [日期时间处理-R篇](R_datetime.html)
 + [JSON处理-R篇](R_JSON.html)
 + [字符串处理-R篇](R_string.html)
-+ [统计绘图-ggplot2](R_ggplot2.html)
++ [R数据打理-dplyr与tidyr](dplyr-tidyr-cheatsheet.pdf)
++ [R统计绘图-ggplot2](ggplot2-cheatsheet.pdf)
++ [统计绘图-ggplot2实践](R_ggplot2.html)
++ [R网站开发-shiny](shiny-cheatsheet.pdf)
++ [用shiny实现Excel数据透视图](R_shiny_ts_viewer.html)
++ [R空间可视化](spatial_analysis_R_vis.html)
++ [R文档生成-rmarkdown](rmarkdown-cheatsheet-2.0.pdf)
+

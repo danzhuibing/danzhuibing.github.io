@@ -17,7 +17,6 @@ navbar:
       href: r_home.html
     - text: "Java"
       href: java_home.html
-
 output:
   html_document:
     theme: cosmo

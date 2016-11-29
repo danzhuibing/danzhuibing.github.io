@@ -169,7 +169,7 @@ $(document).ready(function () {
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <script>
 $(document).ready(function () {
-  window.initializeCodeFolding("hide" === "show");
+  window.initializeCodeFolding("show" === "show");
 });
 </script>
 
@@ -338,11 +338,11 @@ div.tocify {
 
 
 <div class="section level1">
-<h1><span class="header-section-number">1</span> 前言</h1>
+<h1>前言</h1>
 <p>本文介绍第三方库<strong>jsonlite</strong>，用于在R中处理JSON数据。</p>
 </div>
 <div id="fromjson" class="section level1">
-<h1><span class="header-section-number">2</span> fromJSON</h1>
+<h1>fromJSON</h1>
 <p>我们使用<code>fromJSON</code>解析JSON字符串，一般而言，JSON都可以被转变为R的list结构。对于几种常见形式的JSON，jsonlite默认将其转化为比list更紧凑的数据格式：vector、data.frame、matrix。</p>
 <table style="width:22%;">
 <colgroup>
@@ -383,7 +383,7 @@ div.tocify {
 <p>对于DataFrame而言，我们有时候希望是按照列式传输，即<code>json_str &lt;- '{&quot;name&quot;:[&quot;Erik&quot;,&quot;Anna&quot;],&quot;age&quot;:[43,32]}'</code>，这样相比于行式传输能够节省大量空间，这个时候，我们用代码<code>as.data.frame(jsonlite::fromJSON(json_str))</code>可以将其快速转为DataFrame格式。</p>
 </div>
 <div id="tojson" class="section level1">
-<h1><span class="header-section-number">3</span> toJSON</h1>
+<h1>toJSON</h1>
 <p>默认情况下，会删除空格等没必要的空间。如果想打印出来更好看，可以指定参数<code>pretty=TRUE</code>。其他可以指定的参数有日期、POSIXt、复数、Factor、控制等的输出选项。</p>
 </div>
 
