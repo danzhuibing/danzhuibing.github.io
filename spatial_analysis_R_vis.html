@@ -26,6 +26,11 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-1.1/highlight.js"></script>
+<script src="site_libs/htmlwidgets-0.8/htmlwidgets.js"></script>
+<link href="site_libs/leaflet-0.7.3/leaflet.css" rel="stylesheet" />
+<script src="site_libs/leaflet-0.7.3/leaflet.js"></script>
+<link href="site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="site_libs/leaflet-binding-1.0.1/leaflet.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -344,14 +349,12 @@ m &lt;- leaflet() %&gt;%
   addTiles(
     &#39;http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&amp;size=1&amp;scale=1&amp;style=8&amp;x={x}&amp;y={y}&amp;z={z}&#39;,
     tileOptions(tileSize=256, minZoom=9, maxZoom=17),
-    attribution = &#39;&amp;copy; &lt;a href=&quot;http://ditu.amap.com/&quot;&gt;高德地图&lt;/a&gt;&#39;,
+    attribution = &#39;&amp;copy; &lt;a href=&quot;http://ditu.amap.com/&quot;&gt;高德地图&lt;/a&gt;&#39;
   ) %&gt;% 
   setView(116.40,39.90, zoom = 10)
 m</code></pre>
-<div class="figure">
-<img src="images/spatial_analysis_R_vis_amap.png" />
-
-</div>
+<div id="htmlwidget-c184ac1fd575ea30e80d" style="width:672px;height:480px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c184ac1fd575ea30e80d">{"x":{"calls":[{"method":"addTiles","args":["http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",{"minZoom":9,"maxZoom":17,"maxNativeZoom":null,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"continuousWorld":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":null,"unloadInvisibleTiles":null,"updateWhenIdle":null,"detectRetina":false,"reuseTiles":false},null,{"minZoom":0,"maxZoom":18,"maxNativeZoom":null,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"continuousWorld":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":null,"unloadInvisibleTiles":null,"updateWhenIdle":null,"detectRetina":false,"reuseTiles":false,"attribution":"&copy; <a href=\"http://ditu.amap.com/\">楂樺痉鍦板浘\u003c/a>"}]}],"setView":[[39.9,116.4],10,[]]},"evals":[],"jsHooks":[]}</script>
 <p>当然，除了告诉大家怎么在R里调用高德地图外，本文还想做的深入一些，尝试对空间可视化的基础知识做一个简单的介绍。</p>
 </div>
 <div class="section level1">
@@ -418,6 +421,34 @@ Sl &lt;- SpatialLines(plyr::llply(link_list, points2spline, &quot;link_id&quot;,
 Sldf &lt;- splines2splinesdf(Sl, link_coors, &quot;link_id&quot;)
 
 str(Sldf)</code></pre>
+<pre><code>## Formal class &#39;SpatialLinesDataFrame&#39; [package &quot;sp&quot;] with 4 slots
+##   ..@ data       :&#39;data.frame&#39;:  2 obs. of  3 variables:
+##   .. ..$ link_id: Factor w/ 2 levels &quot;road_one&quot;,&quot;road_two&quot;: 1 2
+##   .. ..$ coors  : Factor w/ 2 levels &quot;116.44469451904297,39.890071868896484:116.44451141357422,39.891361236572266&quot;,..: 1 2
+##   .. ..$ status : Factor w/ 2 levels &quot;congest&quot;,&quot;uncongest&quot;: 1 2
+##   ..@ lines      :List of 2
+##   .. ..$ :Formal class &#39;Lines&#39; [package &quot;sp&quot;] with 2 slots
+##   .. .. .. ..@ Lines:List of 1
+##   .. .. .. .. ..$ :Formal class &#39;Line&#39; [package &quot;sp&quot;] with 1 slot
+##   .. .. .. .. .. .. ..@ coords: num [1:2, 1:2] 116.4 116.4 39.9 39.9
+##   .. .. .. .. .. .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. .. .. .. .. .. .. ..$ : NULL
+##   .. .. .. .. .. .. .. .. ..$ : chr [1:2] &quot;lng&quot; &quot;lat&quot;
+##   .. .. .. ..@ ID   : chr &quot;road_one&quot;
+##   .. ..$ :Formal class &#39;Lines&#39; [package &quot;sp&quot;] with 2 slots
+##   .. .. .. ..@ Lines:List of 1
+##   .. .. .. .. ..$ :Formal class &#39;Line&#39; [package &quot;sp&quot;] with 1 slot
+##   .. .. .. .. .. .. ..@ coords: num [1:2, 1:2] 116.4 116.4 39.9 39.9
+##   .. .. .. .. .. .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. .. .. .. .. .. .. ..$ : NULL
+##   .. .. .. .. .. .. .. .. ..$ : chr [1:2] &quot;lng&quot; &quot;lat&quot;
+##   .. .. .. ..@ ID   : chr &quot;road_two&quot;
+##   ..@ bbox       : num [1:2, 1:2] 116.4 39.9 116.4 39.9
+##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. ..$ : chr [1:2] &quot;x&quot; &quot;y&quot;
+##   .. .. ..$ : chr [1:2] &quot;min&quot; &quot;max&quot;
+##   ..@ proj4string:Formal class &#39;CRS&#39; [package &quot;sp&quot;] with 1 slot
+##   .. .. ..@ projargs: chr &quot;+init=epsg:4326&quot;</code></pre>
 </div>
 <div id="rgeos" class="section level2">
 <h2><span class="header-section-number">3.2</span> rgeos</h2>
@@ -459,10 +490,8 @@ m &lt;- leaflet() %&gt;%
   )
 
 m</code></pre>
-<div class="figure">
-<img src="images/spatial_analysis_R_vis_buffer.png" />
-
-</div>
+<div id="htmlwidget-b8485285cb18285e7a81" style="width:672px;height:480px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b8485285cb18285e7a81">{"x":{"calls":[{"method":"addTiles","args":["http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",{"minZoom":9,"maxZoom":17,"maxNativeZoom":null,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"continuousWorld":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":null,"unloadInvisibleTiles":null,"updateWhenIdle":null,"detectRetina":false,"reuseTiles":false},"楂樺痉鍦板浘",{"minZoom":0,"maxZoom":18,"maxNativeZoom":null,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"continuousWorld":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":null,"unloadInvisibleTiles":null,"updateWhenIdle":null,"detectRetina":false,"reuseTiles":false,"attribution":"&copy; <a href=\"http://ditu.amap.com/\">楂樺痉鍦板浘\u003c/a>"}]},{"method":"addPolylines","args":[[[{"lng":[116.444694519043,116.444511413574],"lat":[39.8900718688965,39.8913612365723]}],[{"lng":[116.444999694824,116.444694519043],"lat":[39.8876304626465,39.8900718688965]}]],null,"瀹炴椂璺喌",{"lineCap":null,"lineJoin":null,"clickable":true,"pointerEvents":null,"className":"","stroke":true,"color":["#FF0000","#00FF00"],"weight":3,"opacity":1,"fill":false,"fillColor":["#FF0000","#00FF00"],"fillOpacity":0.2,"dashArray":null,"smoothFactor":1,"noClip":false},null]},{"method":"addPolygons","args":[[[{"lng":[116.4443134,116.44470942,116.44489253,116.44449651,116.4443134],"lat":[39.89133312,39.89138936,39.89009999,39.89004375,39.89133312]}],[{"lng":[116.44449606,116.44489298,116.44519815,116.44480123,116.44449606],"lat":[39.89004706,39.89009668,39.88765527,39.88760565,39.89004706]}]],null,"绌洪棿璁＄畻",{"lineCap":null,"lineJoin":null,"clickable":true,"pointerEvents":null,"className":"","stroke":true,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":"#03F","fillOpacity":0.2,"dashArray":null,"smoothFactor":1,"noClip":false},null]},{"method":"addPolygons","args":[[[{"lng":[116.44442647,116.44462447,116.44477946,116.44458146,116.44442647],"lat":[39.89124817,39.89127629,39.89018494,39.89015682,39.89124817]}],[{"lng":[116.44460769,116.44480616,116.44508652,116.44488805,116.44460769],"lat":[39.88996024,39.88998505,39.88774209,39.88771728,39.88996024]}]],null,"绌洪棿璁＄畻",{"lineCap":null,"lineJoin":null,"clickable":true,"pointerEvents":null,"className":"","stroke":true,"color":"black","weight":5,"opacity":0.5,"fill":true,"fillColor":"black","fillOpacity":0.2,"dashArray":null,"smoothFactor":1,"noClip":false},null]},{"method":"addLayersControl","args":[[],["楂樺痉鍦板浘","瀹炴椂璺喌","绌洪棿璁＄畻"],{"collapsed":false,"autoZIndex":true,"position":"topright"}]},{"method":"addLegend","args":[{"colors":["#FF0000","#00FF00"],"labels":["congest","uncongest"],"na_color":null,"na_label":"NA","opacity":1,"position":"bottomleft","type":"factor","title":"瀹炴椂浜ら€<9a>","extra":null,"layerId":null,"className":"info legend"}]}],"limits":{"lat":[39.88760565,39.89138936],"lng":[116.4443134,116.44519815]},"fitBounds":[39.8866304626465,116.443511413574,39.8923612365723,116.445999694824]},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 

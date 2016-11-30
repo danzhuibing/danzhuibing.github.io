@@ -1,0 +1,16 @@
+base
+readr
+plyr
+dplyr
+tidyr
+ggplot2
+plotly
+lubridate
+leaflet
+sp
+RColorBrewer
+jsonlite
+data.table
+splitstackshape
+stringr
+rlist

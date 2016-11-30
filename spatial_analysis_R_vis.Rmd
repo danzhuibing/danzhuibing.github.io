@@ -6,14 +6,18 @@ output:
     toc: true
     toc_float: 
       collapsed: false
-    theme: cosmo
     highlight: textmate
     number_sections: true
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE,cache=TRUE,warning=FALSE,message = FALSE)
+```
+
 # 前言
 很多朋友说在R里没法使用高德地图，这里给出一个基于leaflet包的解决方法。
 
-``` {r, eval=F}
+``` {r}
 library(leaflet)
 
 # 添加高德地图
@@ -21,14 +25,11 @@ m <- leaflet() %>%
   addTiles(
     'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
     tileOptions(tileSize=256, minZoom=9, maxZoom=17),
-    attribution = '&copy; <a href="http://ditu.amap.com/">高德地图</a>',
+    attribution = '&copy; <a href="http://ditu.amap.com/">高德地图</a>'
   ) %>% 
   setView(116.40,39.90, zoom = 10)
 m
 ```
-
-
-![](images/spatial_analysis_R_vis_amap.png)
 
 
 当然，除了告诉大家怎么在R里调用高德地图外，本文还想做的深入一些，尝试对空间可视化的基础知识做一个简单的介绍。
@@ -59,7 +60,7 @@ SpatialXXDataFrame的结构示意图如下：
 
 下面举一个例子，怎么从dataframe数据变为sp对象。
 
-``` {r, eval=F}
+``` {r}
 library(splitstackshape)
 library(sp)
 library(dplyr)
@@ -105,7 +106,7 @@ str(Sldf)
 ## rgeos
 空间处理，主要用来做一些空间运算，比如计算两个空间对象的位置关系：相交，重叠，包含等等。再比如，根据空间对象创建新的空间对象。此外，rgeos还能够完成WKT与sp对象的相互转换。
 
-``` {r, eval=F}
+``` {r}
 library(rgeos)
 
 # 创建外扩与内缩buffer，演示WKT的读写
@@ -117,7 +118,7 @@ eroded_buffer <- gBuffer(dilated_buffer, byid=TRUE, width=-0.0001, capStyle="SQU
 ## leaflet
 我们继续上面的例子，将空间对象绘制到高德地图上。
 
-``` {r, eval=F}
+``` {r}
 library(leaflet)
 factpal <- colorFactor(c(rgb(1,0,0,1),rgb(0, 1, 0, 1)), domain=c("congest", "uncongest"))
 
@@ -148,5 +149,4 @@ m
 ```
 
 
-![](images/spatial_analysis_R_vis_buffer.png)
 

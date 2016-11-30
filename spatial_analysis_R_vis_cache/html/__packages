@@ -1,0 +1,8 @@
+base
+leaflet
+data.table
+splitstackshape
+sp
+dplyr
+tidyr
+rgeos
