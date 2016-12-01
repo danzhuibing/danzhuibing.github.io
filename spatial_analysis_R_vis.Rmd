@@ -106,6 +106,8 @@ str(Sldf)
 ## rgeos
 空间处理，主要用来做一些空间运算，比如计算两个空间对象的位置关系：相交，重叠，包含等等。再比如，根据空间对象创建新的空间对象。此外，rgeos还能够完成WKT与sp对象的相互转换。
 
+如果使用的是RStudio Server，还需要在`/etc/rstudio/rserver.conf`下添加如下内容：`session-ld-library-path=/usr/local/lib/`，否则会找不到依赖的.so文件。
+
 ``` {r}
 library(rgeos)
 

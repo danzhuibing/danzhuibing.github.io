@@ -8,5 +8,6 @@ output:
 本系列文章介绍机器学习算法基础。
 
 + [推荐系统-协同过滤算法](collaborative_filtering.html)
++ [KMeans聚类](kmeans.html)
 
     

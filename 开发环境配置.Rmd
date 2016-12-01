@@ -1,0 +1,48 @@
+---
+title: "开发环境配置"
+author: "陈水平"
+date: "2016年12月1日"
+output: html_document
+---
+
+## R
+
+``` {r, eval=FALSE}
+# 数据可视化：ggplot2
+# 数据框打理：dplyr, tidyr, data.table, splitstackshape
+# 基础类型处理：lubridate, stringr, jsonlite
+# 网络请求：httr, rvest
+# 数据读取：readr, readxl, RODPS, RMySQL
+# 空间处理与可视化：sp, rgeos, rgdal, leaflet
+# 分析交互化：htmlwidgets, plotly, dygraph, DT
+# 分享分析成果：shiny, rmarkdown
+
+
+to_install_packages <- c("ggplot2", "dplyr", "tidyr", "data.table", "splitstackshape",
+                         "leaflet", "sp", "rgeos", "rgdal",
+                         "lubridate", "stringr", "jsonlite", 
+                         "httr", "rvest"
+                         "shiny", "rmarkdown"
+                         "htmlwidgets", "DT", "plotly", "dygraph",
+                         "readr", "readxl", "RODPS", "RMySQL"
+                         )
+lapply(to_install_packages, install.packages)
+```
+
+## python
+requirements.txt
+
+``` {text}
+numpy
+matplotlib
+pandas
+scikit-learn
+```
+
+执行以下命令
+
+```{shell, eval=F}
+python -m pip install -r requirements.txt -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+```
+
+
