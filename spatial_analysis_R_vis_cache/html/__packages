@@ -1,4 +1,7 @@
 base
+ggplot2
+lubridate
+jsonlite
 leaflet
 data.table
 splitstackshape

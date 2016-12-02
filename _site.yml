@@ -1,10 +1,8 @@
-name: "PYTRAFFICR"
+name: "丹追兵|数据分析师"
 output_dir: "."
 navbar:
   title: "PYTRAFFICR"
   left:
-    - text: "首页"
-      href: index.html
     - text: "大数据"
       href: bigdata_home.html
     - text: "机器学习"

@@ -138,7 +138,7 @@ o2o.hour <- df.o2o.order %>%
          delivery_hour=round_date(fake_dt +Delivery_time, "hour")) %>%
   gather(time_type, tm, pickup_hour, delivery_hour) %>%
   group_by(time_type, tm) %>%
-  summarise(order_cnt=n())
+  dplyr::summarise(order_cnt=n())
 ggplot(o2o.hour) + geom_point(aes(x=tm, y=order_cnt, colour=time_type)) + geom_line(aes(x=tm, y=order_cnt, colour=time_type)) + theme_bw(base_size=16)
 ```
 
@@ -151,7 +151,7 @@ df.o2o.order.batch <- df.o2o.order %>%
   mutate(batch_pickup_time = round_date(fake_dt + Pickup_time, "30 minutes"),
          batch_delivery_time = round_date(fake_dt + Delivery_time, "30 minutes")) %>%
   group_by(Spot_id, Shop_id, batch_pickup_time, batch_delivery_time) %>%
-  summarise(total_order_size=sum(Num), total_order_num=n())
+  dplyr::summarise(total_order_size=sum(Num), total_order_num=n())
 
 table(df.o2o.order.batch$total_order_num)
 ```

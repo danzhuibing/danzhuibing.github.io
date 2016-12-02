@@ -1,5 +1,7 @@
 base
+ggplot2
+lubridate
+jsonlite
 tidyr
 dplyr
-ggplot2
 GGally

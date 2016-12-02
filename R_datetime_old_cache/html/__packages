@@ -1,1 +1,4 @@
 base
+ggplot2
+lubridate
+jsonlite

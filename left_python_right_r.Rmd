@@ -1,0 +1,241 @@
+---
+title: "左手python，右手R"
+output:
+  html_document:
+    code_folding: show
+    toc: true
+    toc_float: 
+      collapsed: false
+    highlight: textmate
+    number_sections: true
+---
+
+
+数据分析领域最常用的两种语言是python和R。二者直接对比的话，python在字符串处理、json处理、网络请求/爬虫、机器学习、分布式架构上更有优势，且效率相对高；R在数据可视化、表格数据打理、javascript库集成方面更有优势。二者在数据分析领域相互学习与接近，正变得越来越像。
+
+
+
+# 字符串处理
+python处理字符串是强项，配合上正则库re更是所向披靡。R的stringr包极大地改善了R处理字符串的舒适度，且每个函数都可接受向量计算。
+
+| 操作 | python | R | 
+| --- | --- | --- |
+| 拆分 | `str.split(",")`<br>`re.split('[:,]', str)` | `str_split(str, "[:,]")` |
+| 拼接 | `",".join(str_list)` | `str_c(str_vec, collapse=",")`<br>`str_c(str_vec1, str_vec2, sep=",", collapse=":")` |
+| 子串 | `str[0:3]` | `str_sub(str, 1, 3)` | 
+| 去空白 | `str.rstrip()` | `str_trim(str, side="right")` | 
+
+# 日期时间处理
+python处理日期时间一般是time和datetime库，能满足绝大部分的需求。R通过lubridate包极大地简化了日期时间类型的操作。lubridate解析日期时间字符串时的特色有两个，一是不用指定日期时间格式，能够自动识别各种常见格式；二是能够包含时区信息，提供表示时区的字符串即可，时区信息列表见[维基百科](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+
+
+| 操作 | python | R |
+| --- | --- | --- |
+| 字符串转datetime | `datetime.datetime.strptime("20160810085830", "%Y%m%d%H%M%S")` | `ymd_hms("20160810085830", tz="Asia/Shanghai")` |
+| datetime转字符串 | `datetime.datetime.strftime(dt, "%Y-%m-%d %H:%M:%S")` | `as.character(dt, format="%Y-%m-%d %H:%M:%S")` | 
+| datetime转时间戳 | `time.mktime(dt.timetuple())` | `as.numeric(dt)` |
+| 时间戳转datetime | `datetime.datetime.fromtimestamp(ts)`<br> `datetime.datetime.utcfromtimestamp(ts)` | `as.POSIXct(ts, tz="Asia/Shanghai", origin="1970-01-01")`  |
+| 获取当前时刻 | `datetime.datetime.now()`<br>`time.time()` | `now(tz="UTC")` |
+| 截取信息 | `dt.weekday()`<br> `dt.hour` | `wday(dt)`<br>`hour(dt)` |
+| 加减时段 | `dt + datetime.timedelta(minutes=10)` | `dt + dminutes(10)`<br>`dt + minutes(10)` |
+| 计算时刻差 | `dt1 - dt2` | `as.duration(interval(dt1, dt2))` | 
+| 时区转换 | 无 | `with_tz(dt, "UTC"), force_tz(dt, "UTC")` |
+| 时刻对齐 | `dt - datetime.timedelta(seconds=time.mktime(dt.timetuple()) % 3600)` | `floor_date(dt, "hour")` |
+
+注：时区对于时间戳与datetime的互转至关重要。datetime转时间戳时，python使用的是系统默认时区，R使用的是dt指定的tz信息，不指定tz默认为UTC时区。时间戳转datetime，python的fromtimestamp()使用系统默认时区，utcfromtimestamp()使用UTC时区。在分布式计算中，为了防止不同机器的时区设置不一致导致的每次计算结果不一致情况，建议采用utcfromtimestamp()，然后再通过时区的小时差加回来。R需要直接指定时区，且需要指定时间戳对应的起始时刻，不一定要是1970年1月1日0点0分0秒。python的weekday()从星期一开始编号，编号为0；R的wday()从星期天开始编号，编号为1.在时区转换方面，with_tz()存储的实际值不变，显示时刻改变，force_tz() 存储的实际值改变，显示时刻不变。在时刻对齐方面，R提供的快捷函数只能精确到1小时、1分钟之流，无法随意为4小时、2分钟之流，通过以下自定义函数可以实现此功能。
+
+``` {r, message=FALSE, warning=FALSE}
+library(lubridate)
+floor_seconds <- function(dt, precision=1) {
+  ts <- as.numeric(dt) 
+  aligned_ts <- ts - ts %% precision
+  return(as.POSIXct(aligned_ts, tz=tz(dt), origin="1970-01-01"))
+}
+
+dt <- ymd_hms("20160810085830", tz="Asia/Shanghai") 
+floor_seconds(dt, 180)
+```
+
+
+下面再简单介绍下没有lubridate时R内部对日期时间类型的构建系统。在文本上，日期时间数据存在的形式有两种：字符串和Unix时间戳。在R里，分别设计了两个日期时间类型：POSIXlt，对应字符串形式表达的日期时间；POSIXct，对应数字形式表达的日期时间。此外，还有一个专门针对日期的类型Date。
+
+- Date: 日期类型，年月日
+- POSIXct：存储一个有符号整数，同时有一个origin时刻和tz时区，这两个参数用来决定如何把有符号整数转化为字符串显示出来，对两个整数比较大小的时候也依赖于这两个参数的设定
+- POSIXlt：以字符串形式存储，包含年月日时分秒等
+
+
+# HTTP请求
+在网络请求上，python有urllib和urllib2包，又有新晋的requests包。很多学python的朋友，常常疑惑不清楚这两套体系到底该怎么选。我们从包的介绍上或许可以洞察一下二者的区别。urllib的介绍是a package that collects several modules for working with URLs，urllib2的介绍是an extensible library for opening URLs using a variety of protocols. 所以urllib/urllib2并不仅仅是针对HTTP请求，面向的是更通用的场景，把各种协议，比如HTTP、FTP、NFS等，都抽象为URL对象来处理。而requests包则是专门针对HTTP协议的网络请求包，接口定义更加人性化。
+
+httr是R语言里借鉴requests库提供的HTTP请求包，二者在使用上十分相似。
+
+
+| 操作 | python | R |
+| --- | --- | --- |
+| GET | `requests.get("http://httpbin.org/get", params={'key1': 'value1', 'key2': 'value2'})`  | `GET("http://httpbin.org/get", query=list(key1="value1", key2="value2"))`  |
+| POST | `requests.post("http://httpbin.org/post", data={'key1': 'value1', 'key2': 'value2'})` | `POST("http://httpbin.org/post", body = list(key1="value1", key2="value2"))`  |
+| 解析响应 | `r.text`<br>`r.encoding = 'utf-8'` <br> `r.status_code` <br> `r.headers['Content-Type']` |  `content(r, "text", encoding="utf-8")` <br> `r[['status_code']]`  <br> `headers(r)[['content-type']]` |
+| custom headers | `requests.get(url, headers={'user-agent': 'my-app/0.0.1'})` | `GET("http://httpbin.org/get", add_headers(user-agent = "my-app/0.0.1"))` |
+
+
+# JSON处理
+python的json模块提供loads和dumps可以方便地对JSON进行读取与输出，且内置的dict和list结构完美地和JSON的定义吻合，所以处理起来很舒服。
+
+R的jsonlite包提供了fromJSON和toJSON两个函数对JSON进行读取与输出，也很方便。R中的list有点像dict和list的结合体，所以R解析JSON后一般会转变为list结构。
+
+| 操作 | python | R | 
+| --- | --- | --- |
+| 读取 | `json.loads(json_str)` | `fromJSON(json_str)` |
+| 输出 | `json.dumps(python_obj, separators = (',', ':'))` | `toJSON(r_obj, pretty=FALSE)` |
+
+jsonlite提供了一些默认的简化机制（Simplification），将一些特定结构的JSON转化为R中更具体的结构，包括data.frame，matrix，atomic vector。jsonlite的默认简化机制总结如下：
+
+| JSON格式 | R内置结构 | 配置参数 |
+| --- | --- | --- |
+| ["Amsterdam", "Rotterdam", "Utrecht", "Den Haag"] | atomic vector | simplifyVector |
+| [{"name":"Erik", "age":43}, {"name":"Anna", "age":32}] | data.frame | simplifyDataFrame | 
+| [ [1, 2, 3], [4, 5, 6] ] | matrix | simplifyMatrix | 
+
+由于R里面data.frame是数据分析最常用的结构，所以我们可能希望JSON能够直接转化为data.frame。但是jsonlite提供的默认简化机制里针对data.frame的这一项有一个比较大的问题：冗余很严重，字段名字重复出现，导致JSON占据的空间很大。所以一种较好的方式是把JSON定义为下面的格式，jsonlite读取后为list，再显示转化为data.frame：
+
+``` {r, message=FALSE, warning=FALSE}
+library(jsonlite)
+json_str <- '{
+"Name": ["pytrafficR", "Zhuibing"],
+"Num": [3, 4]
+}'
+as.data.frame(fromJSON(json_str))
+```
+
+
+# 数据处理
+R的特色是内置数据结构里有一个data.frame，天然地支持表格型数据的分析。data.frame本身有一套经典的数据打理语法，然而R并没有止步于此，而是发展出了目前非常领先的两套数据打理语法。一套是dplyr，基于Rcpp实现，性能上比data.frame和plyr都要高出很多。另一套是data.table，基于R的C接口实现，创造了data.table[where, select, groupby]语法进行数据处理。一般而言，data.table比dplyr的性能还要更高，因为dplyr在内存处理上相对保守，在对数据处理过程中发生修改时，对未修改的列采用的是复制指针的方式，而data.table则允许直接对数据进行修改，省掉了复制指针的操作。此外，data.table允许多步合并为一步：For multiple operations, data.table can be faster because you usually use it with multiple verbs simultaneously. For example, with data table you can do a mutate and a select in a single step. It’s smart enough to know that there’s no point in computing the new variable for rows you’re about to throw away.
+
+python的pandas是这个领域R的模仿者。目前其主要的模仿对象是R原生的data.frame对象，因此还存在一些差距。
+
+| 操作 | pandas | data.frame | dplyr | data.table | 
+| ----------- | ------------ | ---------- |  ----------- | -------- |
+| 选取一列 | `df.SepalLength`<br>`df["SepalLength"]` | `df$Sepal.Length`<br>`df[, "Sepal.Length"]`  | `df %>% select(Sepal.Length)` | `dt[, Sepal.Length,]`<br>`dt[, "Sepal.Length", with=FALSE]` | 
+| 选取多列 | `df[["SepalLength", "SepalWidth"]]` | `df[, c("Sepal.Length", "Sepal.Width")]` | `df %>% select(Sepal.Length, Sepal.Width)` | `dt[, .(Sepal.Length, Sepal.Width)`, ] | 
+| 选取行 |  `df[0:3]` | `df[1:3, ]` | `df %>% slice(1:3)` | `dt[1:3]` |
+| 选取行列 | `df[0:3][["SepalLength", "SepalWidth"]]`<br>`df.ix[0:3, ["SepalLength", "SepalWidth"]]` | `df[1:3, c("Sepal.Length", "Sepal.Width")]` | `df %>% slice(1:3) %>% select(Sepal.Length, Sepal.Width)` | `dt[1:3, .(Sepal.Length, Sepal.Width)]`  | 
+| 过滤 | `df[df.SepalLength>=5]` | `df[df$Sepal.Length >= 5, ]` | `df %>% filter(Sepal.Length >= 5)` | `dt[Sepal.Length >= 5, ,]` | 
+| 分组计算 | `df.groupby(['Species']).agg([np.mean, np.std])` | `aggregate(iris[,c("Sepal.Length")], by = iris[c("Species")], FUN=mean)` | `df %>% group_by(Species) %>% summarise(mean=mean(Sepal.Length), sd=sd(Sepal.Length))` | `dt[, .(mean=mean(Sepal.Length), sd=sd(Sepal.Length)), by=Species]` | 
+| 排序 | `df.sort_values(by='Species')` | `df[order(df$Species),]` | `df %>% arrange(Species)` | `setkey(dt, Species)` |  
+| left join | `pd.merge(df,df,on='Species',how='left')` | `merge(df, df, by.x="Species", by.y="Species", all.x=TRUE)` | `df %>% left_join(df, by=c("Species"="Species"))` | `setkey(dt, Species)<br>dt[dt, allow.cartesian=TRUE]` | 
+
+
+
+# 附录：环境搭建
+## python：jupyter notebook
+首先安装pip
+``` {sh, eval=FALSE}
+wget --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-12.0.3.tar.gz#md5=f07e4b0f4c1c9368fcd980d888b29a65
+tar -zxvf setuptools-12.0.3.tar.gz
+cd setuptools-12.0.3
+python setup.py install
+
+wget --no-check-certificate https://github.com/pypa/pip/archive/1.5.5.tar.gz
+tar zvxf 1.5.5.tar.gz  
+cd pip-1.5.5/
+python setup.py install
+```
+
+然后安装python资源隔离工具包virtualenv，用于创建隔离的专属python环境
+``` {sh, eval=FALSE}
+pip install virtualenv
+# virtualenv使用方法：virtualenv test_env --python=python2.7，默认为2.6
+```
+
+建议创建一个虚拟环境，然后在虚拟环境下完成接下来的安装。
+
+安装、配置与启动jupyter notebook：
+
+``` {sh, eval=FALSE}
+pip install jupyter
+jupyter notebook --generate-config # 生成配置文件
+输入ipython命令，依次敲入如下代码，并输入网站访问时需要填写的密码
+In [1]: from notebook.auth import passwd
+In [2]: passwd()
+Enter password:
+Verify password:
+Out[2]: 'sha1:67c9e60bb8b6:9ffede0825894254b2e042ea597d771089e11aed'
+openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mykey.key -out mycert.pe # 产生秘钥
+修改配置文件vim ~/.jupyter/jupyter_notebook_config.py
+# Set options for certfile, ip, password, and toggle off browser auto-opening
+c.NotebookApp.certfile = u'/absolute/path/to/your/certificate/mycert.pem'
+c.NotebookApp.keyfile = u'/absolute/path/to/your/certificate/mykey.key'
+# Set ip to '*' to bind on all interfaces (ips) for the public server
+c.NotebookApp.ip = '*'
+c.NotebookApp.password = u'sha1:bcd259ccf...<your hashed password here>'
+c.NotebookApp.open_browser = False
+
+# It is a good idea to set a known, fixed port for server access
+c.NotebookApp.port = 9999
+jupyter notebook # 启动服务
+```
+
+为了让数据分析与挖掘顺利进行，还需要在python中安装以下模块。
+
+创建requirements.txt
+
+``` {text}
+numpy
+matplotlib
+pandas
+scikit-learn
+```
+
+执行以下命令
+
+```{shell, eval=F}
+python -m pip install -r requirements.txt -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+```
+
+注：在notebook里显示图片，需要输入命令%matplotlib inline
+
+## R：rstudio server
+首先，源码安装R语言。搜索CRAN Mirror，选出中国境内的服务器，提高下载速度。为了使用一些新的好用的包，需保证版本号至少为3.2.2。
+
+``` {sh, eval=FALSE}
+./configure --with-x=no --enable-R-shlib #为了安装rstudio需要添加此配置项
+make
+make install
+```
+
+然后安装RStudio Server，安装脚本如下：
+
+``` {sh, eval=FALSE}
+yum install openssl098e # Required only for RedHat/CentOS 6 and 7
+wget https://download2.rstudio.org/rstudio-server-rhel-0.99.893-x86_64.rpm
+yum install --nogpgcheck rstudio-server-rhel-0.99.893-x86_64.rpm
+# 启动rstudio-server:
+/usr/sbin/rstudio-server start
+```
+
+最后装一个Shiny Server，用于将分析成果转化为交互式网站。具体安装方法去官网查看。
+
+安装常见R包：
+
+``` {r, eval=FALSE}
+# 数据可视化：ggplot2
+# 数据框打理：dplyr, tidyr, data.table, splitstackshape
+# 基础类型处理：lubridate, stringr, jsonlite
+# 网络请求：httr, rvest
+# 数据读取：readr, readxl, RODPS, RMySQL
+# 空间处理与可视化：sp, rgeos, rgdal, leaflet
+# 分析交互化：htmlwidgets, plotly, dygraph, DT
+# 分享分析成果：shiny, rmarkdown
+
+
+to_install_packages <- c("ggplot2", "dplyr", "tidyr", "data.table", "splitstackshape",
+                         "leaflet", "sp", "rgeos", "rgdal",
+                         "lubridate", "stringr", "jsonlite", 
+                         "httr", "rvest"
+                         "shiny", "rmarkdown"
+                         "htmlwidgets", "DT", "plotly", "dygraph",
+                         "readr", "readxl", "RODPS", "RMySQL"
+                         )
+lapply(to_install_packages, install.packages)
+```
+

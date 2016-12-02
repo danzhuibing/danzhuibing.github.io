@@ -1,7 +1,6 @@
 ---
 output:
   html_document:
-    theme: cosmo
     highlight: textmate
 ---
 
@@ -22,6 +21,7 @@ output:
 + [R使用Spark](R_spark.html)
 + [R包发布-线性回归为例](R_package_dev.html)
 + [R天池最后一公里](R_tianchi_logistics.html)
++ [左手python右手R](left_python_right_r.html)
 
 不推荐使用的过期技术，仅供查阅。
 
