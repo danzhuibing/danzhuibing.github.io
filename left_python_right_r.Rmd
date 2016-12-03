@@ -6,8 +6,6 @@ output:
     toc: true
     toc_float: 
       collapsed: false
-    highlight: textmate
-    number_sections: true
 ---
 
 
@@ -182,6 +180,7 @@ jupyter notebook # 启动服务
 ``` {text}
 numpy
 matplotlib
+scipy
 pandas
 scikit-learn
 ```

@@ -1,7 +1,6 @@
 ---
 output:
-  html_document:
-    highlight: textmate
+  html_document
 ---
 
 本系列文章介绍R的编程基础。
@@ -22,6 +21,7 @@ output:
 + [R包发布-线性回归为例](R_package_dev.html)
 + [R天池最后一公里](R_tianchi_logistics.html)
 + [左手python右手R](left_python_right_r.html)
++ [吴恩达深度学习基础课程R版答案](ml_deep_mining_course_r.html)
 
 不推荐使用的过期技术，仅供查阅。
 

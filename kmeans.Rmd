@@ -10,6 +10,11 @@ output:
 ---
 
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache=TRUE)
+```
+
+
 聚类算法用于根据数据的特征发现数据项的相似性，并将相似的数据项放在同一个组中，相似性采用距离进行描述。
 
 ## K-means聚类
@@ -40,7 +45,7 @@ PAM算法的问题在于伸缩性不好，需要测试所有的替换，只适�
 ```{python, eval=F}
 #!/bin/bash
 # -*- coding: utf-8 -*-
-# import time
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 

@@ -333,7 +333,7 @@ div.tocify {
 
 <p>数据分析领域最常用的两种语言是python和R。二者直接对比的话，python在字符串处理、json处理、网络请求/爬虫、机器学习、分布式架构上更有优势，且效率相对高；R在数据可视化、表格数据打理、javascript库集成方面更有优势。二者在数据分析领域相互学习与接近，正变得越来越像。</p>
 <div class="section level1">
-<h1><span class="header-section-number">1</span> 字符串处理</h1>
+<h1>字符串处理</h1>
 <p>python处理字符串是强项，配合上正则库re更是所向披靡。R的stringr包极大地改善了R处理字符串的舒适度，且每个函数都可接受向量计算。</p>
 <table style="width:17%;">
 <colgroup>
@@ -373,7 +373,7 @@ div.tocify {
 </table>
 </div>
 <div class="section level1">
-<h1><span class="header-section-number">2</span> 日期时间处理</h1>
+<h1>日期时间处理</h1>
 <p>python处理日期时间一般是time和datetime库，能满足绝大部分的需求。R通过lubridate包极大地简化了日期时间类型的操作。lubridate解析日期时间字符串时的特色有两个，一是不用指定日期时间格式，能够自动识别各种常见格式；二是能够包含时区信息，提供表示时区的字符串即可，时区信息列表见<a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">维基百科</a></p>
 <table style="width:17%;">
 <colgroup>
@@ -460,7 +460,7 @@ floor_seconds(dt, 180)</code></pre>
 </ul>
 </div>
 <div id="http" class="section level1">
-<h1><span class="header-section-number">3</span> HTTP请求</h1>
+<h1>HTTP请求</h1>
 <p>在网络请求上，python有urllib和urllib2包，又有新晋的requests包。很多学python的朋友，常常疑惑不清楚这两套体系到底该怎么选。我们从包的介绍上或许可以洞察一下二者的区别。urllib的介绍是a package that collects several modules for working with URLs，urllib2的介绍是an extensible library for opening URLs using a variety of protocols. 所以urllib/urllib2并不仅仅是针对HTTP请求，面向的是更通用的场景，把各种协议，比如HTTP、FTP、NFS等，都抽象为URL对象来处理。而requests包则是专门针对HTTP协议的网络请求包，接口定义更加人性化。</p>
 <p>httr是R语言里借鉴requests库提供的HTTP请求包，二者在使用上十分相似。</p>
 <table style="width:17%;">
@@ -501,7 +501,7 @@ floor_seconds(dt, 180)</code></pre>
 </table>
 </div>
 <div id="json" class="section level1">
-<h1><span class="header-section-number">4</span> JSON处理</h1>
+<h1>JSON处理</h1>
 <p>python的json模块提供loads和dumps可以方便地对JSON进行读取与输出，且内置的dict和list结构完美地和JSON的定义吻合，所以处理起来很舒服。</p>
 <p>R的jsonlite包提供了fromJSON和toJSON两个函数对JSON进行读取与输出，也很方便。R中的list有点像dict和list的结合体，所以R解析JSON后一般会转变为list结构。</p>
 <table style="width:17%;">
@@ -569,7 +569,7 @@ as.data.frame(fromJSON(json_str))</code></pre>
 ## 2   Zhuibing   4</code></pre>
 </div>
 <div class="section level1">
-<h1><span class="header-section-number">5</span> 数据处理</h1>
+<h1>数据处理</h1>
 <p>R的特色是内置数据结构里有一个data.frame，天然地支持表格型数据的分析。data.frame本身有一套经典的数据打理语法，然而R并没有止步于此，而是发展出了目前非常领先的两套数据打理语法。一套是dplyr，基于Rcpp实现，性能上比data.frame和plyr都要高出很多。另一套是data.table，基于R的C接口实现，创造了data.table[where, select, groupby]语法进行数据处理。一般而言，data.table比dplyr的性能还要更高，因为dplyr在内存处理上相对保守，在对数据处理过程中发生修改时，对未修改的列采用的是复制指针的方式，而data.table则允许直接对数据进行修改，省掉了复制指针的操作。此外，data.table允许多步合并为一步：For multiple operations, data.table can be faster because you usually use it with multiple verbs simultaneously. For example, with data table you can do a mutate and a select in a single step. It’s smart enough to know that there’s no point in computing the new variable for rows you’re about to throw away.</p>
 <p>python的pandas是这个领域R的模仿者。目前其主要的模仿对象是R原生的data.frame对象，因此还存在一些差距。</p>
 <table style="width:79%;">
@@ -650,9 +650,9 @@ as.data.frame(fromJSON(json_str))</code></pre>
 </table>
 </div>
 <div class="section level1">
-<h1><span class="header-section-number">6</span> 附录：环境搭建</h1>
+<h1>附录：环境搭建</h1>
 <div id="pythonjupyter-notebook" class="section level2">
-<h2><span class="header-section-number">6.1</span> python：jupyter notebook</h2>
+<h2>python：jupyter notebook</h2>
 <p>首先安装pip</p>
 <pre class="sh"><code>wget --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-12.0.3.tar.gz#md5=f07e4b0f4c1c9368fcd980d888b29a65
 tar -zxvf setuptools-12.0.3.tar.gz
@@ -693,6 +693,7 @@ jupyter notebook # 启动服务</code></pre>
 <p>创建requirements.txt</p>
 <pre class="text"><code>numpy
 matplotlib
+scipy
 pandas
 scikit-learn</code></pre>
 <p>执行以下命令</p>
@@ -700,7 +701,7 @@ scikit-learn</code></pre>
 <p>注：在notebook里显示图片，需要输入命令%matplotlib inline</p>
 </div>
 <div id="rrstudio-server" class="section level2">
-<h2><span class="header-section-number">6.2</span> R：rstudio server</h2>
+<h2>R：rstudio server</h2>
 <p>首先，源码安装R语言。搜索CRAN Mirror，选出中国境内的服务器，提高下载速度。为了使用一些新的好用的包，需保证版本号至少为3.2.2。</p>
 <pre class="sh"><code>./configure --with-x=no --enable-R-shlib #为了安装rstudio需要添加此配置项
 make
@@ -735,6 +736,7 @@ lapply(to_install_packages, install.packages)</code></pre>
 </div>
 </div>
 
+<p>Copyright &copy; 2016 陈水平. All rights reserved.</p>
 
 
 </div>

@@ -8,4 +8,5 @@ output:
 
 + [日期时间处理-Python篇](Python_datetime.html)
 + [JSON处理-Python篇](Python_JSON.html)
++ [矩阵处理-Numpy基础](python_numpy.html)
 + [左手python右手R](left_python_right_r.html)
