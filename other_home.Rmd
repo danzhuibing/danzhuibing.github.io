@@ -1,0 +1,8 @@
+---
+output: html_document
+---
+
+本系列记录人文类的笔记。
+
++ [中国古代军事地理](china_history_geo.html)
++ [欧洲民族与历史](files/europe_people_history.pptx)

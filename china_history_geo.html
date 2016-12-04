@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>中国古代军事地理</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">PYTRAFFICR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">大数据</a>
+</li>
+<li>
+  <a href="ml_home.html">机器学习</a>
+</li>
+<li>
+  <a href="spatial_home.html">空间分析</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+<li>
+  <a href="java_home.html">Java</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">人文</li>
+    <li>
+      <a href="other_home.html">人文笔记</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">友情链接</li>
+    <li>
+      <a href="https://segmentfault.com/blog/pytrafficr">segmentfault</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">中国古代军事地理</h1>
+
+</div>
+
+
+<p>读中国历史，若不懂军事地理，很多时候是似懂非懂。一个地方是不是战略要地，主要是两大因素：山与水，也就是所谓的山川之险。</p>
+<p>山的作用在古代几乎就等于不可逾越的屏障，于是山脉之间的谷道就成了两大区域之间的唯一通道。在这个通道上修筑一些易守难攻的关隘，就可以形成一夫当关万夫莫开的效果，也就是兵家必正的咽喉要道。</p>
+<p>河流同样具有防御作用，但与山的屏障作用相比稍有逊色。但是河流有两个其他的功效：一是交通运输，二是农田灌溉。一个光险要但没有经济实力的地域是缺乏战略价值的，因此山、水两大要素缺一不可。</p>
+<p>我们经常把古代中国称为九州大地，我们在中国地图上画一个九宫格，大致可以复原出这个概念。</p>
+<table>
+<thead>
+<tr class="header">
+<th>关中（秦）</th>
+<th>山西（晋）</th>
+<th>河北（赵）</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>汉中（刘邦）</td>
+<td>中原（？）</td>
+<td>山东（齐）</td>
+</tr>
+<tr class="even">
+<td>巴蜀（刘备）</td>
+<td>荆楚（楚）</td>
+<td>江东（孙权）</td>
+</tr>
+</tbody>
+</table>
+<p>从山川之险的角度出发，关中是中国最为得天独厚的地方。</p>
+<div class="section level2">
+<h2>关中</h2>
+<p>关中的中心是中国第一古都长安。长安周围是渭河、泾河、洛河冲出来的关中平原。这些河的支流围绕着长安流过，天然地形成了护城河。秦与西汉又不断在此修建水渠，使得长安无论是交通还是防御，都极其发达。</p>
+<p>关中的边界非常险峻。南边是秦岭，相当险峻，韩愈诗“云横秦岭家何在”，描述的就是这里，海拔2000米以上的就好几座，海拔1000米左右的华山也是秦岭的一支，险峻程度也让游人观止。秦岭最重要的一段是东边的崤山，秦国在崤山北麓上修建了一座天下名关函谷关。函谷关夹在崤山与黄河之间，旁边就是三门峡，黄河对面就是位于运城的中条山。因此，无论南边还是北边，除非大范围迂回，否则很难绕开这里。东西走向狭长的崤函通道牢牢扼住了关中与中原的咽喉。只要守住这里，中原势力很难进入关中。</p>
+<p>关中西边是陇山，北边是群山环绕的陇东高原，只有东边的黄河算是稍微容易经过的地方，称为河西之地，是关中的门户，因此历史上秦国和赵国对此处展开了激烈的争夺。</p>
+<div class="figure">
+<img src="images/china_history_geo_guanzhong.png" alt="关中地势图" />
+<p class="caption">关中地势图</p>
+</div>
+<p>除了函谷关，关中东南有武关通向中原（南阳），西南有散关（宝鸡市）通向汉中，西北萧关则是长安出发的丝绸之路重地。此四关称为“关中四塞”，是进出关中最直接的四个直线出入口。其余的路，走起来就不大方便。于是关中就成了进可攻、退可守，安全又富庶的地盘，所以有“得关中者王天下”。</p>
+</div>
+<div class="section level2">
+<h2>山西</h2>
+<p>山西者，太行山以西。太行山脉很长，其间只有著名的太行八陉与东面的河北河南相通，是古代晋冀豫三省穿越太行山相互往来的8条咽喉通道，是三省边界的重要军事关隘所在之地。山西的西面和南面是黄河，黄河边还有吕梁山、中条山为屏障。北部是阴山山脉，是中华与蒙古草原的重要分界线；阴山以南的恒山有雁门关等重要关隘把守着中国北面门户。</p>
+<p>但山西内部的地形不像关中那么好，虽有汾河贯穿南北，但其间大小山脉交错纵横，分为多个盆地，容易形成多个小的政治集团。</p>
+<p>整个山西地区就像楔子一样插入了关中与河北之间，是整个中国北方的枢纽地带。战国时秦图大业，商鞅力主首先攻魏；楚汉相争韩信略定北方，也从山西开始。</p>
+<div class="figure">
+<img src="images/china_history_geo_shanxi.JPG" alt="山西地势图" />
+<p class="caption">山西地势图</p>
+</div>
+</div>
+<div class="section level2">
+<h2>河北</h2>
+<p>河北者，黄河以北。南面是黄河，东、西、北三面分别由渤海、太行上、燕山所包，所以也可以割据一方。</p>
+<p>但是河北相比关中和山西，没有八百里秦川富庶，也没有汾河流域丰饶，还饱受黄河改道的水患之苦，因此经济不发达。</p>
+<p>河北的一个优势是燕赵自古多慷慨悲歌之士，民风彪悍。赵武灵王胡服骑射之后，河北骑兵名震天下，因此也可以依赖精兵与天下争雄。</p>
+</div>
+<div class="section level2">
+<h2>山东</h2>
+<p>由河北向南跨过黄河，便是山东。山东与之前三块地方不同，没有四面屏障环绕。山东除了东边的渤海黄海算是安全之外，其余三面几乎无险可守，整个山东地区一马平川，一打就穿。战国时乐毅一口气吞掉齐国，然后田丹一口气将整个齐国吃回来，这种事情只有在山东地区才会发生。</p>
+<p>那么山东为什么是兵家必争之地？因为富，渔盐之利天下闻名，平原之上粮食充足。对于山东的战略地位，这句话总结得最精辟：山东以自守则易弱以亡，以攻人则足以自强而集事。</p>
+</div>
+<div class="section level2">
+<h2>中原</h2>
+<p>中原究竟是什么？说起来比较复杂，只能将其再细分，分为四个小区域：三川、南阳、淮上、河内。</p>
+<p>三川位于中原的西北部，为三川河谷。三川指的是黄河、伊河和洛河冲积出来的小平原，中原重镇洛阳就位于此。三川北邻黄河，另外三面环山，山间亦有险关。西侧为函谷关，东侧为成皋（虎牢关）。当年刘邦为了给韩信的战略包围赢得时间，就是在成皋顶住了项羽的疯狂进攻；后来袁绍的关东军在虎牢关大战董卓的华雄、吕布大将也是在此。南侧是伊阙，也就是现在的龙门，得名于两山对立，伊水穿过，秦国大将白起就是在此与魏国、韩国争夺地盘，斩杀十四万人，从此秦国势力进入中原。</p>
+<p>西南为南阳盆地。北面是重镇洛阳，西北面的武关为通向关中的门户，南面的汉水、方城山又是荆楚的门户，又西接汉中，东临江淮，四通八达，不可不取。历史上围绕南阳盆地的两大重镇宛城（今南阳市）、襄阳发生的战争数不胜数。</p>
+<p>东南为淮河上游地区，最大的特点是河流众多，水运发达，是中原水系命脉所在，经济发达；且南面背靠大别山，是中原少见的有所屏障之地。</p>
+<p>河内指的是太行山（北边）与黄河（南边）夹着的那块区域，是关中、山西、河北、中原之间的一个过渡地区，汉代在此设置河内郡。刘秀统一中国的战争就是以此为粮食的中转地。</p>
+</div>
+<div class="section level2">
+<h2>汉中</h2>
+<p>汉中，是秦岭和巴山之间夹出来的一个长条地带。秦岭隔开了汉中和关中，巴山隔开了汉中和巴蜀。汉中这个地方，在九大战略要地里面是最小的，单独占据汉中，难以成事，必须要向关中或者巴蜀挺近，才能把根据地建的更加厚实。所以汉中的意义，主要在于与关中和巴蜀的关系。</p>
+<p>汉中和关中隔着秦岭，只开了四条谷道，自西向东分别是：陈仓道、褒斜道、傥骆道、子午道。</p>
+<p>陈仓道非常著名，因为韩信暗度陈仓之策是中国战史的经典，它的北口正是关中四塞之一的散关。褒斜道虽然不著名，当年司马错正是从此道进入汉中，进而拿下蜀地。倘骆道极为险峻，很少用兵。子午道是魏延的奇谋，但相比其他谷道有些绕远，当时不太受重视。</p>
+<div class="figure">
+<img src="images/china_history_geo_hanzhong.jpg" alt="汉中-关中四谷道" />
+<p class="caption">汉中-关中四谷道</p>
+</div>
+<p>汉中和巴蜀的巴山谷道更少，只有两条。西边的金牛道直通成都，路途最短，是兵家必争之地。道上的剑门关也是古代名关之一，李白蜀道难中的名句“一夫当关，万夫莫开”就是说的这里。东边的米仓道，需要从巴中、阆中，绕到成都。</p>
+</div>
+<div class="section level2">
+<h2>巴蜀</h2>
+<p>就防御而言，巴蜀比关中更加稳固。巴蜀西边是青藏高原，南边是云贵高原，仅有的两个攻击方向是北面与东面。北面只要守住剑门关和米仓道，便可以保住巴蜀腹心成都的安全。而巴蜀的东面门户是重庆，重庆是有名的山城，从东面陆路进攻巴蜀，几乎不可能，只能走长江水路。而巴蜀位于长江上游，顺流而下易，逆流而上难，加之有三峡阻断，可谓万无一失。</p>
+<p>巴蜀的问题是外面不容易进来，里面也不容易出来，因此最容易形成局部割据的势力。然而一旦巴蜀脱出局域，则变得极为重要。与东面的荆楚相连，则占尽长江天险，足以与北方抗衡；与北面的关中、汉中相连，则可顺流而下，直取荆楚、中原。加之成都平原也是一个巨大粮仓，使得巴蜀虽不是兵家必争之地，但是得之可安天下的重地。</p>
+</div>
+<div class="section level2">
+<h2>荆楚</h2>
+<p>从巴蜀往东，跨过长江三峡，便是荆楚之地。这是整个南方的枢纽地带。与巴蜀相连，则顺江而下，江东岌岌可危；与江东相连，则据守三峡，足可困死巴蜀；凭借长江、汉水，又可与北方对峙。任何一个立足于南方的政权，如果不拿到荆楚，就不会有任何前途。</p>
+</div>
+<div class="section level2">
+<h2>江东</h2>
+<p>由于长江在安徽境内拐向东北，所以长江中下游的皖东南、江浙一带，历史称之为江东。此地是中国地图上水网最密集的一个地方，所以北方铁骑想要从此地跨江南渡绝不可能，必须取道荆楚。所以江东政权只要在西线防住荆楚，便可以割据一方。春秋时期，吴国可以置其他大国不顾，盯着楚国打就是这个道理。</p>
+<p>江东政权的另一个优势，就在于它隔江相望的江淮之间地区，常常是各方势力的真空地带。它便很有机会越过长江，在江北淮南之地建立根据地，为北进中原做好准备。</p>
+</div>
+
+<br>
+<hr>
+
+<!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="1" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"danzhuibing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+</script>
+<hr>
+<p>Copyright &copy; 2016 陈水平. All rights reserved.</p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
