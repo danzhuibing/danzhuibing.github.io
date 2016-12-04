@@ -31,6 +31,7 @@
 <script src="site_libs/leaflet-0.7.3/leaflet.js"></script>
 <link href="site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
 <script src="site_libs/leaflet-binding-1.0.1/leaflet.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -310,6 +311,26 @@ div.tocify {
 </li>
 <li>
   <a href="java_home.html">Java</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">人文</li>
+    <li>
+      <a href="other_home.html">人文笔记</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">友情链接</li>
+    <li>
+      <a href="https://segmentfault.com/blog/pytrafficr">segmentfault</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -669,7 +690,21 @@ plot_vrp_route(saving_route, points)</code></pre>
 <p>Saving Method规划的结果总体来看质量还是很不错的。简单说一下实现Saving Method的思路：构造cost矩阵和demand向量；构造初始解，即从site派专车送货到spot然后返回site；算saving matrix；将saving从大到小排序，逐个取出，判断这个saving对应的两个路线合并后车辆Capacity或时间窗等约束是否被满足，若满足则合并路径。其他常见的构造性的启发式算法还有Insert和Sweep；然后有一些听过大名的模拟退火、禁忌搜索等算法，不甚了解。由于学艺不精，时间有限，此题只能做到这里打住了。</p>
 </div>
 
-<p>Copyright &copy; 2016 陈水平. All rights reserved.</p>
+<!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="1" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"danzhuibing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+</script>
 
 
 </div>

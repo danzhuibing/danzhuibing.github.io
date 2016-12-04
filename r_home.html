@@ -22,6 +22,7 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-1.1/highlight.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -193,6 +194,26 @@ $(document).ready(function () {
 <li>
   <a href="java_home.html">Java</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">人文</li>
+    <li>
+      <a href="other_home.html">人文笔记</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">友情链接</li>
+    <li>
+      <a href="https://segmentfault.com/blog/pytrafficr">segmentfault</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -210,34 +231,62 @@ $(document).ready(function () {
 
 
 <p>本系列文章介绍R的编程基础。</p>
+<p><strong>R数据分析系列</strong></p>
 <ul>
-<li><a href="R_datetime.html">日期时间处理-R篇</a></li>
-<li><a href="R_JSON.html">JSON处理-R篇</a></li>
-<li><a href="R_string.html">字符串处理-R篇</a></li>
-<li><a href="files/dplyr-tidyr-cheatsheet.pdf">R数据打理-dplyr与tidyr</a></li>
-<li><a href="files/ggplot2-cheatsheet.pdf">R统计绘图-ggplot2</a></li>
-<li><a href="R_ggplot2.html">统计绘图-ggplot2实践</a></li>
-<li><a href="R_interactive.html">数据分析体验升级-交互化</a></li>
-<li><a href="files/shiny-cheatsheet.pdf">R网站开发-shiny</a></li>
+<li><a href="R_read_preprocess.html">R数据分析进阶01：数据读取与处理</a></li>
+<li><a href="R_datetime.html">R数据分析进阶02：日期时间处理-lubridate版</a></li>
+<li><a href="R_string.html">R数据分析进阶03：字符串处理</a></li>
+<li><a href="R_JSON.html">R数据分析进阶04：JSON处理</a></li>
+<li><a href="R_dplyr_tidyr.html">R数据分析进阶05：数据框打理-dplyr/tidyr版</a></li>
+<li><a href="R_ggplot2.html">R数据分析进阶06：统计绘图-ggplot2</a></li>
+<li><a href="R_interactive.html">R数据分析进阶07：分析交互化</a></li>
+<li><a href="spatial_analysis_R_vis.html">R数据分析进阶08：空间可视化</a></li>
+</ul>
+<p><strong>R作品</strong></p>
+<ul>
 <li><a href="R_shiny_ts_viewer.html">用shiny实现Excel数据透视图</a></li>
-<li><a href="spatial_analysis_R_vis.html">R空间可视化</a></li>
-<li><a href="files/rmarkdown-cheatsheet-2.0.pdf">R文档生成-rmarkdown</a></li>
-<li><a href="R_ODPS.html">R使用阿里云ODPS</a></li>
-<li><a href="R_spark.html">R使用Spark</a></li>
 <li><a href="R_package_dev.html">R包发布-线性回归为例</a></li>
 <li><a href="R_tianchi_logistics.html">R天池最后一公里</a></li>
-<li><a href="left_python_right_r.html">左手python右手R</a></li>
 <li><a href="ml_deep_mining_course_r.html">吴恩达深度学习基础课程R版答案</a></li>
+</ul>
+<p><strong>R与大数据</strong></p>
+<ul>
+<li><a href="R_ODPS.html">R使用阿里云ODPS</a></li>
+<li><a href="R_spark.html">R使用Spark</a></li>
+</ul>
+<p><strong>R与Python对比</strong></p>
+<ul>
+<li><a href="left_python_right_r.html">左手python右手R</a></li>
+</ul>
+<p><strong>RStudio Cheatsheet</strong></p>
+<ul>
+<li><a href="files/ggplot2-cheatsheet.pdf">ggplot2 cheatsheet</a></li>
+<li><a href="files/rmarkdown-cheatsheet-2.0.pdf">rmarkdown cheatsheet</a></li>
+<li><a href="files/dplyr-tidyr-cheatsheet.pdf">dplyr/tidyr cheatsheet</a></li>
+<li><a href="files/shiny-cheatsheet.pdf">shiny cheatsheet</a></li>
 </ul>
 <p>不推荐使用的过期技术，仅供查阅。</p>
 <ul>
-<li><a href="R_read_preprocess.html">R数据分析进阶01：数据读取与处理</a></li>
-<li><a href="R_datetime_old.html">R数据分析进阶02：日期时间处理</a></li>
-<li><a href="R_plyr.html">R数据分析进阶03：plyr</a></li>
-<li><a href="R_reshape2.html">R数据分析进阶04：reshape2</a></li>
+<li><a href="R_datetime_old.html">R数据分析进阶02：日期时间处理-POSIXct版</a></li>
+<li><a href="R_plyr.html">R数据分析进阶05(a)：数据框打理-plyr</a></li>
+<li><a href="R_reshape2.html">R数据分析进阶05(b)：数据框打理-reshape2</a></li>
 </ul>
 
-<p>Copyright &copy; 2016 陈水平. All rights reserved.</p>
+<!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="1" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"danzhuibing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+</script>
 
 
 

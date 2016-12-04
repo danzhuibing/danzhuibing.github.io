@@ -1,16 +1,65 @@
 ---
 output:
-  html_document:
-    theme: cosmo
-    highlight: textmate
+  html_document
+   
 ---
+<br>
 
-我是丹追兵，真名陈水平，毕业于德国亚琛工业大学，现在阿里巴巴移动事业群高德地图出行业务中心机器学习组做算法工程师。本文是我在大数据、算法、地图领域工作的学习笔记，包括以下几个序列：
+### 关于作者
 
-+ 大数据：介绍Hadoop、Hive、Storm、Spark等基本框架
-+ 机器学习：介绍常用的算法
-+ 空间分析：介绍地图领域GPS数据处理业务
-+ Python：介绍Python编程基础
-+ R：介绍R编程基础
-+ Java：介绍Java编程基础
+我是丹追兵，真名陈水平，2014年硕士毕业加入阿里，从事算法工程师的工作，主要职责是基于高德地图驾车导航与出租车的GPS轨迹，将大数据工具、机器学习算法、数据可视化技术三者结合，提供改善用户出行体验的解决方案。
+
+这个网站记录了我在算法领域的一些学习笔记和心得，希望能够帮助到同行和自己，包括以下几个序列：
+
++ 大数据：总结Hadoop、Hive、Storm、Spark、阿里云等大数据工具的重要知识点。
++ 机器学习：介绍常用的数据挖掘算法的理论与实战，包括分类、聚类、推荐系统等。
++ 空间分析：聚焦互联网地图领域GPS数据处理业务。
++ Python：分享Python编程的关键知识。
++ R：分享R编程的关键知识。
++ Java：分享Java编程的基础知识。
+
+<hr>
+
+我擅长的研究领域包括以下几个方面：
+
++ 交通事件挖掘：基于实时道路速度与道路流量，及时挖掘可能的交通事件，如施工、大雾封闭、体育赛事封路、交通事故等。
++ 短期路况预测：根据历史和实时路况预测未来1小时的路况，基于未来路况推算导航规划路线的旅行时间（ETA）。
++ 城市交通分析：基于海量历史轨迹与实时路况提供以全国拥堵城市排行榜为核心的[权威报告](http://report.amap.com)。
++ 小区选房行为建模：基于购房记录，应用离散选择模型，分析住宅特征的价值与人群偏好。
++ 铁路行程规划：对铁路时刻表进行时空图建模，开发高性能Dijkstra、A*等最短路算法生成铁路出行行程。
++ 酒店推荐系统：基于用户酒店点击行为设计协同过滤算法搭建酒店推荐系统。
+
+我最熟悉的编程语言是Python和R，因为阿里技术环境的需要对Java也有一些研究。一般来讲，我用Python做数据清洗、后端服务、机器学习算法；用R做文档记录、数据分析与可视化、成果展示与分享；用Java做线上算法系统的后端开发。由于接触的数据量在TB、PB级别，对Hadoop和阿里云ODPS有比较深入的研究。我设计的算法需要在后台提供实时的运算服务，因此对Spark和Storm也有比较多的实践经验。
+
+<hr>
+
+### 工作经历
++  阿里移动事业群-高德地图-出行业务中心-机器学习，资深算法工程师
+
+<hr>
+
+### 教育背景
++ 德国亚琛工业大学（RWTH Aachen）-机床研究所（WZL），工学硕士
++ 清华大学-运筹与统计研究所，工学硕士
++ 清华大学-工业工程系，工学硕士
+
+<hr>
+
+### 发表论文
+
+Jiang, H. and **S. Chen**, Dwelling Unit Choice in a Condominium Complex: Analysis of Willingness to Pay and Preference Heterogeneity, **Urban Studies**, v. 53, n. 11, pp. 2273-2292, 2016. （居民小区内的住宅选择:对支付意愿及偏好异质性的分析, SSCI）[下载](files/paper_dwelling_urban_studies.pdf)
+
+Jin, W., **S. Chen** and H. Jiang, Finding the K Shortest Paths in a Time-Schedule Network with Constraints on Arcs, **Computers & Operations Research**, v. 40 n. 12, pp. 2975-2982, 2013. （时刻表网络下的 K 最短路算法, SCI）[下载](files/paper_kpath_computer_operation_research.pdf)
+
+### 公开资料
+
+ECFI Hamburg 2015（欧洲未来互联网大会）：[Big Data in Urban Traffic](http://euchina-ict.eu/choice-workshop-exploring-fiware-opportunities-towards-china-hamburg-november-6-2015/)
+
+RONG系列论坛之三——大数据与未来人居研讨会：[高德交通大数据在城市交通分析方面的应用](http://www.360doc.com/content/15/0608/15/20625606_476568022.shtml)
+
+热门博文：
+
++ [numpy: python数据领域的功臣](python_numpy.html)，被Python开发者微信公众号转载
++ [阿里天池大赛：最后一公里急速配送](R_tianchi_logistics.html)，在segmentfault
+上获5个推荐
 

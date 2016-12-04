@@ -26,6 +26,7 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-1.1/highlight.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -306,6 +307,26 @@ div.tocify {
 <li>
   <a href="java_home.html">Java</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">人文</li>
+    <li>
+      <a href="other_home.html">人文笔记</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">友情链接</li>
+    <li>
+      <a href="https://segmentfault.com/blog/pytrafficr">segmentfault</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -433,10 +454,10 @@ a[&#39;name&#39;][1]
 end = time.clock()
 print &quot;a[&#39;name&#39;][1] cost time: %f&quot; % (end-start)
 </code></pre>
-<pre><code>## a[1] cost time: 0.000012
-## a[&#39;name&#39;] cost time: 0.000021
-## a[1][&#39;name&#39;] cost time: 0.000024
-## a[&#39;name&#39;][1] cost time: 0.000003</code></pre>
+<pre><code>## a[1] cost time: 0.000008
+## a[&#39;name&#39;] cost time: 0.000015
+## a[1][&#39;name&#39;] cost time: 0.000017
+## a[&#39;name&#39;][1] cost time: 0.000002</code></pre>
 <p>从上面的结果，我们发现，获取相同的数据有多种操作，不同的操作性能差别很大。我做了一个推测，纯粹是瞎猜：numpy在建立结构化数组时，将整个结构体连续存储在一起，即按行存储，因此<code>a[1]</code>的速度最快；但是为了保证提取列的效率，对<code>a['name']</code>建立了索引，因此<code>a['name']</code>的效率也很高；但是这个索引只对整个a起作用，如果输入只有a的一部分，仍然需要遍历整个a，去提取出对应的数据，因此<code>a[1]['name']</code>比<code>a['name'][1]</code>的效率差很多。</p>
 </div>
 <div class="section level1">
@@ -515,7 +536,21 @@ def is_fill_too_much(interval_size):
 </div>
 </div>
 
-<p>Copyright &copy; 2016 陈水平. All rights reserved.</p>
+<!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="1" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"danzhuibing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+</script>
 
 
 </div>

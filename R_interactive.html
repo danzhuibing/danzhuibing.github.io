@@ -26,6 +26,7 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-1.1/highlight.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -306,6 +307,26 @@ div.tocify {
 <li>
   <a href="java_home.html">Java</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">人文</li>
+    <li>
+      <a href="other_home.html">人文笔记</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">友情链接</li>
+    <li>
+      <a href="https://segmentfault.com/blog/pytrafficr">segmentfault</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -347,40 +368,6 @@ colnames(m) = c(&#39;&lt;span style=&quot;color:red&quot;&gt;Column 1&lt;/span&g
 datatable(m) # 默认不处理HTML标签
 datatable(m, escape = FALSE) # 处理HTML标签</code></pre>
 </div>
-<div id="tidyrreshape2" class="section level1">
-<h1>tidyr包：reshape2的替代者，功能更纯粹</h1>
-<p>R将整洁数据定义为：每个变量的数据存储在自身的列中，每个观测值的数据存储在其自身的行中。整洁数据是进行数据再加工的基础。</p>
-<p>考虑本系列04的例子。对于melt，tidyr用<strong>gather</strong>进行替代。</p>
-<pre class="r"><code>table1 &lt;- gather(table2,  道路等级, 日均覆盖里程,  one_of(c(&quot;高速覆盖里程&quot;, &quot;快速路覆盖里程&quot;, &quot;主要道路覆盖里程&quot;)))</code></pre>
-<p>最后一个参数指定要gather的列，x:y表示从x到y的列，-z表示不包括z列。还可以使用dplyr包的select的option表达式进行列的选取，示例代码使用了one_of表达式。</p>
-<p>对于cast, tidyr用<strong>spread</strong>进行替代。</p>
-<pre class="r"><code>table2 &lt;- spread(table1, 道路等级, 日均覆盖里程)</code></pre>
-<p>此外，tidyr还提供了<strong>separate</strong>将一列按分隔符分割为多列，<strong>unite</strong>将多列按指定分隔符合并为一列。</p>
-</div>
-<div id="dplyrplyrddplyr" class="section level1">
-<h1>dplyr包：plyr包的替代者，专门面对数据框，将ddplyr转变为更易用的接口</h1>
-<p>首先dplyr提供了一个符号<strong>%&gt;%</strong>，该符号将左边的对象作为第一个参数传递到右边的函数中，这样就实现类似unix管道的编程风格，代码更易读。</p>
-<p>dplyr很好地解决了base包中的几个数据处理的痛点，具体可以参考本系列01。</p>
-<p>首先，dplyr可以方便地抽取数据框的子集。抽取行的子集函数有<strong>filter</strong>，<strong>distinct</strong>，<strong>sample_frac</strong>，<strong>sample_n</strong>，<strong>slice</strong>，<strong>top_n</strong>。抽取列的子集函数是<strong>select</strong>，可通过列名或选项函数进行选择，常见的选项函数有<strong>contains(“.”)</strong>，<strong>ends_with(“Length”)</strong>，<strong>starts_with(“Sepal”)</strong>，<strong>everything()</strong>，<strong>matches(“.t.”)</strong>，<strong>num_range(“x”, 1:5)</strong>，<strong>one_of(c(“Species”, “Genus”))</strong>。</p>
-<p>其次，dplyr还提供了函数<strong>arrange</strong>，方便按照某一列进行<strong>数据排序</strong>。</p>
-<pre class="r"><code>arrange(mtcars, mpg) # 从低到高
-arrange(mtcars, desc(mpg)) # 从高到低</code></pre>
-<p>然后，dplyr可以方便地进行数据集的合并，取代merge函数。</p>
-<pre class="r"><code>left_join(a, b, by=&quot;x1&quot;)
-right_join(a, b, by=&quot;x1&quot;)
-inner_join(a, b, by=&quot;x1&quot;)
-outer_join(a, b, by=&quot;x1&quot;)
-semi_join(a, b, by=&quot;x1&quot;) # 数据集a中能与数据集b匹配的记录
-anti_join(a, b, by=&quot;x1&quot;) # 数据集a中雨数据集b不匹配的记录</code></pre>
-<p>dplyr还提供了intersection、union和setdiff用于获得两个数据集的交集、并集和差集。</p>
-<p>最后，dplyr可以方便地进行数据集的拼接。<strong>bind_rows(y, z)</strong>将数据集z按行拼接到数据集y中，<strong>bind_cols(y, z)</strong>将数据集z按列拼接到数据集y中。</p>
-<p>本系列03介绍plyr时，知道这个包最主要地是用来做分组处理，dplyr对此功能进行了升级，详述如下。</p>
-<p>dplyr可以方便地对数据框进行概述，相当于ddply中的summarize。<strong>summarise(iris, avg=mean(Sepal.Length))</strong>将数据概括为单行结果输出；<strong>summarise_each(iris, funs(mean))</strong>对每一列运行概述函数。支持的概述函数有<strong>first</strong>，<strong>last</strong>，<strong>nth</strong>，<strong>n</strong>，<strong>n_distinct</strong>，<strong>min</strong>，<strong>max</strong>，<strong>mean</strong>，<strong>median</strong>，<strong>var</strong>，<strong>sd</strong>。</p>
-<p>dplyr可以方便地创建新变量，相当于ddply中的transform。<strong>mutate(iris, sepal=Sepal.Length+Sepal.Width)</strong>计算并添加一个或多个新列。<strong>mutate_each(iris, funs(min_rank))</strong>对每一列运行窗口函数。常见的窗口函数有<strong>row_number</strong>，<strong>min_rank</strong>，<strong>percent_rank</strong>，<strong>cumsum</strong>等。</p>
-<p>dplyr提供了一个分组函数<strong>group_by</strong>，把分组依据相同的数据组合成行，相当于ddply中的group_vars。<strong>ungroup</strong>用于移出数据框的分组信息。配合上管道符号，可以方便地进行分组概述和分组计算。</p>
-<pre class="r"><code>iris %&gt;% group_by(Species) %&gt;% summarise(...)
-iris %&gt;% group_by(Species) %&gt;% mutate(...)</code></pre>
-</div>
 <div id="plotlyggplot2" class="section level1">
 <h1>plotly包：让ggplot2的静态图片变得可交互</h1>
 <pre class="r"><code>library(plotly)
@@ -390,7 +377,21 @@ ggplotly(p)</code></pre>
 <p>plotly支持facet，不过当facet的图形超过9个以后，legend处会出现bug。</p>
 </div>
 
-<p>Copyright &copy; 2016 陈水平. All rights reserved.</p>
+<!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="1" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"danzhuibing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+</script>
 
 
 </div>

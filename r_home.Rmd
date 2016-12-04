@@ -5,28 +5,44 @@ output:
 
 本系列文章介绍R的编程基础。
 
-+ [日期时间处理-R篇](R_datetime.html)
-+ [JSON处理-R篇](R_JSON.html)
-+ [字符串处理-R篇](R_string.html)
-+ [R数据打理-dplyr与tidyr](files/dplyr-tidyr-cheatsheet.pdf)
-+ [R统计绘图-ggplot2](files/ggplot2-cheatsheet.pdf)
-+ [统计绘图-ggplot2实践](R_ggplot2.html)
-+ [数据分析体验升级-交互化](R_interactive.html)
-+ [R网站开发-shiny](files/shiny-cheatsheet.pdf)
+**R数据分析系列**
+
++ [R数据分析进阶01：数据读取与处理](R_read_preprocess.html)
++ [R数据分析进阶02：日期时间处理-lubridate版](R_datetime.html)
++ [R数据分析进阶03：字符串处理](R_string.html)
++ [R数据分析进阶04：JSON处理](R_JSON.html)
++ [R数据分析进阶05：数据框打理-dplyr/tidyr版](R_dplyr_tidyr.html)
++ [R数据分析进阶06：统计绘图-ggplot2](R_ggplot2.html)
++ [R数据分析进阶07：分析交互化](R_interactive.html)
++ [R数据分析进阶08：空间可视化](spatial_analysis_R_vis.html)
+
+**R作品**
+
 + [用shiny实现Excel数据透视图](R_shiny_ts_viewer.html)
-+ [R空间可视化](spatial_analysis_R_vis.html)
-+ [R文档生成-rmarkdown](files/rmarkdown-cheatsheet-2.0.pdf)
-+ [R使用阿里云ODPS](R_ODPS.html)
-+ [R使用Spark](R_spark.html)
 + [R包发布-线性回归为例](R_package_dev.html)
 + [R天池最后一公里](R_tianchi_logistics.html)
-+ [左手python右手R](left_python_right_r.html)
 + [吴恩达深度学习基础课程R版答案](ml_deep_mining_course_r.html)
+
+**R与大数据**
+
++ [R使用阿里云ODPS](R_ODPS.html)
++ [R使用Spark](R_spark.html)
+
+**R与Python对比**
+
++ [左手python右手R](left_python_right_r.html)
+
+**RStudio Cheatsheet**
+
++ [ggplot2 cheatsheet](files/ggplot2-cheatsheet.pdf)
++ [rmarkdown cheatsheet](files/rmarkdown-cheatsheet-2.0.pdf)
++ [dplyr/tidyr cheatsheet](files/dplyr-tidyr-cheatsheet.pdf)
++ [shiny cheatsheet](files/shiny-cheatsheet.pdf)
+
 
 不推荐使用的过期技术，仅供查阅。
 
-+ [R数据分析进阶01：数据读取与处理](R_read_preprocess.html)
-+ [R数据分析进阶02：日期时间处理](R_datetime_old.html)
-+ [R数据分析进阶03：plyr](R_plyr.html)
-+ [R数据分析进阶04：reshape2](R_reshape2.html)
++ [R数据分析进阶02：日期时间处理-POSIXct版](R_datetime_old.html)
++ [R数据分析进阶05(a)：数据框打理-plyr](R_plyr.html)
++ [R数据分析进阶05(b)：数据框打理-reshape2](R_reshape2.html)
 
