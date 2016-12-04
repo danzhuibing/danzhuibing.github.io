@@ -31,5 +31,5 @@ output:
     highlight: textmate
     include:
       after_body: 
-        duoshuo_comment.html
+        [duoshuo_comment.html, footer.html]
       
