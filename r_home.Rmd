@@ -24,9 +24,10 @@ output:
 + [吴恩达深度学习基础课程R版答案](ml_deep_mining_course_r.html)
 
 **R与大数据**
-
 + [R使用阿里云ODPS](R_ODPS.html)
 + [R使用Spark](R_spark.html)
++ [R使用HDFS](rhdfs_basic.html)
++ [R使用HBase](rhbase_basic.html)
 
 **R与Python对比**
 
