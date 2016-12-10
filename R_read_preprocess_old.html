@@ -335,8 +335,13 @@ div.tocify {
 </div>
 
 
-<div class="section level3">
-<h3>数据读取</h3>
+<div class="section level2">
+<h2>前言</h2>
+<p>数据分析的第一步工作是把数据集读取到工作空间，并完成一些最基本的数据操作：两个数据集的合并、数据集的排序、添加新列、保存数据集。</p>
+<p>本文基于R自带的标准库，讲解完成上述工作内容需要用到的工具。随着R社区的发展，数据读取与处理工作已经有一些第三方库（如readr、dplyr、tidyr、data.table等）提供更便捷的工具，不过掌握这些最基本的知识，依然是用R进行数据分析很难绕过的一部分。</p>
+</div>
+<div class="section level2">
+<h2>数据读取</h2>
 <pre class="r"><code>read.table(file_name, sep, header, colClasses)</code></pre>
 <p><strong>read.table()</strong>从文本读取数据，存为数据框。</p>
 <ul>
@@ -348,8 +353,8 @@ div.tocify {
 <pre class="r"><code>colnames(df) &lt;- c(&quot;name1&quot;, &quot;name2&quot;, &quot;name3&quot;)</code></pre>
 <p>如果文本数据不包含header，可以在读入数据后，用colnames函数自行指定列名，参数df为数据框变量名。</p>
 </div>
-<div id="join" class="section level3">
-<h3>数据join</h3>
+<div id="join" class="section level2">
+<h2>数据join</h2>
 <pre class="r"><code>merge(df1, df2, by.x, by.y, all.x, all.y)</code></pre>
 <p>R通过<strong>merge()</strong>函数实现SQL的join功能。</p>
 <ul>
@@ -358,25 +363,26 @@ div.tocify {
 <li><em>by.x</em>: 数据框1的合并基准列，e.g. by.x=c(“col1”, “col2”)</li>
 <li><em>by.y</em>: 数据框2的合并基准列，同上</li>
 <li><em>all.x</em>: 设置为True时，所有数据框1包含的记录都保留</li>
-<li><em>all.y</em>: 设置为True时，所有数据框2包含的记录都保留 因此，all.x=False &amp; all.y=False相当于inner join，all.x=True &amp; all.y=False相当于left join，all.x=False &amp; all.y=True相当于right join，all.x=True &amp; all.y=True相当于outter join。</li>
+<li><em>all.y</em>: 设置为True时，所有数据框2包含的记录都保留</li>
 </ul>
+<p>因此，all.x=False &amp; all.y=False相当于inner join，all.x=True &amp; all.y=False相当于left join，all.x=False &amp; all.y=True相当于right join，all.x=True &amp; all.y=True相当于outter join。</p>
 </div>
-<div class="section level3">
-<h3>数据排序</h3>
+<div class="section level2">
+<h2>数据排序</h2>
 <pre class="r"><code>oder([-]df$col)</code></pre>
 <p>R语言通过<strong>order()</strong>函数实现SQL的order by功能。参数是数据框排序的字段名，返回值是按字段明排序后的数据框行号组成的向量，参数前面加负号（-）表示降序排列；将该向量传递给该数据框，即可获得该数据框按照该字段排序后的新结果，e.g.</p>
 <pre class="r"><code>new_data &lt;- df[order(-df$col)]</code></pre>
 <p>排序后的行名仍为原来数据框的行名，可以用<strong>rownames()</strong>重新定义。</p>
 </div>
-<div class="section level3">
-<h3>添加新列</h3>
+<div class="section level2">
+<h2>添加新列</h2>
 <p>最简单的方法举例：</p>
 <pre class="r"><code>df$new_col &lt;- df$old_col1*df$old_col2</code></pre>
 <p>为了不一直重复写“df$”，可以使用<strong>transform()</strong>函数，举例如下：</p>
 <pre class="r"><code>df &lt;- transform(df, new_col=old_col1*old_col2)</code></pre>
 </div>
-<div id="excel" class="section level3">
-<h3>输出到Excel</h3>
+<div id="excel" class="section level2">
+<h2>输出到Excel</h2>
 <pre class="r"><code>output_var &lt;- c(&quot;col1&quot;,
                 &quot;col2&quot;,
                 &quot;col3&quot;
@@ -386,10 +392,11 @@ Sys.setenv(JAVA_HOME=&quot;$YOUR_JAVA_HOME&quot;)
 library(xlsx)
 write.xlsx(output_df, &quot;test.xlsx&quot;, col.names=TRUE, row.names=FALSE, sheetName=&quot;Sheet1&quot;, append=FALSE
 )</code></pre>
-<p><em>output_var</em>指定要输出的列，<em>Sys.setenv(JAVA_HOME=“$YOUR_JAVA_HOME”)</em> 指定xlsx库需要依赖的JAVA环境变量地址，<strong>write.xlsx()</strong>将数据集导出为excel文件格式。</p>
+<p><em>output_var</em>指定要输出的列，<em>Sys.setenv(JAVA_HOME=“$YOUR_JAVA_HOME”)</em> 指定xlsx库需要依赖的JAVA环境变量地址，<strong>write.xlsx()</strong>将数据集导出为excel文件格式。xlsx库也可以用来读取excel文件，不过效率比Hadley Wickham开发的readxl库要低，所以读取excel建议使用readxl。</p>
 </div>
-<div class="section level3">
-<h3>剪贴板交互</h3>
+<div class="section level2">
+<h2>剪贴板交互</h2>
+<p>最后我们讲一个小技巧，让R的工作空间和剪贴板进行快速交互。</p>
 <pre class="r"><code># 读取剪贴板的内容
 df &lt;- read.table(&quot;clipboard&quot;)
 # 写内容到剪贴板
