@@ -690,6 +690,10 @@ plot_vrp_route(saving_route, points)</code></pre>
 <p>Saving Method规划的结果总体来看质量还是很不错的。简单说一下实现Saving Method的思路：构造cost矩阵和demand向量；构造初始解，即从site派专车送货到spot然后返回site；算saving matrix；将saving从大到小排序，逐个取出，判断这个saving对应的两个路线合并后车辆Capacity或时间窗等约束是否被满足，若满足则合并路径。其他常见的构造性的启发式算法还有Insert和Sweep；然后有一些听过大名的模拟退火、禁忌搜索等算法，不甚了解。由于学艺不精，时间有限，此题只能做到这里打住了。</p>
 </div>
 
+<hr/>
+<p>为数据分析师分享python和R的技术资料</p>
+<input type="image" name="公众号" id="weixin_scan" src="images/weixin_scan.jpg" alt="" />
+
 <br>
 
 <!-- 多说评论框 start -->
