@@ -1,0 +1,30 @@
+---
+title: "R使用HDFS"
+output: html_document
+---
+
+
+## rhdfs的安装
+首先需要有JDK，并设置好环境变量`JAVA_HOME`。
+
+然后需要安装好Hadoop，并提供指向hadoop命令的环境变量`HADOOP_CMD`。
+
+从RHadoop项目的[wiki](https://github.com/RevolutionAnalytics/RHadoop/wiki)上下载rhdfs，并使用`R CMD INSTALL *.tar.gz`安装。
+
+## rhdfs的使用
+
+```{r, eval=F}
+if (nchar(Sys.getenv("JAVA_HOME")) < 1) {
+  Sys.setenv(JAVA_HOME = "$YOUR_JAVA_HOME")
+}
+if (nchar(Sys.getenv("HADOOP_CMD")) < 1) {
+  Sys.setenv(HADOOP_CMD = "$YOUR_HADOOP_CMD")
+}
+library(rhdfs)
+hdfs.init()
+
+hdfslist.files("/home/$YOUR_ACCOUNT")
+```
+
+## 存在问题
+`rhdfs.init()`指向的FileSystem是本地文件系统，而不是HDFS，具体原因暂时不详。
