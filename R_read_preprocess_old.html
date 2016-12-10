@@ -337,7 +337,7 @@ div.tocify {
 
 <div class="section level2">
 <h2>前言</h2>
-<p>万事开头难，数据分析也一样。R是数据分析的一把利器，但是就像学习任何一门上乘的武功一样，总归免不了一段枯燥的时光去练习最基础的招式。现在市面上滥竽充数的数据分析师很多，就是因为在这些基本功上根基太浅。算者推出的<strong>R数据分析进阶</strong>系列文章，旨在面向接触过一点R语言但没摸着门路却又励志成为一名优秀的数据分析师的这么一类纠结人群，提供一条通往优雅使用R从事数据分析工作的捷径。</p>
+<p>万事开头难，数据分析也一样。R是数据分析的一把利器，但是就像学习任何一门上乘的武功一样，总归免不了一段枯燥的时光去练习最基础的招式。现在市面上滥竽充数的数据分析师很多，就是因为在这些基本功上根基太浅。作者推出的<strong>R数据分析进阶</strong>系列文章，旨在面向接触过一点R语言但没摸着门路却又励志成为一名优秀的数据分析师的这么一类纠结人群，提供一条通往优雅使用R从事数据分析工作的捷径。</p>
 <p>本文是<strong>R数据分析进阶</strong>的第一篇文章：数据读取与处理。我们数据分析工作的开始往往是拿到一份外部的数据，需要知道怎么把它加载到R的工作空间，随后再进行一些基本的数据操作：两个数据集的合并、数据集的排序、添加新列、保存数据集等。</p>
 </div>
 <div class="section level2">
@@ -345,7 +345,7 @@ div.tocify {
 <p>数据最常见的形式是文本文件，R工作环境最常见的数据形式是其独步江湖的数据框<code>data.frame</code>。怎么完成这两者的转换，往往是一个小型数据分析任务的开始和结束。</p>
 <p>我们先来看怎么将一个<code>data.frame</code>输出为文本文件。R提供了内置的<code>write.table</code>函数完成这个工作。</p>
 <pre class="r"><code>write.table(iris, file=&quot;data/iris.txt&quot;, quote=FALSE, sep=&quot;,&quot;, row.names=FALSE, col.names=FALSE)</code></pre>
-<p>iris是R内置的一个非常有名的数据集，中文名是鸢尾花，有四个属性，分别是Sepal.Length（花萼长度），Sepal.Width（花萼宽度），Petal.Length（花瓣长度），Petal.Width（花瓣宽度）。算者从网上找了一个图片，做个标注，方便读者理解。</p>
+<p>iris是R内置的一个非常有名的数据集，中文名是鸢尾花，有四个属性，分别是Sepal.Length（花萼长度），Sepal.Width（花萼宽度），Petal.Length（花瓣长度），Petal.Width（花瓣宽度）。作者从网上找了一个图片，做个标注，方便读者理解。</p>
 <div class="figure">
 <img src="images/R_ggplot2_iris.png" alt="IRIS数据集变量含义" />
 <p class="caption">IRIS数据集变量含义</p>
@@ -457,6 +457,10 @@ df &lt;- read.table(&quot;clipboard&quot;)
 # 写内容到剪贴板
 write.table(df, &quot;clipboard&quot;)</code></pre>
 </div>
+
+<hr/>
+<p>扫描关注pyR微信公众号，为数据分析师、算法工程师分享python和R的技术资料</p>
+<input type="image" name="公众号" id="weixin_scan" src="images/weixin_scan.jpg" alt="" />
 
 <br>
 
