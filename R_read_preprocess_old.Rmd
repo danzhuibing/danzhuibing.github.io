@@ -18,6 +18,7 @@ read.table(file_name, sep, header, colClasses)
 ```
 
 **read.table()**从文本读取数据，存为数据框。
+
 - *file_name*: 文件名，不指定路径时，在工作目录下查找；使用getwd()函数可以查看当前的工作目录，使用setwd()可以设置当前工作目录
 - *sep*: 分隔符，e.g. sep=","
 - *header*: 第一行是数据时设置为False/F，是列名时设置为True/T.
@@ -30,10 +31,11 @@ colnames(df) <- c("name1", "name2", "name3")
 如果文本数据不包含header，可以在读入数据后，用colnames函数自行指定列名，参数df为数据框变量名。
 
 ### 数据join
-``` r
+``` {r}
 merge(df1, df2, by.x, by.y, all.x, all.y)
 ```
 R通过**merge()**函数实现SQL的join功能。
+
 - *df1*: 数据框1
 - *df2*: 数据框2
 - *by.x*: 数据框1的合并基准列，e.g. by.x=c("col1", "col2")
@@ -63,7 +65,7 @@ df$new_col <- df$old_col1*df$old_col2
 ```
 
 为了不一直重复写“df$”，可以使用**transform()**函数，举例如下：
-``` r
+``` {r}
 df <- transform(df, new_col=old_col1*old_col2)
 ```
 
@@ -74,13 +76,13 @@ output_var <- c("col1",
                 "col3"
 )
 output_df <- df[output_var]
-Sys.setenv(JAVA_HOME="C:\\Program Files\\Java\\jre8")
+Sys.setenv(JAVA_HOME="$YOUR_JAVA_HOME")
 library(xlsx)
 write.xlsx(output_df, "test.xlsx", col.names=TRUE, row.names=FALSE, sheetName="Sheet1", append=FALSE
 )
 ```
 
-*output_var*指定要输出的列，*Sys.setenv(JAVA_HOME="C:\\Program Files\\Java\\jre8")* 指定xlsx库需要依赖的JAVA环境变量地址，**write.xlsx()**将数据集导出为excel文件格式。
+*output_var*指定要输出的列，*Sys.setenv(JAVA_HOME="$YOUR_JAVA_HOME")* 指定xlsx库需要依赖的JAVA环境变量地址，**write.xlsx()**将数据集导出为excel文件格式。
 
 ### 剪贴板交互
 ``` {r}
@@ -89,3 +91,4 @@ df <- read.table("clipboard")
 # 写内容到剪贴板
 write.table(df, "clipboard")
 ```
+

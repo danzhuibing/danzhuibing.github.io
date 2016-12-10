@@ -338,14 +338,28 @@ div.tocify {
 <div class="section level3">
 <h3>数据读取</h3>
 <pre class="r"><code>read.table(file_name, sep, header, colClasses)</code></pre>
-<p><strong>read.table()</strong>从文本读取数据，存为数据框。 - <em>file_name</em>: 文件名，不指定路径时，在工作目录下查找；使用getwd()函数可以查看当前的工作目录，使用setwd()可以设置当前工作目录 - <em>sep</em>: 分隔符，e.g. sep=“,” - <em>header</em>: 第一行是数据时设置为False/F，是列名时设置为True/T. - <em>colClasses</em>: 读取过程中，不指定该参数，R将按照默认规则指定列的数据类型；如果默认规则不满足要求，可以用colClasses自行指定，e.g. <em>colClasses=c(“factor”, “numeric”,“character”)</em></p>
+<p><strong>read.table()</strong>从文本读取数据，存为数据框。</p>
+<ul>
+<li><em>file_name</em>: 文件名，不指定路径时，在工作目录下查找；使用getwd()函数可以查看当前的工作目录，使用setwd()可以设置当前工作目录</li>
+<li><em>sep</em>: 分隔符，e.g. sep=“,”</li>
+<li><em>header</em>: 第一行是数据时设置为False/F，是列名时设置为True/T.</li>
+<li><em>colClasses</em>: 读取过程中，不指定该参数，R将按照默认规则指定列的数据类型；如果默认规则不满足要求，可以用colClasses自行指定，e.g. <em>colClasses=c(“factor”, “numeric”,“character”)</em></li>
+</ul>
 <pre class="r"><code>colnames(df) &lt;- c(&quot;name1&quot;, &quot;name2&quot;, &quot;name3&quot;)</code></pre>
 <p>如果文本数据不包含header，可以在读入数据后，用colnames函数自行指定列名，参数df为数据框变量名。</p>
 </div>
 <div id="join" class="section level3">
 <h3>数据join</h3>
 <pre class="r"><code>merge(df1, df2, by.x, by.y, all.x, all.y)</code></pre>
-<p>R通过<strong>merge()</strong>函数实现SQL的join功能。 - <em>df1</em>: 数据框1 - <em>df2</em>: 数据框2 - <em>by.x</em>: 数据框1的合并基准列，e.g. by.x=c(“col1”, “col2”) - <em>by.y</em>: 数据框2的合并基准列，同上 - <em>all.x</em>: 设置为True时，所有数据框1包含的记录都保留 - <em>all.y</em>: 设置为True时，所有数据框2包含的记录都保留 因此，all.x=False &amp; all.y=False相当于inner join，all.x=True &amp; all.y=False相当于left join，all.x=False &amp; all.y=True相当于right join，all.x=True &amp; all.y=True相当于outter join。</p>
+<p>R通过<strong>merge()</strong>函数实现SQL的join功能。</p>
+<ul>
+<li><em>df1</em>: 数据框1</li>
+<li><em>df2</em>: 数据框2</li>
+<li><em>by.x</em>: 数据框1的合并基准列，e.g. by.x=c(“col1”, “col2”)</li>
+<li><em>by.y</em>: 数据框2的合并基准列，同上</li>
+<li><em>all.x</em>: 设置为True时，所有数据框1包含的记录都保留</li>
+<li><em>all.y</em>: 设置为True时，所有数据框2包含的记录都保留 因此，all.x=False &amp; all.y=False相当于inner join，all.x=True &amp; all.y=False相当于left join，all.x=False &amp; all.y=True相当于right join，all.x=True &amp; all.y=True相当于outter join。</li>
+</ul>
 </div>
 <div class="section level3">
 <h3>数据排序</h3>
@@ -368,11 +382,11 @@ div.tocify {
                 &quot;col3&quot;
 )
 output_df &lt;- df[output_var]
-Sys.setenv(JAVA_HOME=&quot;C:\\Program Files\\Java\\jre8&quot;)
+Sys.setenv(JAVA_HOME=&quot;$YOUR_JAVA_HOME&quot;)
 library(xlsx)
 write.xlsx(output_df, &quot;test.xlsx&quot;, col.names=TRUE, row.names=FALSE, sheetName=&quot;Sheet1&quot;, append=FALSE
 )</code></pre>
-<p><em>output_var</em>指定要输出的列，<em>Sys.setenv(JAVA_HOME=“C:\Program Files\Java\jre8”)</em> 指定xlsx库需要依赖的JAVA环境变量地址，<strong>write.xlsx()</strong>将数据集导出为excel文件格式。</p>
+<p><em>output_var</em>指定要输出的列，<em>Sys.setenv(JAVA_HOME=“$YOUR_JAVA_HOME”)</em> 指定xlsx库需要依赖的JAVA环境变量地址，<strong>write.xlsx()</strong>将数据集导出为excel文件格式。</p>
 </div>
 <div class="section level3">
 <h3>剪贴板交互</h3>
