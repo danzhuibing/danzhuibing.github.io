@@ -9,93 +9,120 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(eval = FALSE)
+knitr::opts_chunk$set(eval = T, warning=F, message=F)
 ```
 
 ## 前言
-数据分析的第一步工作是把数据集读取到工作空间，并完成一些最基本的数据操作：两个数据集的合并、数据集的排序、添加新列、保存数据集。
+万事开头难，数据分析也一样。R是数据分析的一把利器，但是就像学习任何一门上乘的武功一样，总归免不了一段枯燥的时光去练习最基础的招式。现在市面上滥竽充数的数据分析师很多，就是因为在这些基本功上根基太浅。算者推出的**R数据分析进阶**系列文章，旨在面向接触过一点R语言但没摸着门路却又励志成为一名优秀的数据分析师的这么一类纠结人群，提供一条通往优雅使用R从事数据分析工作的捷径。
 
-本文基于R自带的标准库，讲解完成上述工作内容需要用到的工具。随着R社区的发展，数据读取与处理工作已经有一些第三方库（如readr、dplyr、tidyr、data.table等）提供更便捷的工具，不过掌握这些最基本的知识，依然是用R进行数据分析很难绕过的一部分。
+本文是**R数据分析进阶**的第一篇文章：数据读取与处理。我们数据分析工作的开始往往是拿到一份外部的数据，需要知道怎么把它加载到R的工作空间，随后再进行一些基本的数据操作：两个数据集的合并、数据集的排序、添加新列、保存数据集等。
 
 ## 数据读取
-``` {r}
-read.table(file_name, sep, header, colClasses)
-```
+数据最常见的形式是文本文件，R工作环境最常见的数据形式是其独步江湖的数据框`data.frame`。怎么完成这两者的转换，往往是一个小型数据分析任务的开始和结束。
 
-**read.table()**从文本读取数据，存为数据框。
-
-- *file_name*: 文件名，不指定路径时，在工作目录下查找；使用getwd()函数可以查看当前的工作目录，使用setwd()可以设置当前工作目录
-- *sep*: 分隔符，e.g. sep=","
-- *header*: 第一行是数据时设置为False/F，是列名时设置为True/T.
-- *colClasses*: 读取过程中，不指定该参数，R将按照默认规则指定列的数据类型；如果默认规则不满足要求，可以用colClasses自行指定，e.g. *colClasses=c("factor", "numeric","character")*
+我们先来看怎么将一个`data.frame`输出为文本文件。R提供了内置的`write.table`函数完成这个工作。
 
 ``` {r}
-colnames(df) <- c("name1", "name2", "name3")
+write.table(iris, file="data/iris.txt", quote=FALSE, sep=",", row.names=FALSE, col.names=FALSE)
 ```
 
-如果文本数据不包含header，可以在读入数据后，用colnames函数自行指定列名，参数df为数据框变量名。
+iris是R内置的一个非常有名的数据集，中文名是鸢尾花，有四个属性，分别是Sepal.Length（花萼长度），Sepal.Width（花萼宽度），Petal.Length（花瓣长度），Petal.Width（花瓣宽度）。算者从网上找了一个图片，做个标注，方便读者理解。
 
-## 数据join
+![IRIS数据集变量含义](images/R_ggplot2_iris.png)
+
+`write.table`函数中，`quote`指的是数据集中的字符串类型输出时是否要带引号，`sep`表示输出文本的字段的分隔符，`row.names`表示是否要输出数据框的行名，`col.names`表示是否要输出数据框的列名。
+
+现在，我们再使用R内置的`read.table`函数完成数据读取工作。
+
 ``` {r}
-merge(df1, df2, by.x, by.y, all.x, all.y)
+df <- read.table(file="data/iris.txt", sep=",", header=FALSE, colClasses=c("numeric", "numeric", "numeric", "numeric", "character"))
 ```
 
-R通过**merge()**函数实现SQL的join功能。
+参数`header`表示第一行数据是否是列名，`colClasses`用于指定数据读入时每列的类型，如果不指定将按照R的默认规则自动生成。
 
-- *df1*: 数据框1
-- *df2*: 数据框2
-- *by.x*: 数据框1的合并基准列，e.g. by.x=c("col1", "col2")
-- *by.y*: 数据框2的合并基准列，同上
-- *all.x*: 设置为True时，所有数据框1包含的记录都保留
-- *all.y*: 设置为True时，所有数据框2包含的记录都保留
+注：读取大数据时，R内置的`read.table`函数效率有些低，可改用`readr`包提供的`read_table`函数。
 
-因此，all.x=False & all.y=False相当于inner join，all.x=True & all.y=False相当于left join，all.x=False & all.y=True相当于right join，all.x=True & all.y=True相当于outter join。
+如果文本数据不包含header，可以在读入数据后，用`colnames`函数自行指定列名。
 
-## 数据排序
 ``` {r}
-oder([-]df$col)
+colnames(df) <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species") 
 ```
 
-R语言通过**order()**函数实现SQL的order by功能。参数是数据框排序的字段名，返回值是按字段明排序后的数据框行号组成的向量，参数前面加负号（-）表示降序排列；将该向量传递给该数据框，即可获得该数据框按照该字段排序后的新结果，e.g. 
+读入数据后，可以使用`str`查看数据的结构，使用`summary`函数查看数据的统计信息。
 
-``` {r} 
-new_data <- df[order(-df$col)]
+``` {r}
+str(df)
+summary(df)
 ```
 
-排序后的行名仍为原来数据框的行名，可以用**rownames()**重新定义。
+我们可以看到字段`Species`的类型是`character`，即普通的字符串，但是在这个业务场景下，这个字段表示的是鸢尾花的类型，即一个具备有限取值范围的分类变量，R里用`factor`类型来专门表示此类变量。我们可以使用R的`as`系列来完成不同类型的转变。注意，要获取数据框某一列的取值，可以使用`$`特殊字符。
+
+``` {r}
+df$Species <- as.factor(df$Species)
+```
+
+如果要查看数据的前几行，可以使用`head`函数，或者自行设定下标：
+
+```{r}
+head(df)
+df[1:10,]
+```
 
 ## 添加新列
-最简单的方法举例：
+我们现在给读取进来的数据增加一列ID，用于表示每一个单独的样本
 
 ``` {r}
-df$new_col <- df$old_col1*df$old_col2
+df$id <- seq(1:nrow(df))
 ```
 
-为了不一直重复写“df$”，可以使用**transform()**函数，举例如下：
+## 数据集合并
+R通过`merge()`函数实现SQL的join功能。
+
 
 ``` {r}
-df <- transform(df, new_col=old_col1*old_col2)
+df1 <- df[, c("Sepal.Length", "Sepal.Width", "id")]
+df2 <- df[, c("Petal.Length", "Petal.Width", "id")]
+df_all <- merge(df1, df2, by.x=c("id"), by.y=c("id"), all.x=TRUE, all.y=TRUE)
 ```
 
-## 输出到Excel
+其中，`by.x`和`by.y`分别指定两个数据框的合并基准列，e.g. `by.x=c("col1", "col2")`；`all.x`设置为`True`时，所有数据框1包含的记录都保留，`all.y`设置为`TRUE`时，所有数据框2包含的记录都保留。所以，`all.x=FALSE`且`all.y=FALSE`相当于inner join，`all.x=TRUE`且 `all.y=FALSE`相当于left join，`all.x=FALSE`且`all.y=TRUE`相当于right join，`all.x=TRUE`且 `all.y=TRUE`相当于outer join。
+
+## 数据排序
+R语言通过`order`函数实现SQL的order by功能。参数是数据框排序的字段名，返回值是按字段明排序后的数据框行号组成的向量，参数前面加负号（-）表示降序排列。
+
 ``` {r}
-output_var <- c("col1",
-                "col2",
-                "col3"
+order(-df$Sepal.Width)
+```
+
+将该向量传递给该数据框，即可获得该数据框按照该字段排序后的新结果，代码示例如下
+
+``` {r} 
+new_data <- df[order(-df$Sepal.Width),]
+```
+
+
+## R与Excel的相互转化
+Excel是数据分析师的另一个常用技能，因此有必要学会R与Excel的数据转换。R的`xlsx`包提供了读取Excel和写出为Excel的功能，但是读取Excel的效率比`readxl`包低很多，所以读取Excel建议用`readxl`，写出Excel可以用`xlsx`。顺便提一句，`readxl`是R语言男神Hadley Wickham的一个小作品。什么，你不知道Hadley Wickham？这。。。
+
+``` {r, eval=FALSE}
+output_var <- c("Sepal.Length",
+                "Sepal.Width",
+                "Species"
 )
 output_df <- df[output_var]
 Sys.setenv(JAVA_HOME="$YOUR_JAVA_HOME")
+
 library(xlsx)
-write.xlsx(output_df, "test.xlsx", col.names=TRUE, row.names=FALSE, sheetName="Sheet1", append=FALSE
-)
+write.xlsx(output_df, "data/iris.xlsx", col.names=TRUE, row.names=FALSE, sheetName="Sheet1", append=FALSE)
+
+library(readxl)
+input_df <- read_excel("data/iris/xlsx")
 ```
 
-*output_var*指定要输出的列，*Sys.setenv(JAVA_HOME="$YOUR_JAVA_HOME")* 指定xlsx库需要依赖的JAVA环境变量地址，**write.xlsx()**将数据集导出为excel文件格式。xlsx库也可以用来读取excel文件，不过效率比Hadley Wickham开发的readxl库要低，所以读取excel建议使用readxl。
-
-## 剪贴板交互
+## R与剪贴板
 最后我们讲一个小技巧，让R的工作空间和剪贴板进行快速交互。
 
-``` {r}
+``` {r, eval=F}
 # 读取剪贴板的内容
 df <- read.table("clipboard")
 # 写内容到剪贴板
