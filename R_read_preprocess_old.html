@@ -23,7 +23,6 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-1.1/highlight.js"></script>
 <link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
@@ -162,14 +161,6 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
-<style type="text/css">
-.code-folding-btn { margin-bottom: 4px; }
-</style>
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("show" === "show");
-});
-</script>
 
 
 
@@ -337,14 +328,6 @@ div.tocify {
 
 <div class="fluid-row" id="header">
 
-<div class="btn-group pull-right">
-<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu" style="min-width: 50px;">
-<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
-<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
-</ul>
-</div>
-
 
 
 <h1 class="title toc-ignore">R数据分析进阶01：数据读取与处理</h1>
@@ -352,55 +335,134 @@ div.tocify {
 </div>
 
 
-<div class="section level3">
-<h3>数据读取</h3>
-<pre class="r"><code>read.table(file_name, sep, header, colClasses)</code></pre>
-<p><strong>read.table()</strong>从文本读取数据，存为数据框。 - <em>file_name</em>: 文件名，不指定路径时，在工作目录下查找；使用getwd()函数可以查看当前的工作目录，使用setwd()可以设置当前工作目录 - <em>sep</em>: 分隔符，e.g. sep=“,” - <em>header</em>: 第一行是数据时设置为False/F，是列名时设置为True/T. - <em>colClasses</em>: 读取过程中，不指定该参数，R将按照默认规则指定列的数据类型；如果默认规则不满足要求，可以用colClasses自行指定，e.g. <em>colClasses=c(“factor”, “numeric”,“character”)</em></p>
-<pre class="r"><code>colnames(df) &lt;- c(&quot;name1&quot;, &quot;name2&quot;, &quot;name3&quot;)</code></pre>
-<p>如果文本数据不包含header，可以在读入数据后，用colnames函数自行指定列名，参数df为数据框变量名。</p>
+<div class="section level2">
+<h2>前言</h2>
+<p>万事开头难，数据分析也一样。R是数据分析的一把利器，但是就像学习任何一门上乘的武功一样，总归免不了一段枯燥的时光去练习最基础的招式。现在市面上滥竽充数的数据分析师很多，就是因为在这些基本功上根基太浅。作者推出的<strong>R数据分析进阶</strong>系列文章，旨在面向接触过一点R语言但没摸着门路却又励志成为一名优秀的数据分析师的这么一类纠结人群，提供一条通往优雅使用R从事数据分析工作的捷径。</p>
+<p>本文是<strong>R数据分析进阶</strong>的第一篇文章：数据读取与处理。我们数据分析工作的开始往往是拿到一份外部的数据，需要知道怎么把它加载到R的工作空间，随后再进行一些基本的数据操作：两个数据集的合并、数据集的排序、添加新列、保存数据集等。</p>
 </div>
-<div id="join" class="section level3">
-<h3>数据join</h3>
-<pre class="r"><code>merge(df1, df2, by.x, by.y, all.x, all.y)</code></pre>
-<p>R通过<strong>merge()</strong>函数实现SQL的join功能。 - <em>df1</em>: 数据框1 - <em>df2</em>: 数据框2 - <em>by.x</em>: 数据框1的合并基准列，e.g. by.x=c(“col1”, “col2”) - <em>by.y</em>: 数据框2的合并基准列，同上 - <em>all.x</em>: 设置为True时，所有数据框1包含的记录都保留 - <em>all.y</em>: 设置为True时，所有数据框2包含的记录都保留 因此，all.x=False &amp; all.y=False相当于inner join，all.x=True &amp; all.y=False相当于left join，all.x=False &amp; all.y=True相当于right join，all.x=True &amp; all.y=True相当于outter join。</p>
+<div class="section level2">
+<h2>数据读取</h2>
+<p>数据最常见的形式是文本文件，R工作环境最常见的数据形式是其独步江湖的数据框<code>data.frame</code>。怎么完成这两者的转换，往往是一个小型数据分析任务的开始和结束。</p>
+<p>我们先来看怎么将一个<code>data.frame</code>输出为文本文件。R提供了内置的<code>write.table</code>函数完成这个工作。</p>
+<pre class="r"><code>write.table(iris, file=&quot;data/iris.txt&quot;, quote=FALSE, sep=&quot;,&quot;, row.names=FALSE, col.names=FALSE)</code></pre>
+<p>iris是R内置的一个非常有名的数据集，中文名是鸢尾花，有四个属性，分别是Sepal.Length（花萼长度），Sepal.Width（花萼宽度），Petal.Length（花瓣长度），Petal.Width（花瓣宽度）。作者从网上找了一个图片，做个标注，方便读者理解。</p>
+<div class="figure">
+<img src="images/R_ggplot2_iris.png" alt="IRIS数据集变量含义" />
+<p class="caption">IRIS数据集变量含义</p>
 </div>
-<div class="section level3">
-<h3>数据排序</h3>
-<pre class="r"><code>oder([-]df$col)</code></pre>
-<p>R语言通过<strong>order()</strong>函数实现SQL的order by功能。参数是数据框排序的字段名，返回值是按字段明排序后的数据框行号组成的向量，参数前面加负号（-）表示降序排列；将该向量传递给该数据框，即可获得该数据框按照该字段排序后的新结果，e.g.</p>
-<pre class="r"><code>new_data &lt;- df[order(-df$col)]</code></pre>
-<p>排序后的行名仍为原来数据框的行名，可以用<strong>rownames()</strong>重新定义。</p>
+<p><code>write.table</code>函数中，<code>quote</code>指的是数据集中的字符串类型输出时是否要带引号，<code>sep</code>表示输出文本的字段的分隔符，<code>row.names</code>表示是否要输出数据框的行名，<code>col.names</code>表示是否要输出数据框的列名。</p>
+<p>现在，我们再使用R内置的<code>read.table</code>函数完成数据读取工作。</p>
+<pre class="r"><code>df &lt;- read.table(file=&quot;data/iris.txt&quot;, sep=&quot;,&quot;, header=FALSE, colClasses=c(&quot;numeric&quot;, &quot;numeric&quot;, &quot;numeric&quot;, &quot;numeric&quot;, &quot;character&quot;))</code></pre>
+<p>参数<code>header</code>表示第一行数据是否是列名，<code>colClasses</code>用于指定数据读入时每列的类型，如果不指定将按照R的默认规则自动生成。</p>
+<p>注：读取大数据时，R内置的<code>read.table</code>函数效率有些低，可改用<code>readr</code>包提供的<code>read_table</code>函数。</p>
+<p>如果文本数据不包含header，可以在读入数据后，用<code>colnames</code>函数自行指定列名。</p>
+<pre class="r"><code>colnames(df) &lt;- c(&quot;Sepal.Length&quot;, &quot;Sepal.Width&quot;, &quot;Petal.Length&quot;, &quot;Petal.Width&quot;, &quot;Species&quot;) </code></pre>
+<p>读入数据后，可以使用<code>str</code>查看数据的结构，使用<code>summary</code>函数查看数据的统计信息。</p>
+<pre class="r"><code>str(df)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    150 obs. of  5 variables:
+##  $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+##  $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+##  $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+##  $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+##  $ Species     : chr  &quot;setosa&quot; &quot;setosa&quot; &quot;setosa&quot; &quot;setosa&quot; ...</code></pre>
+<pre class="r"><code>summary(df)</code></pre>
+<pre><code>##   Sepal.Length    Sepal.Width     Petal.Length    Petal.Width   
+##  Min.   :4.300   Min.   :2.000   Min.   :1.000   Min.   :0.100  
+##  1st Qu.:5.100   1st Qu.:2.800   1st Qu.:1.600   1st Qu.:0.300  
+##  Median :5.800   Median :3.000   Median :4.350   Median :1.300  
+##  Mean   :5.843   Mean   :3.057   Mean   :3.758   Mean   :1.199  
+##  3rd Qu.:6.400   3rd Qu.:3.300   3rd Qu.:5.100   3rd Qu.:1.800  
+##  Max.   :7.900   Max.   :4.400   Max.   :6.900   Max.   :2.500  
+##    Species         
+##  Length:150        
+##  Class :character  
+##  Mode  :character  
+##                    
+##                    
+## </code></pre>
+<p>我们可以看到字段<code>Species</code>的类型是<code>character</code>，即普通的字符串，但是在这个业务场景下，这个字段表示的是鸢尾花的类型，即一个具备有限取值范围的分类变量，R里用<code>factor</code>类型来专门表示此类变量。我们可以使用R的<code>as</code>系列来完成不同类型的转变。注意，要获取数据框某一列的取值，可以使用<code>$</code>特殊字符。</p>
+<pre class="r"><code>df$Species &lt;- as.factor(df$Species)</code></pre>
+<p>如果要查看数据的前几行，可以使用<code>head</code>函数，或者自行设定下标：</p>
+<pre class="r"><code>head(df)</code></pre>
+<pre><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 1          5.1         3.5          1.4         0.2  setosa
+## 2          4.9         3.0          1.4         0.2  setosa
+## 3          4.7         3.2          1.3         0.2  setosa
+## 4          4.6         3.1          1.5         0.2  setosa
+## 5          5.0         3.6          1.4         0.2  setosa
+## 6          5.4         3.9          1.7         0.4  setosa</code></pre>
+<pre class="r"><code>df[1:10,]</code></pre>
+<pre><code>##    Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 1           5.1         3.5          1.4         0.2  setosa
+## 2           4.9         3.0          1.4         0.2  setosa
+## 3           4.7         3.2          1.3         0.2  setosa
+## 4           4.6         3.1          1.5         0.2  setosa
+## 5           5.0         3.6          1.4         0.2  setosa
+## 6           5.4         3.9          1.7         0.4  setosa
+## 7           4.6         3.4          1.4         0.3  setosa
+## 8           5.0         3.4          1.5         0.2  setosa
+## 9           4.4         2.9          1.4         0.2  setosa
+## 10          4.9         3.1          1.5         0.1  setosa</code></pre>
 </div>
-<div class="section level3">
-<h3>添加新列</h3>
-<p>最简单的方法举例：</p>
-<pre class="r"><code>df$new_col &lt;- df$old_col1*df$old_col2</code></pre>
-<p>为了不一直重复写“df$”，可以使用<strong>transform()</strong>函数，举例如下：</p>
-<pre class="r"><code>df &lt;- transform(df, new_col=old_col1*old_col2)</code></pre>
+<div class="section level2">
+<h2>添加新列</h2>
+<p>我们现在给读取进来的数据增加一列ID，用于表示每一个单独的样本</p>
+<pre class="r"><code>df$id &lt;- seq(1:nrow(df))</code></pre>
 </div>
-<div id="excel" class="section level3">
-<h3>输出到Excel</h3>
-<pre class="r"><code>output_var &lt;- c(&quot;col1&quot;,
-                &quot;col2&quot;,
-                &quot;col3&quot;
+<div class="section level2">
+<h2>数据集合并</h2>
+<p>R通过<code>merge()</code>函数实现SQL的join功能。</p>
+<pre class="r"><code>df1 &lt;- df[, c(&quot;Sepal.Length&quot;, &quot;Sepal.Width&quot;, &quot;id&quot;)]
+df2 &lt;- df[, c(&quot;Petal.Length&quot;, &quot;Petal.Width&quot;, &quot;id&quot;)]
+df_all &lt;- merge(df1, df2, by.x=c(&quot;id&quot;), by.y=c(&quot;id&quot;), all.x=TRUE, all.y=TRUE)</code></pre>
+<p>其中，<code>by.x</code>和<code>by.y</code>分别指定两个数据框的合并基准列，e.g. <code>by.x=c(&quot;col1&quot;, &quot;col2&quot;)</code>；<code>all.x</code>设置为<code>True</code>时，所有数据框1包含的记录都保留，<code>all.y</code>设置为<code>TRUE</code>时，所有数据框2包含的记录都保留。所以，<code>all.x=FALSE</code>且<code>all.y=FALSE</code>相当于inner join，<code>all.x=TRUE</code>且 <code>all.y=FALSE</code>相当于left join，<code>all.x=FALSE</code>且<code>all.y=TRUE</code>相当于right join，<code>all.x=TRUE</code>且 <code>all.y=TRUE</code>相当于outer join。</p>
+</div>
+<div class="section level2">
+<h2>数据排序</h2>
+<p>R语言通过<code>order</code>函数实现SQL的order by功能。参数是数据框排序的字段名，返回值是按字段明排序后的数据框行号组成的向量，参数前面加负号（-）表示降序排列。</p>
+<pre class="r"><code>order(-df$Sepal.Width)</code></pre>
+<pre><code>##   [1]  16  34  33  15   6  17  19  20  45  47 118 132  11  22  49   5  23
+##  [18]  38 110   1  18  28  37  41  44   7   8  12  21  25  27  29  32  40
+##  [35]  86 137 149  24  50  57 101 125 145   3  30  36  43  48  51  52  71
+##  [52] 111 116 121 126 144   4  10  31  35  53  66  87 138 140 141 142   2
+##  [69]  13  14  26  39  46  62  67  76  78  85  89  92  96 103 105 106 113
+##  [86] 117 128 130 136 139 146 148 150   9  59  64  65  75  79  97  98 104
+## [103] 108  55  56  72  74  77 100 115 122 123 127 129 131 133 134  60  68
+## [120]  83  84  95 102 112 124 143  80  91  93 119 135  70  73  90  99 107
+## [137] 109 114 147  58  81  82  42  54  88  94  63  69 120  61</code></pre>
+<p>将该向量传递给该数据框，即可获得该数据框按照该字段排序后的新结果，代码示例如下</p>
+<pre class="r"><code>new_data &lt;- df[order(-df$Sepal.Width),]</code></pre>
+</div>
+<div id="rexcel" class="section level2">
+<h2>R与Excel的相互转化</h2>
+<p>Excel是数据分析师的另一个常用技能，因此有必要学会R与Excel的数据转换。R的<code>xlsx</code>包提供了读取Excel和写出为Excel的功能，但是读取Excel的效率比<code>readxl</code>包低很多，所以读取Excel建议用<code>readxl</code>，写出Excel可以用<code>xlsx</code>。顺便提一句，<code>readxl</code>是R语言男神Hadley Wickham的一个小作品。什么，你不知道Hadley Wickham？这。。。</p>
+<pre class="r"><code>output_var &lt;- c(&quot;Sepal.Length&quot;,
+                &quot;Sepal.Width&quot;,
+                &quot;Species&quot;
 )
 output_df &lt;- df[output_var]
-Sys.setenv(JAVA_HOME=&quot;C:\\Program Files\\Java\\jre8&quot;)
+Sys.setenv(JAVA_HOME=&quot;$YOUR_JAVA_HOME&quot;)
+
 library(xlsx)
-write.xlsx(output_df, &quot;test.xlsx&quot;, col.names=TRUE, row.names=FALSE, sheetName=&quot;Sheet1&quot;, append=FALSE
-)</code></pre>
-<p><em>output_var</em>指定要输出的列，<em>Sys.setenv(JAVA_HOME=“C:\Program Files\Java\jre8”)</em> 指定xlsx库需要依赖的JAVA环境变量地址，<strong>write.xlsx()</strong>将数据集导出为excel文件格式。</p>
+write.xlsx(output_df, &quot;data/iris.xlsx&quot;, col.names=TRUE, row.names=FALSE, sheetName=&quot;Sheet1&quot;, append=FALSE)
+
+library(readxl)
+input_df &lt;- read_excel(&quot;data/iris/xlsx&quot;)</code></pre>
 </div>
-<div class="section level3">
-<h3>剪贴板交互</h3>
+<div id="r" class="section level2">
+<h2>R与剪贴板</h2>
+<p>最后我们讲一个小技巧，让R的工作空间和剪贴板进行快速交互。</p>
 <pre class="r"><code># 读取剪贴板的内容
 df &lt;- read.table(&quot;clipboard&quot;)
 # 写内容到剪贴板
 write.table(df, &quot;clipboard&quot;)</code></pre>
 </div>
 
+<hr/>
+<p>为数据分析师分享python和R的技术资料</p>
+<input type="image" name="公众号" id="weixin_scan" src="images/weixin_scan.jpg" alt="" />
+
 <br>
-<hr>
 
 <!-- 多说评论框 start -->
 <div class="ds-thread" data-thread-key="1" data-title="丹追兵|算法" data-url="invalid"></div>
