@@ -5,6 +5,12 @@ output:
 
 本系列文章介绍R的编程基础。
 
+**R工具箱**
+
++ [R工具箱01：Excel读写](R_read_write_excel.html)
+
+
+
 **R数据分析系列**
 
 + [R数据分析进阶01：数据读取与处理](R_read_preprocess_old.html)
