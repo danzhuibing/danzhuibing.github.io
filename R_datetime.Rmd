@@ -2,7 +2,7 @@
 title: "R日期时间处理"
 output:
   html_document:
-    code_folding: hide
+    code_folding: show
     toc: true
     toc_float: 
       collapsed: false
