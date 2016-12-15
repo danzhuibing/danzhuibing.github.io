@@ -1,5 +1,5 @@
 ---
-title: "R工具箱01：读写Excel"
+title: "R读写Excel"
 output:
   html_document:
     toc: true
@@ -19,8 +19,7 @@ Excel是数据分析师最常用的工具之一，相比其他数据分析工具
 
 
 ```{r, eval=F}
-install.packages("xlsx")
-install.packages("readxl")
+install.packages(c("xlsx", "readxl"))
 ```
 
 ## Read Excel
