@@ -44,7 +44,7 @@ R社区需要感谢一家有情怀的公司**RStudio**，里面有许多大家�
 
 ### Visualise
 
-- [统计绘图](R_ggplot2.html)，内容待更新：**ggplot2**
+- [统计绘图](R_ggplot2.html)：**ggplot2**
 - 统计绘图交互化：**plotly**
 - 表格可视化：**DT**
 - 时间序列处理与可视化：**zoo**，**xts**，**dygraphs**
