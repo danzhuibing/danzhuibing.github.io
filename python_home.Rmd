@@ -6,11 +6,14 @@ output:
 
 
 ## Python与数据科学
-### Data Structure
-- [`ndarray`](py_numpy_ndarray.html)：多维数组
+### Matrix
+- [numpy多维数组](py_numpy_ndarray.html)
 
+### Data Frame
+- [pandas数据分析](python_pandas.html)
 
 ### Visualise
+- [matplotlib绘图](python_matplotlib.html)
 
 ### Model
 - 估计器（Estimator）：分类器模型，主要包含两个方法`fit()`和`predict()`。

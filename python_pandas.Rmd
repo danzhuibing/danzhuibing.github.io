@@ -1,0 +1,158 @@
+---
+title: "Pandas数据分析"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
+
+按照以下方式导入pandas库：
+
+```{python}
+import pandas as pd
+```
+
+## Import
+###  CSV
+```{python}
+df = pd.read_csv("your_file.csv")
+df.to_csv("your_file.csv")
+```
+
+### Excel
+```{python}
+df = pd.read_excel("your_file.xlsx", 'sheet1')
+df.to_excel('your_file.xlsx', sheet_name='sheet2')
+```
+
+### ODPS
+
+```{python, eval=F}
+from odps import ODPS
+from odps.df import DataFrame
+
+odps = ODPS( 'your-access-id', 'your-access-key', 'your-project', endpoint='your-endpoint')
+df = DataFrame(odps.get_table('your-table', project="your-project")).to_pandas()
+```
+
+## Preview
+```{python, eval=F}
+df.head(5)
+df.tail(10)
+df.columns # 列名
+df.dtypes # 类型
+df.describe() # 每列描述统计
+df.cov() # 协方差
+df.corr() # 相关系数
+```
+
+## Manipulate
+### filter
+```{python, eval=F}
+df[df.SepalLength>=5] 
+df[df.Species.isin(["setosa", "versicolor"])] # 根据一个list的取值范围过滤
+df[(df.PetalLength>=1) & (df.SepalWidth<3)] # 根据多个条件过滤
+```
+
+### rename
+```{python, eval=F}
+df2 = df.rename(columns={'old_columnname': 'new_columnname'})
+df.rename(columns={'old_columnname': 'new_columnname'}, inplace=True)
+```
+
+### slice
+```{python, eval=F}
+df[0:3] # 选取行
+```
+
+### select
+```{python, eval=F}
+df.flag # 选择一列
+df["flag"] # 选择一列
+df[["flag", "link"]] # 选择多列
+```
+
+### mutate
+```{python, eval=F}
+df.normal_cnt = df.total_cnt - df.abnormal_cnt
+```
+
+### group by
+
+```{python, eval=F}
+import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({'A' : ['foo', 'bar', 'foo', 'bar','foo', 'bar', 'foo', 'foo'],
+                   'B' : ['one', 'one', 'two', 'three', 'two', 'two', 'one', 'three'],
+                   'C' : np.random.randn(8),
+                   'D' : np.random.randn(8)})
+                   
+grouped = df.groupby(["A", "B"])
+
+# 选取某一个分组
+grouped.get_group(('foo','one'))
+
+# 分组迭代
+for name, group in grouped:
+    print name
+    print group
+
+# 分组聚合
+grouped.aggregate(np.sum) # 所有列使用一个聚合函数
+grouped['C'].agg([np.sum, np.mean, np.std]) # 选取一个列使用多个聚合函数
+grouped.agg([np.sum, np.mean, np.std]) # 所有列使用多个聚合函数
+grouped.agg({'C' : np.sum,
+             'D' : lambda x: np.std(x, ddof=1)}) # 每个列定制自己的聚合函数
+
+```
+
+### distinct
+```{python, eval=F}
+df['column1'].unique()
+```
+
+
+### union
+```{python, eval=F}
+pd.concat([df1, df2])
+```
+
+### join
+```{python, eval=F}
+pd.merge(df1, df2, on='column1', how='inner') # change how to ['left', 'right', 'outer']
+```
+
+### pivot table
+```{python, eval=F}
+pd.pivot_table(df, values='column1', index=['column2', 'column3'], columns=['column4']) # 默认采用sum聚合
+pd.pivot_table(df, values='column1', index=['column2', 'column3'], columns=['column4'], aggfunc=len) # 采用aggfunc自定义聚合函数  
+```
+
+### na
+```{python, eval=F}
+df1.dropna() # 删除含na的行和列
+df2.fillna(value=5) # 填充缺失值为5
+mean = df2['column1'].mean()
+df2['column1'].fillna(mean) # 用均值填充
+```
+
+### apply function
+#### by element
+```{python, eval=F}
+# map: iterate over each element of a series
+df['column1'].map(lambda x: 10+x) # add 10 to each element of column1
+df['column2'].map(lambda x: "AV"+x) # concatenae "AV" at the beginning of each element of column2
+
+# applymap: iterate over each element of a data frame
+df.applymap(lambda x: x+2)
+```
+
+#### by axis
+```{python, eval=F}
+df[['column1', 'column2']].apply(sum) # return the sum of all values of column1 and column2
+```
+
+
+
