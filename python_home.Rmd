@@ -4,6 +4,36 @@ output:
     highlight: textmate
 ---
 
+
+## Python与数据科学
+### Data Structure
+- [`ndarray`](py_numpy_ndarray.html)：多维数组
+
+
+### Visualise
+
+### Model
+- 估计器（Estimator）：分类器模型，主要包含两个方法`fit()`和`predict()`。
+- 转换器（Transformer）：数据预处理与数据转换，主要包含三个方法`fit()`、`transform()`、`fit_transform()`。
+- 流水线（Pipeline）：流水线的输入时一连串的数据挖掘步骤，最后一步必须是估计器，前几步是转换器；每步用元组（'名称'，步骤）来表示。
+- 预处理（Preprocessing）
+    + 规范化：`MinMaxScaler`，最大最小值规范化；`Normalizer`，每条数据各特征的和为1；`StandardScaler`，使各特征均值为0，方差为1
+    + 编码：`LabelEncoder`，将字符串类型的数据转化为整型；`OneHotEncoder`，特征用一个二进制数字来表示；`Binarizer`，将数值特征二值化；`MultiLabelBinarizer`，将多标签二值化。
+- 特征（Feature）
+    + 特征抽取：`sklearn.feature_extraction`
+    + 特征选择：`sklearn.feature_selection`
+- 降维：`sklearn.decomposition`
+- 组合：`sklearn.ensemble`
+- 评估：`sklearn.metrics`，包括`accuracy_score`，`confusion_matrix`，`classification_report`，`precision_recall_fscore_support`等
+- 交叉验证：`sklearn.cross_validation`
+- 网格搜索：`sklearn.grid_search`
+
+<hr>
+
+
+
+
+
 本系列文章介绍Python的编程基础。
 
 + [日期时间处理-Python篇](Python_datetime.html)

@@ -1,0 +1,72 @@
+---
+title: "使用tidyr对数据整形"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+**tidyr**的作用主要是对`data.frame`进行形状的改变，包括两大类功能：行列转化（宽表与长表转换）、列合并拆分。
+
+## 宽表与长表转换
+
+我们用下面的案例来说明长表与宽表的含义：
+
+**表1：长表**
+
+| 车辆  | 道路等级 | 日均覆盖里程 |
+| ----- | -------- | ------------ |
+| 车辆1 | 高速     | 100          |
+| 车辆2 | 高速     | 111          |
+| 车辆1 | 快速路   | 125          |
+| 车辆2 | 快速路   | 110          |
+| 车辆1 | 主要道路 | 30           |
+| 车辆2 | 主要道路 | 76           |
+
+**表2：宽表**
+
+| 车辆  | 高速覆盖里程 | 快速路覆盖里程 | 主要道路覆盖里程 |
+| ----- | ------------ | -------------- | ---------------- |
+| 车辆1 | 100          | 125            | 30               |
+| 车辆2 | 111          | 110            | 76               |
+
+
+按照Hadley Wickham的说法，长表是tidy的，因为每一行是一个observation，每一列是一个variable。
+
+
+
+**tidyr**提供了两个函数完成两种形式的转换：`gather()`将宽表变为长表；`spread()`将长表变为宽表。
+
+``` {r, eval=F}
+library(tidyr)
+
+table1 <- table2 %>% gather(道路等级, 日均覆盖里程,  one_of(c("高速覆盖里程", "快速路覆盖里程", "主要道路覆盖里程")))
+table2 <- table11 %>% spread(道路等级, 日均覆盖里程)
+```
+
+这里着重说一下`gather()`的最后一个参数，用于指定要gather的列，x:y表示从x到y的列，-z表示不包括z列。还可以使用**dplyr**包的`select()`的`option`表达式进行列的选取，示例代码使用了`one_of()`表达式。
+
+
+## 列合并与拆分
+
+**tidyr**还提供了两个重要函数：`separate()`用于将一个列按照指定的分隔符分为多个列；`unite()`用于将多个列按照指定的分隔符合并为一个列。
+
+``` {r, eval=F}
+# 合并列
+## unite()直接使用列名即可，unite_()需要在列名两边使用引号
+demo <- iris %>% 
+  unite(unite_sepal, Sepal.Length, Sepal.Width, sep="_", remove=TRUE) %>%
+  unite_("unite_petal", c("Petal.Length", "Petal.Width"), sep="_", remove=TRUE)
+
+# 拆分列
+## separate()直接使用列名，separate_()需要在列名两边使用引号
+demo %>%
+  separate(unite_sepal, c("Sepal.Length", "Sepal.Width"), sep="_") %>%
+  separate_("unite_petal", c("Petal.Length", "Petal.Width"), sep="_")
+
+```
+
+需要指出的是，**tidyr**的拆分列功能只能拆分为固定列数，如果某一行的拆分结果不足这个列数或超出这个列数，需要选择不足时的填充策略和过多时的处理策略，具体设置参看`fill`和`extra`选项。
+
+如果想要将一列按照分隔符拆分成多行，**tidyr**无法完成这个功能，请移步**splitstackshape**包的`cSplit()`函数。

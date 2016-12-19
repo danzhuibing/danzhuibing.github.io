@@ -1,0 +1,66 @@
+---
+title: "使用dplyr进行数据框处理"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+## 前言
+
+数据科学里最重要的数据形式是表格。对表格的操作接口最经典的是SQL。但是SQL语句的风格过于松散，不便于组织成逻辑清晰的代码。**dplyr**包可以理解为实现了SQL接口的一套函数，通过组合使用这一套函数可以完成几乎所有的表格数据打理工作。
+
+
+## 管道操作符
+
+**dplyr**继承了**magrittr**的管道操作符`%>%`，该符号将左边的对象作为第一个参数传递到右边的函数中，这样就实现类似unix管道的编程风格，代码更易读。
+
+## 抽取子集
+**dplyr**可以方便地抽取数据框的子集。抽取行的子集函数有`filter`，`distinct`，`sample_frac`，`sample_n`，`slice`，`top_n`。抽取列的子集函数是`select`，可通过列名或选项函数进行选择，常见的选项函数有`contains(".")`，`ends_with("Length")`，`starts_with("Sepal")`，`everything()`，`matches(".t.")`，`num_range("x", 1:5)`，`one_of(c("Species", "Genus"))`。
+
+## 排序
+
+**dplyr**提供了函数`arrange`，方便按照某一列进行数据排序。
+
+``` {r, eval=F}
+arrange(mtcars, mpg) # 从低到高
+arrange(mtcars, desc(mpg)) # 从高到低
+```
+
+## join
+
+**dplyr**可以方便地进行数据集的合并。
+
+``` {r, eval=F}
+left_join(a, b, by="x1")
+right_join(a, b, by="x1")
+inner_join(a, b, by="x1")
+outer_join(a, b, by="x1")
+semi_join(a, b, by="x1") # 数据集a中能与数据集b匹配的记录
+anti_join(a, b, by="x1") # 数据集a中雨数据集b不匹配的记录
+```
+
+**dplyr**还提供了`intersection`、`union`和`setdiff`用于获得两个数据集的交集、并集和差集。
+
+## 合并
+**dplyr**可以方便地进行数据集的拼接。`bind_rows(y, z)`将数据集z按行拼接到数据集y中，`bind_cols(y, z)`将数据集z按列拼接到数据集y中。
+
+## 分组
+
+**dplyr**可以方便地对数据框进行分组统计。首先调用`group_by`方法，确定分组规则，然后调用下面的聚合算子完成统计操作：
+
+- `summarise(iris, avg=mean(Sepal.Length))`：将数据概括为单行结果输出；
+- `summarise_each(iris, funs(mean))`：对每一列运行概述函数；支持的概述函数有`first`，`last`，`nth`，`n`，`n_distinct`，`min`，`max`，`mean`，`median`，`var`，`sd`。
+
+dplyr可以方便地进行变量运算：
+
+- `mutate(iris, sepal=Sepal.Length+Sepal.Width)`计算并添加一个或多个新列；
+- `mutate_each(iris, funs(min_rank))`对每一列运行窗口函数；常见的窗口函数有`row_number`，`min_rank`，`percent_rank`，`cumsum`等。
+
+一般来讲，分组统计的编码模式如下：
+
+``` {r, eval=F}
+iris %>% group_by(Species) %>% summarise(...)
+iris %>% group_by(Species) %>% mutate(...)
+```

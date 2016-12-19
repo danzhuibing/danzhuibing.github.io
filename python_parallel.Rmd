@@ -1,0 +1,75 @@
+---
+title: "Python并发编程"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=F)
+```
+
+Python有一个特性一直被诟病：全局解释锁（Global Interpreter Lock，GIL）。因为这个限制，Python的多线程程序任意一个时刻只能有一个线程真正被执行，不能充分利用多CPU的计算能力。在了解到Python这个特性之后很长的一段时间里，我不再写多线程的程序，所有的并发都使用多进程实现。后来，我发现自己对这个特性的理解还太肤浅，多线程程序虽然有这个限制，但还是有很多场景下适合用多线程做并发。简而言之，在IO密集型任务中，建议使用多线程手段。Python的并发任务，我们可以划分为两类，CPU密集型和IO密集型；Python的多进程不受GIL的限制，可以充分利用多核CPU的计算能力，适用于CPU密集型任务。关于IO密集型任务的详细含义请参考下面的引文：
+
+
+> Many programs, particularly those relating to network programming or data input/output (I/O) are often network-bound or I/O bound. This means that the Python interpreter is awaiting the result of a function call that is manipulating data from a "remote" source such as a network address or hard disk. Such access is far slower than reading from local memory or a CPU-cache.For example, consider a Python code that is scraping many web URLs. Given that each URL will have an associated download time well in excess of the CPU processing capability of the computer, a single-threaded implementation will be significantly I/O bound. By adding a new thread for each download resource, the code can download multiple data sources in parallel and combine the results at the end of every download. This means that each subsequent download is not waiting on the download of earlier web pages. In this case the program is now bound by the bandwidth limitations of the client/server(s) instead. [出处](https://www.quantstart.com/articles/Parallelising-Python-with-Threading-and-Multiprocessing)
+
+
+在Python的标准模块中，多线程可以用thread模块实现，多进程可以用multiprocessing模块实现。然而，面对多线程/多进程并发类的任务，其实有一套统一的优雅的编写方法：multiprocessing模块有一个multiprocessing.dummy子模块，可以将多进程的代码变为多线程。
+
+本文以进程池和线程池为例，讲解这套编写模式的效果。
+
+``` {python, eval=F}
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# @description: 并发执行shell命令
+# @author: shuiping.chen@alibaba-inc.com
+# @date: 2016-10-27
+#
+
+from optparse import OptionParser
+import subprocess
+import sys, os, time
+from multiprocessing.dummy import Pool
+
+
+def gen_cmd_list(file):
+    with open(file, "r") as f:
+        cmd_str = f.read().split(";")
+    return cmd_str 
+
+def func(cmd):
+    try:
+        subprocess.call(cmd, shell=True)
+    except Exception, e:
+        return "fail with cmd: %s, Exception [e]" % (cmd, e)
+    if hasattr(os, 'getppid'):
+        return "done with parent pid [%d] and pid [%d] with cmd: %s" % (os.getppid(), os.getpid(), cmd)
+    return "done with pid [%d] with cmd: %s" % (os.getpid(), cmd)
+
+if __name__ == '__main__':
+    usage_string = "usage: python %prog [options] arg"
+    parser = OptionParser(usage=usage_string)
+    parser.add_option('-f', dest="cmd_file", default=None,
+                help='specify the targeted cmd file')
+    parser.add_option('-n', dest="pool_process_num", default=1,
+                help='specify the pool process num')
+    (options, args) = parser.parse_args()
+    if options.cmd_file == None:
+        print '-f argument should not be empty'
+        sys.exit(1)
+
+    home = sys.path[0]
+    cmd_list = gen_cmd_list(options.cmd_file)
+    pool = Pool(processes=options.pool_process_num)
+    result = []
+    for i in range(len(cmd_list)-1):
+        result.append(pool.apply_async(func, (cmd_list[i],)))
+    pool.close()
+    pool.join()
+    print "######### RESULT OF POOL ###########"
+    for res in result:
+        print ":::", res.get()
+
+```
+
+上面的代码的`-f`选项指定一个文件，文件包含多个shell命令，之间用分号分割；`-p`选项指定进程池/线程池的大小。代码运行模式是线程池。将`from multiprocessing.dummy import Pool`替换为`from multiprocessing import Pool`，运行模式变为进程池。

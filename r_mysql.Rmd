@@ -1,0 +1,80 @@
+---
+title: "R连接MySQL"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+## 前言
+MySQL是最常用的数据库之一，数据分析师经常需要从MySQL读取数据做进一步的处理。本文对如何使用R包`RMySQL`完成基本的数据操作进行讲解。
+
+``` {r, eval=F}
+install.packages("RMySQL")
+```
+
+数据库的基本操作包括：
+
+- 连接数据库与断开连接
+- 执行SQL查询
+- 获取查询结果
+- 错误与异常处理
+- 获取数据库元信息
+- 事务管理
+
+
+## 示例代码
+
+``` {r, eval=F}
+library(RMySQL)
+host <-"xxx.ooo.m.tt"
+pass <- "123456"
+user <- "rmysql"
+db <- "rmysql"
+port <- 3306
+
+# 建立连接
+con <- dbConnect(MySQL(), dbname = db, username=user, password=pass, host=host, port=port)
+
+# 列出数据库的所有表
+dbListTables(con)
+
+# 将数据框写为一张表
+dbWriteTable(con, "mtcars", mtcars, row.names=FALSE, overwrite=TRUE)
+dbListTables(con)
+
+# 设置字符编码
+dbSendQuery(conn,'SET NAMES gbk')
+
+# 列出一张表的所有字段
+dbListFields(con, "mtcars")
+
+# 将一张表读取为数据框
+df <- dbReadTable(con, "mtcars")
+
+# 使用底层借口读取表格为一个数据框
+res <- dbSendQuery(con, "SELECT * FROM mtcars WHERE cyl = 4")
+df <- dbFetch(res)
+dbClearResult(res)
+
+# 执行自定义的SQL语句，并自由解析
+res <- dbSendQuery(con, "SELECT * FROM mtcars WHERE cyl = 4")
+while(!dbHasCompleted(res)){
+  chunk <- dbFetch(res, n = 5)
+  print(nrow(chunk))
+}
+dbClearResult(res)
+
+# 执行SQL，将结果读取为数据框
+df <- dbGetQuery(con, "SELECT * FROM mtcars WHERE cyl = 4")
+
+# 删除表
+if(dbExistsTable(con, "mtcars")) {
+  dbRemoveTable(con, "mtcars")
+}
+
+# 关闭连接
+dbDisconnect(con)
+```
+

@@ -13,22 +13,22 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# 前言
-numpy对python的意义非凡，在数据分析与机器学习领域为python立下了汗马功劳。现在用python搞数据分析或机器学习经常使用的pandas、matplotlib、sklearn等库，都需要基于numpy构建。毫不夸张地说，没有numpy，python今天在数据分析与机器学习领域只能是捉襟见肘。
+## 前言
+numpy对python的意义非凡，在数据分析与机器学习领域为python立下了汗马功劳。现在用python搞数据分析或机器学习经常使用的pandas、matplotlib、sklearn等库，都需要基于numpy构建。
 
-## 关于数据分析语言
+### 关于数据分析语言
 数据分析面向的数据大多数是二维表。一门好的数据分析语言，首先需要能够直接有个数据结构存下这个二维表，然后要配上一套成熟的类SQL的数据操作接口，最后要有一套好用的可视化工具。R语言就是一个极好的典范：用内置的data.frame结构做数据的存储；data.frame本身提供足够强大的数据操作能力，另有dplyr、tidyr、data.table、plyr、reshape2等库提供更好用更高效的数据操作能力；在绘图上，除了基本的plot功能外，还提供了ggplot2这样一套优雅的绘图语言，还通过htmlwidget库与javascript各种绘图库建立了紧密的联系，让可视化的动态展示效果更进一步。Excel也是一个极好的例子，有单元格这种灵活的结构为数据存储做支撑，有大量的函数实现灵活的操作，也有强大的绘图系统。
 
 python目前在数据分析领域也已经具备了相当可观的能力，包括pandas库实现的DataFrame结构，pandas本身提供的数据操作能力，matplotlib提供的数据可视化能力，而这一切都离不开numpy库。
 
-## 关于机器学习语言
+### 关于机器学习语言
 一般来讲，一门好的机器学习语言在数据分析上也一定很吃得开，因为数据分析往往是机器学习的基础。但是机器学习的要求更高，因为在模型训练阶段往往需要较为复杂的参数估计运算，因此语言需要具备较强的科学计算能力。科学计算能力，最核心的就是矩阵运算能力。关于矩阵运算能力，[这篇文章](http://sebastianraschka.com/Articles/2014_matrix_cheatsheet.html)对各种语言有很好的比较。
 
 如果没有numpy，python内部只能用list或array来表示矩阵。假如用list来表示[1,2,3]，由于list的元素可以是任何对象，因此list中所保存的是对象的指针，所以需要有3个指针和三个整数对象，比较浪费内存和CPU计算时间。python的array和list不同，它直接保存数值，和C语言的一维数组比较类似，但是不支持多维，表达形式很简陋，写科学计算的算法很难受。numpy弥补了这些不足，其提供的ndarray是存储单一数据类型的多维数组，且采用预编译好的C语言代码，性能上的表现也十分不错。
 
 python最流行的机器学习库sklearn构建在numpy之上，提供了各种标准机器学习模型的训练与预测接口，其中模型训练接口的内部实现是基于numpy库实现的。比如很常见的线性回归模型，参数估计调用的是numpy.linalg.lstsq函数。
 
-# numpy的核心结构：ndarray
+## 核心结构：ndarray
 > 以下内容摘录自[用Python做科学计算](http://old.sebug.net/paper/books/scipydoc/index.html)
 
 ``` {python, eval=F}
@@ -45,6 +45,46 @@ ndarray是numpy的核心数据结构。我们来看一下ndarray如何在内存�
 数据存储区域保存着数组中所有元素的二进制数据，dtype对象则知道如何将元素的二进制数据转换为可用的值。数组的维数、大小等信息都保存在ndarray数组对象的数据结构中。
 
 strides中保存的是当每个轴的下标增加1时，数据存储区中的指针所增加的字节数。例如图中的strides为12,4，即第0轴的下标增加1时，数据的地址增加12个字节：即a[1,0]的地址比a[0,0]的地址要高12个字节，正好是3个单精度浮点数的总字节数；第1轴下标增加1时，数据的地址增加4个字节，正好是单精度浮点数的字节数。
+
+## 创建ndarray
+
+``` {python, eval=F}
+import numpy as np
+
+# 从python的list转换
+x = np.array([[1,2.0],[0,0],(1+1j,3.)])
+
+# 使用numpy的创建函数
+np.zeros((2, 3))
+np.arange(2, 3, 0.1) # start, end, step
+np.linspace(1., 4., 6) # start, end, num
+np.indices((3, 3)) # 返回一个array，元素0是行下标，元素1是列下标；行下标为一个3*3二维array，对应3*3矩阵的行下标；列下标为一个3*3二维array，对应3*3矩阵的列下标
+
+# 从文本文件读取
+ndtype=[('a',int), ('b', float), ('c', int)]
+names = ["A", "B", "C"]
+np.genfromtxt("file_name.txt", 
+  delimiter=",",
+  names=names,
+  dtype=ndtype, 
+  autostrip=True,
+  comments="#",
+  skip_header=3, 
+  skip_footer=5,
+  usecols=(0, -1))
+
+```
+
+
+## ndarray索引
+``` {python, eval=F}
+x = np.arange(10)
+x.shape = (2,5) 
+x[0][2]
+x[:,0:5:2]
+
+```
+
 
 > 以下内容总结自Numpy官方文档[Numpy basics](http://docs.scipy.org/doc/numpy/user/quickstart.html)
 
@@ -88,7 +128,11 @@ a
 
 可以看到numpy和R在矩阵的分片操作有不同的设计理念：在R里分片操作会引起数据的复制，在numpy里不会。事实上，R的设计理念很多时候可以用一句话来概括：copy on modify，一旦对数据有修改就会引起内存上的复制操作，这个操作要花不少时间，因此经常会听到人们抱怨R费内存且速度慢。所以，我们可以看到numpy在处理这件事情上明显要用心很多，根据场景设计了不同的策略，不是简单地采用R的一刀切方式。当然，这也带来了一些学习成本，需要对numpy足够熟悉才能避免踩坑。R社区里对copy on modify的哲学也有诟病并在努力改变，比如同是data.frame操作库的data.table和dplyr，data.table性能比dplyr高很多，部分原因也是data.table规避了copy on modify的方式。
 
-# Structured Array
+
+
+
+
+## Structured Array
 根据numpy的官方文档，定义结构化数组有四种方式。本文采用字典方法，通过定义一个dtype对象实现，需要指定的键值有names和formats。我们用IPython的计时函数看一下提取数据的效率：
 
 ``` {python}
