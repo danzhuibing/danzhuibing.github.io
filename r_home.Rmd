@@ -22,9 +22,9 @@ R社区需要感谢一家有情怀的公司**RStudio**，里面有许多大家�
 我依照这个结构把自己的R语言学习笔记整理放在下面，供感兴趣的朋友查阅。
 
 ### Import
-- [读取文本](R_read_write_text.html)：**readr**
+- [读取文本](r_read_write_text.html)：**readr**
 - [读取Excel](r_read_write_excel.html)：**readxl**, **xlsx**
-- [读取MSQL](r_mysql.html)：**RMySQL**
+- [读取MySQL](r_mysql.html)：**RMySQL**
 - 网络请求：**httr**
 
 ### Transform
