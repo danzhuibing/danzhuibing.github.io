@@ -1,0 +1,104 @@
+---
+title: "R绘图布局grid"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+在一个空间上绘制多张统计图形，需要有一个布局工具。本文讲解`grid`包在绘图布局上的重要概念和基本模式。
+
+## viewport
+`viewport`是**grid**包的核心对象，说简单点就是一个矩形的绘图区域。
+
+创建viewport时，可以指定以下几个重要参数：
+
+- x：绘图区域相对页面左下角原点的x坐标，默认单位为npc，Normalised Parent Coordinates，含义是归一化的父区域坐标
+- y：绘图区域相对页面左下角原点的y坐标
+- width：绘图区域的宽度（x轴方向）
+- height：绘图区域的高度（y轴方向）
+- just：x和y所指的位置，默认为矩形中心位置
+- angle：将绘图区域旋转多少度
+- name：此viewport的名字，用于搜索和定位
+
+通过`grid.show.viewport()`可以用可视化的方式了解到每个参数的含义：
+
+```{r}
+library(grid)
+grid.show.viewport(viewport(x=0.6, y=0.6, width=unit(1, "inches"), height=unit(1, "inches"), angle=30))
+```
+
+
+ggplot2的绘图结果默认情况下是打开一个全新的页面绘制。如果要在一个页面上绘制多个图形，可以使用`print.ggplot()`函数。这个函数有一个选项`vp`，可以指定这个图形要绘制的viewport的位置。绘图过程中可以使用`grid.newpage()`创建一个全新的空白页面。我们在下面举一个例子：
+
+```{r}
+library(grid)
+library(ggplot2)
+# prepare ggplot charts
+p.hist.len <- ggplot(iris) + geom_histogram(aes(x=Sepal.Length))
+p.hist.wid <- ggplot(iris) + geom_histogram(aes(x=Sepal.Width)) + coord_flip()
+p.scatter <- ggplot(iris) + geom_point(aes(x=Sepal.Length, y=Sepal.Width))
+
+# create viewports
+grid.newpage()
+vp.len <- viewport(x=0, y=0.66, width=0.66, height=0.34, just=c("left", "bottom"))
+vp.wid <- viewport(x=0.66, y=0, width=0.34, height=0.66, just=c("left", "bottom"))
+vp.scatter <- viewport(x=0, y=0, width=0.66, height=0.66, just=c("left", "bottom"))
+
+# direct the charts into the specified viewport
+print(p.hist.len, vp=vp.len)
+print(p.hist.wid, vp=vp.wid)
+print(p.scatter, vp=vp.scatter)
+```
+
+
+## viewport树
+
+grid可以创建多个viewport，所有的viewport组织成一棵树。grid提供了一套函数用于管理viewport对象。任何一个时刻，有一个当前viewport对象，初始状态下为树的根节点viewport。使用`pushViewport()`可以将指定的viewport插入到当前viewport的子节点中，同时当前viewport对象移动为刚刚插入的viewport；使用`popViewport()`可以删除当前viewport，同时当前viewport改为刚刚删除的viewport的父节点；使用`upViewport()`当前viewport移动到父节点；使用`downViewport()`当前viewport移动到指定name的子节点；使用`seekViewport()`在整棵树范围内搜索指定name的viewport，将其设置为当前viewport。
+
+
+```{r}
+# top left panel
+grid.newpage()
+vp.len <- viewport(x=0, y=0.66, width=0.66, height=0.34, just=c("left", "bottom"))
+pushViewport(vp.len)
+print(p.hist.len, newpage=F)
+upViewport() # 返回父节点
+
+# bottom right panel
+vp.wid <- viewport(x=0.66, y=0, width=0.34, height=0.66, just=c("left", "bottom"))
+pushViewport(vp.wid)
+print(p.hist.wid, newpage=F)
+upViewport()
+
+# bottom left panel
+vp.scatter <- viewport(x=0, y=0, width=0.66, height=0.66, just=c("left", "bottom"))
+pushViewport(vp.scatter)
+print(p.scatter, newpage=F)
+upViewport()
+```
+
+## viewport行列布局
+viewport还支持行列布局，前面提到`viewport`函数，还有几个参数我们还没涉及：
+
+- layout：`grid.layout`对象，用于将当前viewport拆分为子区域
+- layout.pos.row：创建的viewport在父节点layout的行位置
+- layout.pos.col：创建的viewport在父节点layout的列位置
+
+我们来看一下`grid.layout()`的参数：
+
+- nrow：将该区域拆分为几行
+- ncol：将该区域拆分为几列
+- widths：每个子区域的宽度，向量长度等于ncol
+- heights：每个子区域的高度，向量长度等于nrow
+
+我们来演示下这种方法生成上图的过程：
+
+```{r}
+grid.newpage()
+pushViewport(viewport(layout = grid.layout(3, 3)))
+print(p.scatter, vp=viewport(layout.pos.row=2:3, layout.pos.col=1:2))
+print(p.hist.len, vp=viewport(layout.pos.row=1, layout.pos.col=1:2))
+print(p.hist.wid, vp=viewport(layout.pos.row=2:3, layout.pos.col=3))
+```

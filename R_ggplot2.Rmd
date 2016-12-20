@@ -116,7 +116,6 @@ p.box.facet
 ``` {r}
 library(grid)
 # Show bivariate scatter plot and univariate histogram
-vplayout <- function(x, y) viewport(layout.pos.row = x, layout.pos.col = y)
 p.hist.len <- ggplot(iris) + geom_histogram(aes(x=Sepal.Length))
 p.hist.wid <- ggplot(iris) + geom_histogram(aes(x=Sepal.Width)) + coord_flip()
 grid.newpage()
