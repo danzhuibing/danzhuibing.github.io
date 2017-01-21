@@ -125,3 +125,51 @@ $$gini_{age}(D)=\frac{5}{14}g(2,3)+\frac{4}{14}g(4,0)+\frac{5}{14}g(3,2)$$
 
 ## 过拟合与剪枝
 过度拟合问题是对训练数据完全拟合的决策树对新数据的预测能力较低。为了解决这个问题，有两种解决方法。第一种方法是前剪枝(prepruning)，即事先设定一个分裂阈值，若分裂得到的信息增益不大于这个阈值，则停止分裂。第二种方法是后剪枝（postpruning），首先生成与训练集完全拟合的决策树，然后自下而上地逐层剪枝，如果一个节点的子节点被删除后，决策树的准确度没有降低，那么就将该节点设置为叶节点（基于的原则是Occam剪刀：具有相似效果的两个模型选择较简单的那个）。
+
+## 决策树的优缺点
+
+本节讨论的决策树优缺点摘录自《集成智慧编程》
+
+优点有：
+
+* 最大的优势是易于解释
+* 同时接受categorical和numerical数据，不需要做预处理或归一化。
+* 允许结果是不确定的：叶子节点具有多种可能的结果值却无法进一步拆分，可以统计count，评估出一个概率。
+
+缺点有：
+
+* 对于只有几种可能结果的问题，算法很有效；面对拥有大量可能结果的数据集时，决策树会变得异常复杂，预测效果也可能会大打折扣。
+* 尽管能处理简单的数值型数据，但只能创建满足“大于/小于”条件的节点。若决定分类的因素取决于更多变量的复杂组合，此时要根据决策树进行分类就会比较困难了。例如，假设结果值是由两个变量的差来决定的，那么这棵树会变得异常庞大，而且预测的准确性也会迅速下降。
+
+总而言之：决策树最适合用来处理的，是那些带分界点的、由大量分类数据和数值数据共同组成的数据集。
+
+关于书中提到的**假设结果值是由两个变量的差来决定的，那么这棵树会变得异常庞大，而且预测的准确性也会迅速下降**，我们可以用下面的例子来实验一下：
+
+``` {r, warning=F,message=F}
+library(rpart)
+library(rpart.plot)
+library(dplyr)
+
+# 生成训练数据
+age1 <- as.integer(runif(1000, min=18, max=30))
+age2 <- as.integer(runif(1000, min=18, max=30))
+df <- data.frame(cbind(age1, age2))
+df <- df %>% mutate(diff=age1-age2, label = diff >= 0 & diff <= 5)
+
+ct <- rpart.control(xval=10, minsplit=20, cp=0.01) 
+
+# 使用age1与age2预测
+cfit <- rpart(label~age1+age2,
+              data=df, method="class", control=ct,
+              parms=list(split="gini")
+)
+rpart.plot(cfit,  main="Decision Tree");  
+
+# 使用diff预测
+cfit <- rpart(label~diff,
+              data=df, method="class", control=ct,
+              parms=list(split="gini")
+)
+rpart.plot(cfit, main="Decision Tree");  
+```
+
