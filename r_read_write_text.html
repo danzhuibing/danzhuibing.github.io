@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>R读写文本</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">R读写文本</h1>
+
+</div>
+
+
+<div class="section level2">
+<h2>前言</h2>
+<p>文本是数据分析师接触最多的一种数据，本文讲解如何使用R对其进行读写，使用<strong>readr</strong>这个包：</p>
+<pre class="r"><code>install.packages(&quot;readr&quot;)</code></pre>
+</div>
+<div class="section level2">
+<h2>读取文本</h2>
+<div class="section level3">
+<h3>基础</h3>
+<p><strong>readr</strong>提供许多工具函数用于读取不同类型的文件：</p>
+<ul>
+<li>分隔符：<code>read_csv()</code>读取逗号分隔的文件；<code>read_csv2()</code>读取分号分隔的文件；<code>read_tsv()</code>读取<code>\t</code>分隔的文件；<code>read_delim()</code>读取任意分隔符分隔的文件。</li>
+<li>固定宽度：<code>read_fwf()</code>读取固定宽度的文件，指定宽度的方法包括三种，一是<code>fwf_empty()</code>，获取一个或多个空格形成的空白位置，并用其拆分列，这种模式被封装为另一个函数<code>read_table()</code>；二是<code>fwf_widths()</code>，指定每个字段的宽度；三是<code>fwf_positions()</code>，提供两个<code>vector</code>，分别指定每个字段的起始位置和结束位置。</li>
+<li>日志：<code>read_log()</code>读取Apache风格的日志，更高级的功能可以使用<strong>webreadr</strong>包。</li>
+</ul>
+<p>本文只讲解<code>read_csv()</code>方法，其余方法类似。</p>
+<p><code>read_csv()</code>的第一个参数是文件路径，另有几个常用的选项：</p>
+<ul>
+<li><code>skip=n</code>：跳过前n行；</li>
+<li><code>comment=&quot;#&quot;</code>：忽略以#开头的所有行；</li>
+<li><code>col_names = FALSE</code>：告诉<strong>readr</strong>文件不包含列名；</li>
+<li><code>na=&quot;NA&quot;</code>：告诉<strong>readr</strong>文件中的NA字符串代表空值</li>
+</ul>
+<p>绝大多数情况下，上面的这些知识就足够用来读取文本了。<strong>readr</strong>提供的这些工具比R内置的<code>read.table()</code>系列函数效率要高十几倍。如果文件还是太大，读的还是太慢，可以移步<strong>data.table</strong>包，试一下<code>fread()</code>函数。</p>
+</div>
+<div class="section level3">
+<h3>进阶</h3>
+<p>如果读取文件遇到了问题，那就需要这些知识帮助你正确地读入文件。</p>
+<p>首先，我们要知道<code>data.frame</code>是按列存储的，每一列是一个向量。<strong>readr</strong>的底层原理是：读取文件的前1000行，对1000行的每一列去推断它最可能的类型。所以以下情况就会出错：假设一列数据是<code>numeric</code>类型，但是前1000行是整数，所以被错误地判断为<code>integer</code>类型，导致这列后续的值读取出错；又或者这一列的前1000行是缺失值，会被错误地判断为<code>character</code>类型，导致这列后续的值虽然被读入，但类型不对。你可以使用下面的选项推测类型时修改读取的行数：</p>
+<ul>
+<li><code>guess_max = 1001</code>：读取前1001行推断每列类型。</li>
+</ul>
+<p>每一列数据最开始都被当做是字符串，<strong>readr</strong>一共有以下几类解析器，试图将其解析为对应的格式：</p>
+<ul>
+<li><code>parse_logical()</code>和<code>parse_integer()</code></li>
+<li><code>parse_double()</code></li>
+<li><code>parse_character()</code>：主要得处理编码问题</li>
+<li><code>parse_factor()</code></li>
+<li><code>parse_datetime()</code>、<code>parse_date()</code>和<code>parse_time()</code>：针对日期时间处理</li>
+</ul>
+<p>调用<code>read_csv()</code>失败后会返回解析失败的几行数据，用<code>problems()</code>可以观察所有的出错结果。根据观察结果，你可以使用以下选项人工指定每一列的类型：</p>
+<ul>
+<li><code>col_types = cols(x = col_integer(), y = col_character())</code>：指定x为整数类型，指定y为字符串类型。</li>
+<li><code>col_types = cols(.default = col_character())</code>：让未声明类型的每一列都按照字符串类型读取。</li>
+</ul>
+<p>上述的每个<code>parse_xyz()</code>对应一个<code>col_xyz()</code>类型。</p>
+</div>
+</div>
+<div class="section level2">
+<h2>输出文本</h2>
+<p><strong>readr</strong>提供两个函数将数据写入到磁盘：<code>write_csv()</code>和<code>write_tsv()</code>。在写出过程中，字符串的编码使用UTF-8，日期时间格式按照ISO8601输出。</p>
+<p>如果希望输出的csv文件提供给Excel，请使用<code>write_excel_csv()</code>，这个函数将在文件的开头写入一些标记，让Excel知道文件是使用UTF-8编码。</p>
+<p>输出文本的常用选项有：</p>
+<ul>
+<li><code>x=df</code>：要输出的<code>data.frame</code>数据；</li>
+<li><code>path=file_name</code>：保存的文件路径；</li>
+<li><code>na=&quot;.&quot;</code>：代表空值的字符串输出；</li>
+<li><code>append=FALSE</code>：是否追加模式。</li>
+</ul>
+<p>除了输出文本，<strong>readr</strong>还支持输出二进制格式。RDS是R自定义的一种二进制编码格式，通过<code>write_rds()</code>和<code>read_rds()</code>可以完成这种格式文件的读写。</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

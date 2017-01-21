@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>R包发布-以线性回归为例</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">R包发布-以线性回归为例</h1>
+
+</div>
+
+
+<p>参考文献 &gt; Friedrich Leisch, “Createing R Packages: A Tutorial”, 2009</p>
+<div class="section level1">
+<h1>自行实现线性回归模型的参数估计</h1>
+<pre class="r"><code># 线性回归模型：y = X&#39;beta + epsilon
+# 最小二乘法：beta_est = (X&#39;X)^-1X&#39;y
+## 直接求逆的数值计算不好，采用QR分解求逆
+## qr函数用于获得QR分解
+## solve.qr(qx, y)用于求解y = X&#39;beta_est的beta_est
+## chol2inv(qr)用于求解(X&#39;X)^-1
+# 参数检验t分布的自由度: 观测数-特征数-1，1是截距，即观测数-列数
+# 参数估计的协方差矩阵：VAR(beta_est) = VAR(y) * (X&#39;X)^-1
+linmodEst &lt;- function(x, y) {
+  qx &lt;- qr(x)
+  coef &lt;- solve.qr(qx, y)
+  df &lt;- nrow(x) - ncol(x)
+  sigma2 &lt;- sum((y - x%*%coef)^2)/df
+  vcov &lt;- sigma2 * chol2inv(qx$qr)
+  colnames(vcov) &lt;- rownames(vcov) &lt;- colnames(x)
+  list(coefficients = coef,
+    vcov = vcov,
+    sigma = sqrt(sigma2),
+    df = df)
+}</code></pre>
+</div>
+<div id="s3" class="section level1">
+<h1>面向对象编程：S3模式</h1>
+<pre class="r"><code># 面向对象编程
+# 通过generic function和method dispatch实现多态
+# the same function performs different computations depending on the classes of its arguments.
+## 定义generic function
+linmod &lt;- function(x, ...) UseMethod(&quot;linmod&quot;)
+## 添加默认方法，在方法的最后将返回值的class参数设置为linmod
+linmod.default &lt;- function(x, y, ...)
+{
+  x &lt;- as.matrix(x)
+  y &lt;- as.numeric(y)
+ 
+  est &lt;- linmodEst(x, y)
+ 
+  est$fitted.values &lt;- as.vector(x %*% est$coefficients)
+  est$residuals &lt;- y - est$fitted.values
+  est$call &lt;- match.call()
+  class(est) &lt;- &quot;linmod&quot;
+  est
+}
+## print函数发现输入参数类型是linmod，会调用print.linmod函数
+print.linmod &lt;- function(x, ...)
+{
+  cat(&quot;Call:\n&quot;)
+  print(x$call)
+  cat(&quot;\nCoefficients:\n&quot;)
+  print(x$coefficients)
+}
+## summary函数发现输入参数类型是linmod，会调用summary.linmod函数
+summary.linmod &lt;- function(object, ...)
+{
+  se &lt;- sqrt(diag(object$vcov))
+  tval &lt;- coef(object) / se
+  TAB &lt;- cbind(Estimate = coef(object),
+               StdErr = se,
+               t.value = tval,
+               p.value = 2*pt(-abs(tval), df=object$df)
+               )
+  res &lt;- list(call=object$call,
+              coefficients=TAB)
+  class(res) &lt;- &quot;summary.linmod&quot;
+  res
+}
+## print发现summary返回的类型是summary.linmod，会调用print.summary.linmod
+## printCoefmat是内置的用来输出矩阵参数的方法，排版比较好看
+print.summary.linmod &lt;- function(x, ...)
+{
+  cat(&quot;Call:\n&quot;)
+  print(x$call)
+  cat(&quot;\n&quot;)
+ 
+  printCoefmat(x$coefficients, P.value=TRUE, has.Pvalue=TRUE)
+}</code></pre>
+</div>
+<div id="formula" class="section level1">
+<h1>怎么支持formula格式的参数</h1>
+<pre class="r"><code># R语言建模为什么可以接受formula的输入？
+## 输入参数是y~x1+x2+x3的formula
+## 首先会调用model.frame方法，从输入数据中提取出formula指定的列
+## 然后基于model.frame来构造X和y
+linmod.formula &lt;- function(formula, data=list(), ...)
+{
+  mf &lt;- model.frame(formula=formula, data=data)
+  x &lt;- model.matrix(attr(mf, &quot;terms&quot;), data=mf)
+  y &lt;- model.response(mf)
+  est &lt;- linmod.default(x, y, ...)
+  est$call &lt;- match.call()
+  est$formula &lt;- formula
+  est
+}
+# 预测模块
+predict.linmod &lt;- function(object, newdata=NULL, ...)
+{
+  if(is.null(newdata))
+    y &lt;- fitted(object)
+  else {
+    if(!is.null(object$formula)){
+      x &lt;- model.matrix(object$formula, newdata)
+    }
+    else {
+      x &lt;- newdata
+    }
+    y &lt;- as.vector(x %*% coef(object))
+  }
+  y
+}</code></pre>
+</div>
+<div id="r" class="section level1">
+<h1>怎么发布R包</h1>
+<p>首先在R里执行</p>
+<pre class="r"><code>package.skeleton(name=&quot;linmod&quot;, code_files=&quot;linmod.R&quot;)</code></pre>
+<p>修改DESCRIPTION文件</p>
+<pre class="text"><code>Package: linmod 
+Title: Linear Regression 
+Version: 1.0 
+Date: 2008-05-13 
+Author: Friedrich Leisch 
+Maintainer: Friedrich Leisch &lt;Friedrich.Leisch@R-project.org&gt; 
+Description: This is a demo package for the tutorial &quot;Creating R  Packages&quot; to Compstat 2008 in Porto. 
+Suggests: MASS 
+License: GPL-2</code></pre>
+<p>修改man目录下的文件为1个：</p>
+<pre class="r"><code>\name{linmod} 
+\alias{linmod} 
+\alias{linmod.default} 
+\alias{linmod.formula} 
+\alias{print.linmod} 
+\alias{predict.linmod} 
+\alias{summary.linmod} 
+\alias{print.summary.linmod} 
+\title{Linear Regression} 
+\description{Fit a linear regression model.} 
+\usage{
+linmod(x, ...)
+\method{linmod}{default}(x, y, ...) 
+\method{linmod}{formula}(formula, data = list(), ...) 
+\method{print}{linmod}(x, ...) 
+\method{summary}{linmod}(object, ...) 
+\method{predict}{linmod}(object, newdata=NULL, ...) } 
+\arguments{
+ \item{x}{ a numeric design matrix for the model. }  
+ \item{y}{ a numeric vector of responses. }  
+ \item{formula}{ a symbolic description of the model to be fit. }  
+ \item{data}{ an optional data frame containing the variables in the model. }  
+ \item{object}{ an object of class \code{&quot;linmod&quot;}, i.e., a fitted model. }  
+ \item{\dots}{ not used. }
+} 
+\value{An object of class \code{logreg}, basically a list including elements  
+\item{coefficients}{  a named vector of coefficients }  
+\item{vcov}{ covariance matrix of coefficients }  
+\item{fitted.values}{ fitted values }
+\item{residuals}{ residuals } }
+\author{Friedrich Leisch} 
+\examples{ 
+data(cats, package=&quot;MASS&quot;) 
+mod1 &lt;- linmod(Hwt~Bwt*Sex, data=cats) 
+mod1
+summary(mod1) 
+} 
+\keyword{regression}</code></pre>
+<p>在shell中执行</p>
+<pre class="shell"><code>R CMD INSTALL linmod</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

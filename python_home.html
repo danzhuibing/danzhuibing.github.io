@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title></title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<div id="python" class="section level2">
+<h2>Python与数据科学</h2>
+<div id="matrix" class="section level3">
+<h3>Matrix</h3>
+<ul>
+<li><a href="py_numpy_ndarray.html">numpy多维数组</a></li>
+</ul>
+</div>
+<div id="data-frame" class="section level3">
+<h3>Data Frame</h3>
+<ul>
+<li><a href="python_pandas.html">pandas数据分析</a></li>
+</ul>
+</div>
+<div id="visualise" class="section level3">
+<h3>Visualise</h3>
+<ul>
+<li><a href="python_matplotlib.html">matplotlib绘图</a></li>
+</ul>
+</div>
+<div id="model" class="section level3">
+<h3>Model</h3>
+<ul>
+<li>估计器（Estimator）：分类器模型，主要包含两个方法<code>fit()</code>和<code>predict()</code>。</li>
+<li>转换器（Transformer）：数据预处理与数据转换，主要包含三个方法<code>fit()</code>、<code>transform()</code>、<code>fit_transform()</code>。</li>
+<li>流水线（Pipeline）：流水线的输入时一连串的数据挖掘步骤，最后一步必须是估计器，前几步是转换器；每步用元组（‘名称’，步骤）来表示。</li>
+<li>预处理（Preprocessing）
+<ul>
+<li>规范化：<code>MinMaxScaler</code>，最大最小值规范化；<code>Normalizer</code>，每条数据各特征的和为1；<code>StandardScaler</code>，使各特征均值为0，方差为1</li>
+<li>编码：<code>LabelEncoder</code>，将字符串类型的数据转化为整型；<code>OneHotEncoder</code>，特征用一个二进制数字来表示；<code>Binarizer</code>，将数值特征二值化；<code>MultiLabelBinarizer</code>，将多标签二值化。</li>
+</ul></li>
+<li>特征（Feature）
+<ul>
+<li>特征抽取：<code>sklearn.feature_extraction</code></li>
+<li>特征选择：<code>sklearn.feature_selection</code></li>
+</ul></li>
+<li>降维：<code>sklearn.decomposition</code></li>
+<li>组合：<code>sklearn.ensemble</code></li>
+<li>评估：<code>sklearn.metrics</code>，包括<code>accuracy_score</code>，<code>confusion_matrix</code>，<code>classification_report</code>，<code>precision_recall_fscore_support</code>等</li>
+<li>交叉验证：<code>sklearn.cross_validation</code></li>
+<li>网格搜索：<code>sklearn.grid_search</code></li>
+</ul>
+<hr>
+<p>本系列文章介绍Python的编程基础。</p>
+<ul>
+<li><a href="Python_datetime.html">日期时间处理-Python篇</a></li>
+<li><a href="Python_JSON.html">JSON处理-Python篇</a></li>
+<li><a href="python_numpy.html">矩阵处理-Numpy基础</a></li>
+<li><a href="python_parallel.html">并发编程</a></li>
+<li><a href="left_python_right_r.html">左手python右手R</a></li>
+</ul>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

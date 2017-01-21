@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Python并发编程</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Python并发编程</h1>
+
+</div>
+
+
+<p>Python有一个特性一直被诟病：全局解释锁（Global Interpreter Lock，GIL）。因为这个限制，Python的多线程程序任意一个时刻只能有一个线程真正被执行，不能充分利用多CPU的计算能力。在了解到Python这个特性之后很长的一段时间里，我不再写多线程的程序，所有的并发都使用多进程实现。后来，我发现自己对这个特性的理解还太肤浅，多线程程序虽然有这个限制，但还是有很多场景下适合用多线程做并发。简而言之，在IO密集型任务中，建议使用多线程手段。Python的并发任务，我们可以划分为两类，CPU密集型和IO密集型；Python的多进程不受GIL的限制，可以充分利用多核CPU的计算能力，适用于CPU密集型任务。关于IO密集型任务的详细含义请参考下面的引文：</p>
+<blockquote>
+<p>Many programs, particularly those relating to network programming or data input/output (I/O) are often network-bound or I/O bound. This means that the Python interpreter is awaiting the result of a function call that is manipulating data from a “remote” source such as a network address or hard disk. Such access is far slower than reading from local memory or a CPU-cache.For example, consider a Python code that is scraping many web URLs. Given that each URL will have an associated download time well in excess of the CPU processing capability of the computer, a single-threaded implementation will be significantly I/O bound. By adding a new thread for each download resource, the code can download multiple data sources in parallel and combine the results at the end of every download. This means that each subsequent download is not waiting on the download of earlier web pages. In this case the program is now bound by the bandwidth limitations of the client/server(s) instead. <a href="https://www.quantstart.com/articles/Parallelising-Python-with-Threading-and-Multiprocessing">出处</a></p>
+</blockquote>
+<p>在Python的标准模块中，多线程可以用thread模块实现，多进程可以用multiprocessing模块实现。然而，面对多线程/多进程并发类的任务，其实有一套统一的优雅的编写方法：multiprocessing模块有一个multiprocessing.dummy子模块，可以将多进程的代码变为多线程。</p>
+<p>本文以进程池和线程池为例，讲解这套编写模式的效果。</p>
+<pre class="python"><code>#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# @description: 并发执行shell命令
+# @author: shuiping.chen@alibaba-inc.com
+# @date: 2016-10-27
+#
+
+from optparse import OptionParser
+import subprocess
+import sys, os, time
+from multiprocessing.dummy import Pool
+
+
+def gen_cmd_list(file):
+    with open(file, &quot;r&quot;) as f:
+        cmd_str = f.read().split(&quot;;&quot;)
+    return cmd_str 
+
+def func(cmd):
+    try:
+        subprocess.call(cmd, shell=True)
+    except Exception, e:
+        return &quot;fail with cmd: %s, Exception [e]&quot; % (cmd, e)
+    if hasattr(os, &#39;getppid&#39;):
+        return &quot;done with parent pid [%d] and pid [%d] with cmd: %s&quot; % (os.getppid(), os.getpid(), cmd)
+    return &quot;done with pid [%d] with cmd: %s&quot; % (os.getpid(), cmd)
+
+if __name__ == &#39;__main__&#39;:
+    usage_string = &quot;usage: python %prog [options] arg&quot;
+    parser = OptionParser(usage=usage_string)
+    parser.add_option(&#39;-f&#39;, dest=&quot;cmd_file&quot;, default=None,
+                help=&#39;specify the targeted cmd file&#39;)
+    parser.add_option(&#39;-n&#39;, dest=&quot;pool_process_num&quot;, default=1,
+                help=&#39;specify the pool process num&#39;)
+    (options, args) = parser.parse_args()
+    if options.cmd_file == None:
+        print &#39;-f argument should not be empty&#39;
+        sys.exit(1)
+
+    home = sys.path[0]
+    cmd_list = gen_cmd_list(options.cmd_file)
+    pool = Pool(processes=options.pool_process_num)
+    result = []
+    for i in range(len(cmd_list)-1):
+        result.append(pool.apply_async(func, (cmd_list[i],)))
+    pool.close()
+    pool.join()
+    print &quot;######### RESULT OF POOL ###########&quot;
+    for res in result:
+        print &quot;:::&quot;, res.get()
+</code></pre>
+<p>上面的代码的<code>-f</code>选项指定一个文件，文件包含多个shell命令，之间用分号分割；<code>-p</code>选项指定进程池/线程池的大小。代码运行模式是线程池。将<code>from multiprocessing.dummy import Pool</code>替换为<code>from multiprocessing import Pool</code>，运行模式变为进程池。</p>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

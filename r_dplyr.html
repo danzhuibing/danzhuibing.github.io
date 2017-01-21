@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>使用dplyr进行数据框处理</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">使用dplyr进行数据框处理</h1>
+
+</div>
+
+
+<div class="section level2">
+<h2>前言</h2>
+<p>数据科学里最重要的数据形式是表格。对表格的操作接口最经典的是SQL。但是SQL语句的风格过于松散，不便于组织成逻辑清晰的代码。<strong>dplyr</strong>包可以理解为实现了SQL接口的一套函数，通过组合使用这一套函数可以完成几乎所有的表格数据打理工作。</p>
+</div>
+<div class="section level2">
+<h2>编码风格：管道</h2>
+<p><strong>dplyr</strong>继承了<strong>magrittr</strong>的管道操作符<code>%&gt;%</code>，该符号将左边的对象作为第一个参数传递到右边的函数中，这样就实现类似unix管道的编程风格，代码更易读。</p>
+</div>
+<div id="where-select" class="section level2">
+<h2>抽取子集：where &amp; select</h2>
+<p><strong>dplyr</strong>可以方便地抽取数据框的子集：</p>
+<ul>
+<li>抽取行的子集函数有<code>filter</code>，<code>distinct</code>，<code>sample_frac</code>，<code>sample_n</code>，<code>slice</code>，<code>top_n</code></li>
+<li>抽取列的子集函数是<code>select</code>，可通过列名或选项函数进行选择，常见的选项函数有<code>contains(&quot;.&quot;)</code>，<code>ends_with(&quot;Length&quot;)</code>，<code>starts_with(&quot;Sepal&quot;)</code>，<code>everything()</code>，<code>matches(&quot;.t.&quot;)</code>，<code>num_range(&quot;x&quot;, 1:5)</code>，<code>one_of(c(&quot;Species&quot;, &quot;Genus&quot;))</code></li>
+</ul>
+</div>
+<div id="order-by" class="section level2">
+<h2>排序：order by</h2>
+<p><strong>dplyr</strong>提供了函数<code>arrange</code>，方便按照某一列进行数据排序。</p>
+<pre class="r"><code>arrange(mtcars, mpg) # 从低到高
+arrange(mtcars, desc(mpg)) # 从高到低</code></pre>
+</div>
+<div id="join" class="section level2">
+<h2>连接：join</h2>
+<p><strong>dplyr</strong>可以方便地进行数据集的合并。</p>
+<pre class="r"><code>left_join(a, b, by=&quot;x1&quot;)
+right_join(a, b, by=&quot;x1&quot;)
+inner_join(a, b, by=&quot;x1&quot;)
+outer_join(a, b, by=&quot;x1&quot;)
+semi_join(a, b, by=&quot;x1&quot;) # 数据集a中能与数据集b匹配的记录
+anti_join(a, b, by=&quot;x1&quot;) # 数据集a中雨数据集b不匹配的记录</code></pre>
+<p><strong>dplyr</strong>还提供了<code>intersection</code>、<code>union</code>和<code>setdiff</code>用于获得两个数据集的交集、并集和差集。</p>
+</div>
+<div id="union" class="section level2">
+<h2>合并：union</h2>
+<p><strong>dplyr</strong>可以方便地进行数据集的拼接。<code>bind_rows(y, z)</code>将数据集z按行拼接到数据集y中，<code>bind_cols(y, z)</code>将数据集z按列拼接到数据集y中。</p>
+</div>
+<div id="group-by" class="section level2">
+<h2>分组：group by</h2>
+<p><strong>dplyr</strong>可以方便地对数据框进行分组统计。首先调用<code>group_by</code>方法，确定分组规则，然后调用下面的聚合算子完成统计操作：</p>
+<ul>
+<li><code>summarise(iris, avg=mean(Sepal.Length))</code>：将数据概括为单行结果输出；</li>
+<li><code>summarise_each(iris, funs(mean))</code>：对每一列运行概述函数；支持的概述函数有<code>first</code>，<code>last</code>，<code>nth</code>，<code>n</code>，<code>n_distinct</code>，<code>min</code>，<code>max</code>，<code>mean</code>，<code>median</code>，<code>var</code>，<code>sd</code>。</li>
+</ul>
+<p>dplyr可以方便地进行变量运算：</p>
+<ul>
+<li><code>mutate(iris, sepal=Sepal.Length+Sepal.Width)</code>计算并添加一个或多个新列；</li>
+<li><code>mutate_each(iris, funs(min_rank))</code>对每一列运行窗口函数；常见的窗口函数有<code>row_number</code>，<code>min_rank</code>，<code>percent_rank</code>，<code>cumsum</code>等。</li>
+</ul>
+<p>一般来讲，分组统计的编码模式如下：</p>
+<pre class="r"><code>iris %&gt;% group_by(Species) %&gt;% summarise(...)
+iris %&gt;% group_by(Species) %&gt;% mutate(...)</code></pre>
+</div>
+<div class="section level2">
+<h2>附录</h2>
+<p><a href="files/dplyr-tidyr-cheatsheet.pdf">RStudio Cheetsheet</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="陈水平" />
+
+
+<title>R数据框打理：tidyr与dplyr</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">R数据框打理：tidyr与dplyr</h1>
+<h4 class="author"><em>陈水平</em></h4>
+<h4 class="date"><em>2016年12月3日</em></h4>
+
+</div>
+
+
+<div id="tidyr" class="section level1">
+<h1>tidyr</h1>
+<p>本节需要的案例：</p>
+<p><strong>表1：长形式</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>车辆</th>
+<th>道路等级</th>
+<th>日均覆盖里程</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>车辆1</td>
+<td>高速</td>
+<td>100</td>
+</tr>
+<tr class="even">
+<td>车辆2</td>
+<td>高速</td>
+<td>111</td>
+</tr>
+<tr class="odd">
+<td>车辆1</td>
+<td>快速路</td>
+<td>125</td>
+</tr>
+<tr class="even">
+<td>车辆2</td>
+<td>快速路</td>
+<td>110</td>
+</tr>
+<tr class="odd">
+<td>车辆1</td>
+<td>主要道路</td>
+<td>30</td>
+</tr>
+<tr class="even">
+<td>车辆2</td>
+<td>主要道路</td>
+<td>76</td>
+</tr>
+</tbody>
+</table>
+<p><strong>表2：宽形式</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>车辆</th>
+<th>高速覆盖里程</th>
+<th>快速路覆盖里程</th>
+<th>主要道路覆盖里程</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>车辆1</td>
+<td>100</td>
+<td>125</td>
+<td>30</td>
+</tr>
+<tr class="even">
+<td>车辆2</td>
+<td>111</td>
+<td>110</td>
+<td>76</td>
+</tr>
+</tbody>
+</table>
+<p>tidyr包是reshape2的替代者，功能更纯粹。对于reshape2中的<code>melt</code>，tidyr用<code>gather</code>进行替代。</p>
+<pre class="r"><code>table1 &lt;- gather(table2,  道路等级, 日均覆盖里程,  one_of(c(&quot;高速覆盖里程&quot;, &quot;快速路覆盖里程&quot;, &quot;主要道路覆盖里程&quot;)))</code></pre>
+<p>最后一个参数指定要gather的列，x:y表示从x到y的列，-z表示不包括z列。还可以使用dplyr包的select的option表达式进行列的选取，示例代码使用了one_of表达式。</p>
+<p>对于reshape2中的<code>cast</code>, tidyr用<code>spread</code>进行替代。</p>
+<pre class="r"><code>table2 &lt;- spread(table1, 道路等级, 日均覆盖里程)</code></pre>
+</div>
+<div id="dplyr" class="section level1">
+<h1>dplyr</h1>
+<p>dplyr是plyr包的替代者，专门面对数据框，将<code>ddply</code>转变为更易用的接口。</p>
+<p>首先dplyr提供了一个符号<code>%&gt;%</code>，该符号将左边的对象作为第一个参数传递到右边的函数中，这样就实现类似unix管道的编程风格，代码更易读。</p>
+<p>dplyr很好地解决了base包中的几个数据处理的痛点，具体可以参考<a href="R_read_preprocess_old.html">本系列01</a>。</p>
+<p>首先，dplyr可以方便地抽取数据框的子集。抽取行的子集函数有<code>filter</code>，<code>distinct</code>，<code>sample_frac</code>，<code>sample_n</code>，<code>slice</code>，<code>top_n</code>。抽取列的子集函数是<code>select</code>，可通过列名或选项函数进行选择，常见的选项函数有<code>contains(&quot;.&quot;)</code>，<code>ends_with(&quot;Length&quot;)</code>，<code>starts_with(&quot;Sepal&quot;)</code>，<code>everything()</code>，<code>matches(&quot;.t.&quot;)</code>，<code>num_range(&quot;x&quot;, 1:5)</code>，<code>one_of(c(&quot;Species&quot;, &quot;Genus&quot;))</code>。</p>
+<p>其次，dplyr还提供了函数<code>arrange</code>，方便按照某一列进行<strong>数据排序</strong>。</p>
+<pre class="r"><code>arrange(mtcars, mpg) # 从低到高
+arrange(mtcars, desc(mpg)) # 从高到低</code></pre>
+<p>然后，dplyr可以方便地进行数据集的合并，取代<code>merge</code>。</p>
+<pre class="r"><code>left_join(a, b, by=&quot;x1&quot;)
+right_join(a, b, by=&quot;x1&quot;)
+inner_join(a, b, by=&quot;x1&quot;)
+outer_join(a, b, by=&quot;x1&quot;)
+semi_join(a, b, by=&quot;x1&quot;) # 数据集a中能与数据集b匹配的记录
+anti_join(a, b, by=&quot;x1&quot;) # 数据集a中雨数据集b不匹配的记录</code></pre>
+<p>dplyr还提供了<code>intersection</code>、<code>union</code>和<code>setdiff</code>用于获得两个数据集的交集、并集和差集。</p>
+<p>最后，dplyr可以方便地进行数据集的拼接。<code>bind_rows(y, z)</code>将数据集z按行拼接到数据集y中，<code>bind_cols(y, z)</code>将数据集z按列拼接到数据集y中。</p>
+<p>dplyr对plyr的分组统计功能进行了升级，详述如下。</p>
+<p>dplyr可以方便地对数据框进行概述，相当于ddply中的<code>summarize</code>。<code>summarise(iris, avg=mean(Sepal.Length))</code>将数据概括为单行结果输出；<code>summarise_each(iris, funs(mean))</code>对每一列运行概述函数。支持的概述函数有<code>first</code>，<code>last</code>，<code>nth</code>，<code>n</code>，<code>n_distinct</code>，<code>min</code>，<code>max</code>，<code>mean</code>，<code>median</code>，<code>var</code>，<code>sd</code>。</p>
+<p>dplyr可以方便地创建新变量，相当于ddply中的transform。<code>mutate(iris, sepal=Sepal.Length+Sepal.Width)</code>计算并添加一个或多个新列。<code>mutate_each(iris, funs(min_rank))</code>对每一列运行窗口函数。常见的窗口函数有<code>row_number</code>，<code>min_rank</code>，<code>percent_rank</code>，<code>cumsum</code>等。</p>
+<p>dplyr提供了一个分组函数<code>group_by</code>，把分组依据相同的数据组合成行，相当于ddply中的group_vars。<code>ungroup</code>用于移出数据框的分组信息。配合上管道符号，可以方便地进行分组概述和分组计算。</p>
+<pre class="r"><code>iris %&gt;% group_by(Species) %&gt;% summarise(...)
+iris %&gt;% group_by(Species) %&gt;% mutate(...)</code></pre>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

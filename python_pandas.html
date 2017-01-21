@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Pandas数据分析</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Pandas数据分析</h1>
+
+</div>
+
+
+<p>按照以下方式导入pandas库：</p>
+<pre class="python"><code>import pandas as pd</code></pre>
+<div id="import" class="section level2">
+<h2>Import</h2>
+<div id="csv" class="section level3">
+<h3>CSV</h3>
+<pre class="python"><code>df = pd.read_csv(&quot;your_file.csv&quot;)
+df.to_csv(&quot;your_file.csv&quot;)</code></pre>
+</div>
+<div id="excel" class="section level3">
+<h3>Excel</h3>
+<pre class="python"><code>df = pd.read_excel(&quot;your_file.xlsx&quot;, &#39;sheet1&#39;)
+df.to_excel(&#39;your_file.xlsx&#39;, sheet_name=&#39;sheet2&#39;)</code></pre>
+</div>
+<div id="odps" class="section level3">
+<h3>ODPS</h3>
+<pre class="python"><code>from odps import ODPS
+from odps.df import DataFrame
+
+odps = ODPS( &#39;your-access-id&#39;, &#39;your-access-key&#39;, &#39;your-project&#39;, endpoint=&#39;your-endpoint&#39;)
+df = DataFrame(odps.get_table(&#39;your-table&#39;, project=&quot;your-project&quot;)).to_pandas()</code></pre>
+</div>
+</div>
+<div id="preview" class="section level2">
+<h2>Preview</h2>
+<pre class="python"><code>df.head(5)
+df.tail(10)
+df.columns # 列名
+df.dtypes # 类型
+df.describe() # 每列描述统计
+df.cov() # 协方差
+df.corr() # 相关系数</code></pre>
+</div>
+<div id="manipulate" class="section level2">
+<h2>Manipulate</h2>
+<div id="filter" class="section level3">
+<h3>filter</h3>
+<pre class="python"><code>df[df.SepalLength&gt;=5] 
+df[df.Species.isin([&quot;setosa&quot;, &quot;versicolor&quot;])] # 根据一个list的取值范围过滤
+df[(df.PetalLength&gt;=1) &amp; (df.SepalWidth&lt;3)] # 根据多个条件过滤</code></pre>
+</div>
+<div id="rename" class="section level3">
+<h3>rename</h3>
+<pre class="python"><code>df2 = df.rename(columns={&#39;old_columnname&#39;: &#39;new_columnname&#39;})
+df.rename(columns={&#39;old_columnname&#39;: &#39;new_columnname&#39;}, inplace=True)</code></pre>
+</div>
+<div id="slice" class="section level3">
+<h3>slice</h3>
+<pre class="python"><code>df[0:3] # 选取行</code></pre>
+</div>
+<div id="select" class="section level3">
+<h3>select</h3>
+<pre class="python"><code>df.flag # 选择一列
+df[&quot;flag&quot;] # 选择一列
+df[[&quot;flag&quot;, &quot;link&quot;]] # 选择多列</code></pre>
+</div>
+<div id="mutate" class="section level3">
+<h3>mutate</h3>
+<pre class="python"><code>df.normal_cnt = df.total_cnt - df.abnormal_cnt</code></pre>
+</div>
+<div id="group-by" class="section level3">
+<h3>group by</h3>
+<pre class="python"><code>import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({&#39;A&#39; : [&#39;foo&#39;, &#39;bar&#39;, &#39;foo&#39;, &#39;bar&#39;,&#39;foo&#39;, &#39;bar&#39;, &#39;foo&#39;, &#39;foo&#39;],
+                   &#39;B&#39; : [&#39;one&#39;, &#39;one&#39;, &#39;two&#39;, &#39;three&#39;, &#39;two&#39;, &#39;two&#39;, &#39;one&#39;, &#39;three&#39;],
+                   &#39;C&#39; : np.random.randn(8),
+                   &#39;D&#39; : np.random.randn(8)})
+                   
+grouped = df.groupby([&quot;A&quot;, &quot;B&quot;])
+
+# 选取某一个分组
+grouped.get_group((&#39;foo&#39;,&#39;one&#39;))
+
+# 分组迭代
+for name, group in grouped:
+    print name
+    print group
+
+# 分组聚合
+grouped.aggregate(np.sum) # 所有列使用一个聚合函数
+grouped[&#39;C&#39;].agg([np.sum, np.mean, np.std]) # 选取一个列使用多个聚合函数
+grouped.agg([np.sum, np.mean, np.std]) # 所有列使用多个聚合函数
+grouped.agg({&#39;C&#39; : np.sum,
+             &#39;D&#39; : lambda x: np.std(x, ddof=1)}) # 每个列定制自己的聚合函数
+</code></pre>
+</div>
+<div id="distinct" class="section level3">
+<h3>distinct</h3>
+<pre class="python"><code>df[&#39;column1&#39;].unique()</code></pre>
+</div>
+<div id="union" class="section level3">
+<h3>union</h3>
+<pre class="python"><code>pd.concat([df1, df2])</code></pre>
+</div>
+<div id="join" class="section level3">
+<h3>join</h3>
+<pre class="python"><code>pd.merge(df1, df2, on=&#39;column1&#39;, how=&#39;inner&#39;) # change how to [&#39;left&#39;, &#39;right&#39;, &#39;outer&#39;]</code></pre>
+</div>
+<div id="pivot-table" class="section level3">
+<h3>pivot table</h3>
+<pre class="python"><code>pd.pivot_table(df, values=&#39;column1&#39;, index=[&#39;column2&#39;, &#39;column3&#39;], columns=[&#39;column4&#39;]) # 默认采用sum聚合
+pd.pivot_table(df, values=&#39;column1&#39;, index=[&#39;column2&#39;, &#39;column3&#39;], columns=[&#39;column4&#39;], aggfunc=len) # 采用aggfunc自定义聚合函数  </code></pre>
+</div>
+<div id="na" class="section level3">
+<h3>na</h3>
+<pre class="python"><code>df1.dropna() # 删除含na的行和列
+df2.fillna(value=5) # 填充缺失值为5
+mean = df2[&#39;column1&#39;].mean()
+df2[&#39;column1&#39;].fillna(mean) # 用均值填充</code></pre>
+</div>
+<div id="apply-function" class="section level3">
+<h3>apply function</h3>
+<div id="by-element" class="section level4">
+<h4>by element</h4>
+<pre class="python"><code># map: iterate over each element of a series
+df[&#39;column1&#39;].map(lambda x: 10+x) # add 10 to each element of column1
+df[&#39;column2&#39;].map(lambda x: &quot;AV&quot;+x) # concatenae &quot;AV&quot; at the beginning of each element of column2
+
+# applymap: iterate over each element of a data frame
+df.applymap(lambda x: x+2)</code></pre>
+</div>
+<div id="by-axis" class="section level4">
+<h4>by axis</h4>
+<pre class="python"><code>df[[&#39;column1&#39;, &#39;column2&#39;]].apply(sum) # return the sum of all values of column1 and column2</code></pre>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

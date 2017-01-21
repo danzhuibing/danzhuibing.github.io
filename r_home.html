@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title></title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<p><br></p>
+<div id="r" class="section level2">
+<h2>R与数据科学</h2>
+<p>R是一门特立独行的语言。我接触过的编程语言有：C、Java、PHP、R、Python和Javascript。除了R，其他语言的入门标志可能是你学会用它的<code>if</code>和<code>for</code>完成了一套处理逻辑；但对R而言，入门标志恰恰是你小心谨慎地避免在R中使用<code>if</code>和<code>for</code>来完成处理逻辑。</p>
+<p>R需要一种特殊的学习方法。学习其他的语言好比学理科，理解最重要，得会举一反三，基础扎实了，掌握新工具分分钟的事。学习R却好像念文科，背诵最重要，只要记住做某件事最顺手的包和函数，就能得心应手。</p>
+<p>R是一门天生就适合数据科学的语言。数据科学最常见的数据规格是表格型数据，也称为矩形数据：每一行代表一个观测，每一列代表一个特征。R内置数据类型<code>data.frame</code>能够非常自然地表达这种数据。而这种内置带来的深远影响是几乎所有的R工具包都提供了对<code>data.frame</code>的支持，所以R在数据科学领域的生态体系是许多语言所不能匹敌的。</p>
+<p>R社区需要感谢一家有情怀的公司<strong>RStudio</strong>，里面有许多大家耳熟能详的大神：创始人兼CEO J.J. Allaire；首席科学家Hadley Wickham；还有我们中国的高产R包作者谢益辉。</p>
+<p>要入门R语言，最好的学习资料是<a href="http://r4ds.had.co.nz/index.html">R for Data Science</a>，书里的这张插图很好地诠释了数据科学的工作内容，而R在这些内容上能够提供全套工具：</p>
+<div class="figure">
+<img src="images/r_for_ds.png" />
+
+</div>
+<p>我依照这个结构把自己的R语言学习笔记整理放在下面，供感兴趣的朋友查阅。</p>
+<div id="import" class="section level3">
+<h3>Import</h3>
+<ul>
+<li><a href="r_read_write_text.html">读取文本</a>：<strong>readr</strong></li>
+<li><a href="r_read_write_excel.html">读取Excel</a>：<strong>readxl</strong>, <strong>xlsx</strong></li>
+<li><a href="r_mysql.html">读取MySQL</a>：<strong>RMySQL</strong></li>
+<li>网络请求：<strong>httr</strong></li>
+</ul>
+</div>
+<div id="transform" class="section level3">
+<h3>Transform</h3>
+<p>数据框通用操作：</p>
+<ul>
+<li><a href="R_dplyr.html"><strong>dplyr</strong></a>：SQL操作算子体系1，如<code>filter</code>, <code>mutate</code>, <code>group_by</code>, <code>summarise</code>, <code>arrange</code>等</li>
+<li><a href="r_tidyr.html"><strong>tidyr</strong></a>：宽长表转换，列拆分合并</li>
+<li><strong>data.table</strong>：SQL操作算子体系2，dt[<code>where</code>, <code>select</code>, <code>group_by</code>]范式</li>
+<li><strong>splitstackshape</strong>：基于<strong>data.table</strong>的列拆分宽长表转换</li>
+</ul>
+<p>数据类型专题：</p>
+<ul>
+<li><a href="R_datetime.html">日期</a>：<strong>lubridate</strong></li>
+<li><a href="R_string.html">字符串</a>：<strong>stringr</strong></li>
+<li><a href="R_JSON.html">JSON</a>：<strong>jsonlite</strong></li>
+<li>列表：<strong>rlist</strong></li>
+</ul>
+</div>
+<div id="visualise" class="section level3">
+<h3>Visualise</h3>
+<ul>
+<li><a href="R_ggplot2.html">统计绘图</a>：<strong>ggplot2</strong>，<strong>GGally</strong></li>
+<li><a href="r_plotly.html">统计绘图交互化</a>：<strong>plotly</strong></li>
+<li><a href="R_grid.html">复杂绘图布局</a>：<strong>grid</strong></li>
+<li><a href="r_dt.html">表格可视化</a>：<strong>DT</strong></li>
+<li>时间序列可视化：<strong>zoo</strong>，<strong>xts</strong>，<strong>dygraphs</strong></li>
+<li><a href="spatial_analysis_R_vis.html">空间数据可视化</a>：<strong>sp</strong>，<strong>rgeos</strong>，<strong>rgdal</strong>, <strong>leaflet</strong></li>
+</ul>
+</div>
+<div id="model" class="section level3">
+<h3>Model</h3>
+<ul>
+<li><a href="ml_deep_mining_course_r.html">机器学习基础</a>：线性回归、逻辑回归、梯度下降、牛顿法、正则化</li>
+<li>线性模型：<code>lm</code>, <code>glm</code></li>
+<li>树模型：<code>rpart</code>，<code>randomForest</code>，<code>gbm</code></li>
+</ul>
+</div>
+<div id="communicate" class="section level3">
+<h3>Communicate</h3>
+<ul>
+<li>静态文档：<strong>rmarkdown</strong></li>
+<li>交互式网站：<strong>shiny</strong></li>
+</ul>
+</div>
+<div id="big-data" class="section level3">
+<h3>Big Data</h3>
+<ul>
+<li>HDFS：<strong>rhdfs</strong></li>
+<li>MapReduce：<strong>rmr2</strong></li>
+<li><a href="rhbase_basic.html">HBase</a>：<strong>rhbase</strong></li>
+<li><a href="R_spark.html">Spark</a>：<strong>SparkR</strong></li>
+<li><a href="R_ODPS.html">阿里云ODPS</a>：<strong>RODPS</strong></li>
+</ul>
+</div>
+<div id="applications" class="section level3">
+<h3>Applications</h3>
+<ul>
+<li><a href="R_shiny_ts_viewer.html">用shiny实现Excel数据透视图</a></li>
+<li><a href="R_tianchi_logistics.html">R天池最后一公里</a></li>
+</ul>
+</div>
+<div id="extend" class="section level3">
+<h3>Extend</h3>
+<ul>
+<li>Javascript：<strong>htmlwidgets</strong></li>
+<li>C++：<strong>Rcpp</strong></li>
+<li>Java：<strong>rJava</strong></li>
+<li><a href="R_package_dev.html">R包开发</a>，内容待更新：<strong>devtools</strong>，<strong>roxygen2</strong></li>
+</ul>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2>其他</h2>
+<p><strong>R与Python对比</strong></p>
+<ul>
+<li><a href="left_python_right_r.html">左手python右手R</a></li>
+</ul>
+<p><strong>RStudio Cheatsheet</strong></p>
+<ul>
+<li><a href="files/ggplot2-cheatsheet.pdf">ggplot2 cheatsheet</a></li>
+<li><a href="files/rmarkdown-cheatsheet-2.0.pdf">rmarkdown cheatsheet</a></li>
+<li><a href="files/dplyr-tidyr-cheatsheet.pdf">dplyr/tidyr cheatsheet</a></li>
+<li><a href="files/shiny-cheatsheet.pdf">shiny cheatsheet</a></li>
+</ul>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

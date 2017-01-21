@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>python matplotlib绘图</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">python matplotlib绘图</h1>
+
+</div>
+
+
+<p>按照如下方法导入需要的库：</p>
+<pre class="python"><code>import numpy as np
+import matplotlib.pyplot as plt</code></pre>
+<div class="section level2">
+<h2>条形图</h2>
+<pre class="python"><code># prepare data
+people = (&#39;John&#39;, &#39;Allair&#39;, &#39;Hadley&#39;, &#39;Yihui&#39;, &#39;Patrick&#39;)
+y_pos = np.arange(len(people))
+performance = np.random.rand(len(people)) * 10 + 3
+
+plt.barh(y_pos, performance, alpha=0.4)
+plt.yticks(y_pos, people)
+plt.xlabel(&#39;Performance&#39;)
+plt.title(&#39;How fast do you want to go today?&#39;)
+
+plt.show()</code></pre>
+</div>
+<div class="section level2">
+<h2>柱形图</h2>
+<pre class="python"><code>mu = 100
+sigma = 15
+x = mu + sigma * np.random.randn(10000)
+
+num_bins = 50
+plt.hist(x, num_bins, normed=True, facecolor=&quot;green&quot;, alpha=0.5)
+plt.xlabel(&#39;Smarts&#39;)
+plt.ylabel(&#39;Probability&#39;)
+plt.title(r&#39;Histogram of IQ: $\mu=100$, $\sigma=15$&#39;)
+plt.show()</code></pre>
+<p>多个柱形图</p>
+<pre class="python"><code>n_bins = 10
+x = np.random.randn(1000, 3)
+
+fig, axes = plt.subplots(nrows=2, ncols=2)
+ax0, ax1, ax2, ax3 = axes.flat
+
+colors = [&#39;red&#39;, &#39;tan&#39;, &#39;lime&#39;]
+ax0.hist(x, n_bins, normed=1, histtype=&#39;bar&#39;, color=colors, label=colors)
+ax0.legend(prop={&#39;size&#39;: 10})
+ax0.set_title(&#39;bars with legend&#39;)
+
+ax1.hist(x, n_bins, normed=1, histtype=&#39;bar&#39;, stacked=True)
+ax1.set_title(&#39;stacked bar&#39;)
+
+ax2.hist(x, n_bins, normed=1, histtype=&#39;step&#39;, stacked=True, fill=True)
+ax2.set_title(&#39;stepfilled&#39;)
+
+x_multi = [np.random.rand(n) for n in [10000, 5000, 2000]]
+ax3.hist(x_multi, n_bins, histtype=&#39;bar&#39;)
+ax3.set_title(&#39;different sample sizes&#39;)
+
+plt.tight_layout()
+plt.show()</code></pre>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

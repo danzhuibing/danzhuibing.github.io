@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>R绘图布局grid</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">R绘图布局grid</h1>
+
+</div>
+
+
+<p>在本博客的<a href="R_ggplot2.html">ggplot2入门指南</a>一文里提到，ggplot2的<code>facet</code>功能支持快速生成多张相同制作流程的统计图形，但是不能支持生成多张制作流程不同的统计图形。其实这很正常，制作流程不同，那就只能一张一张地制作——那么问题来了：这单独制作的多张图怎么随心所欲地按照你的设想进行摆放呢？</p>
+<p>本文将对这个问题展开深入的讨论，代码里用到了R的一个包<strong>grid</strong>，原来是第三方的，由于其在R图形领域极其重要的地位，现在已经随R语言一同打包下载了。本文详细讲解grid包图形布局的核心概念<strong>viewport</strong>，并演示三种结合ggplot2绘制上图的方法。</p>
+<div id="viewport" class="section level2">
+<h2>viewport</h2>
+<p><code>viewport</code>是<strong>grid</strong>包的核心对象，说简单点就是一个矩形的绘图区域。</p>
+<p>创建viewport时，可以指定以下几个重要参数：</p>
+<ul>
+<li>x：绘图区域相对页面左下角原点的x坐标，默认单位为npc，Normalised Parent Coordinates，含义是归一化的父区域坐标</li>
+<li>y：绘图区域相对页面左下角原点的y坐标</li>
+<li>width：绘图区域的宽度（x轴方向）</li>
+<li>height：绘图区域的高度（y轴方向）</li>
+<li>just：x和y所指的位置，默认为矩形中心位置</li>
+<li>angle：将绘图区域旋转多少度</li>
+<li>name：此viewport的名字，用于搜索和定位</li>
+</ul>
+<p>通过<code>grid.show.viewport()</code>可以用可视化的方式了解到每个参数的含义：</p>
+<pre class="r"><code>library(grid)
+grid.show.viewport(viewport(x=0.6, y=0.6, width=unit(1, &quot;inches&quot;), height=unit(1, &quot;inches&quot;), angle=30))</code></pre>
+<p><img src="r_grid_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>ggplot2的绘图结果默认情况下是打开一个全新的页面绘制。如果要在一个页面上绘制多个图形，可以使用<code>print.ggplot()</code>函数。这个函数有一个选项<code>vp</code>，可以指定这个图形要绘制的viewport的位置。绘图过程中可以使用<code>grid.newpage()</code>创建一个全新的空白页面。我们在下面举一个例子：</p>
+<pre class="r"><code>library(grid)
+library(ggplot2)
+# prepare ggplot charts
+p.hist.len &lt;- ggplot(iris) + geom_histogram(aes(x=Sepal.Length))
+p.hist.wid &lt;- ggplot(iris) + geom_histogram(aes(x=Sepal.Width)) + coord_flip()
+p.scatter &lt;- ggplot(iris) + geom_point(aes(x=Sepal.Length, y=Sepal.Width))
+
+# create viewports
+grid.newpage()
+vp.len &lt;- viewport(x=0, y=0.66, width=0.66, height=0.34, just=c(&quot;left&quot;, &quot;bottom&quot;))
+vp.wid &lt;- viewport(x=0.66, y=0, width=0.34, height=0.66, just=c(&quot;left&quot;, &quot;bottom&quot;))
+vp.scatter &lt;- viewport(x=0, y=0, width=0.66, height=0.66, just=c(&quot;left&quot;, &quot;bottom&quot;))
+
+# direct the charts into the specified viewport
+print(p.hist.len, vp=vp.len)
+print(p.hist.wid, vp=vp.wid)
+print(p.scatter, vp=vp.scatter)</code></pre>
+<p><img src="r_grid_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="viewport" class="section level2">
+<h2>viewport树</h2>
+<p>grid可以创建多个viewport，所有的viewport组织成一棵树。grid提供了一套函数用于管理viewport对象。任何一个时刻，有一个当前viewport对象，初始状态下为树的根节点viewport。使用<code>pushViewport()</code>可以将指定的viewport插入到当前viewport的子节点中，同时当前viewport对象移动为刚刚插入的viewport；使用<code>popViewport()</code>可以删除当前viewport，同时当前viewport改为刚刚删除的viewport的父节点；使用<code>upViewport()</code>当前viewport移动到父节点；使用<code>downViewport()</code>当前viewport移动到指定name的子节点；使用<code>seekViewport()</code>在整棵树范围内搜索指定name的viewport，将其设置为当前viewport。</p>
+<pre class="r"><code># top left panel
+grid.newpage()
+vp.len &lt;- viewport(x=0, y=0.66, width=0.66, height=0.34, just=c(&quot;left&quot;, &quot;bottom&quot;))
+pushViewport(vp.len)
+print(p.hist.len, newpage=F)
+upViewport() # 返回父节点
+
+# bottom right panel
+vp.wid &lt;- viewport(x=0.66, y=0, width=0.34, height=0.66, just=c(&quot;left&quot;, &quot;bottom&quot;))
+pushViewport(vp.wid)
+print(p.hist.wid, newpage=F)
+upViewport()
+
+# bottom left panel
+vp.scatter &lt;- viewport(x=0, y=0, width=0.66, height=0.66, just=c(&quot;left&quot;, &quot;bottom&quot;))
+pushViewport(vp.scatter)
+print(p.scatter, newpage=F)
+upViewport()</code></pre>
+<p><img src="r_grid_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="viewport" class="section level2">
+<h2>viewport行列布局</h2>
+<p>viewport还支持行列布局，前面提到<code>viewport</code>函数，还有几个参数我们还没涉及：</p>
+<ul>
+<li>layout：<code>grid.layout</code>对象，用于将当前viewport拆分为子区域</li>
+<li>layout.pos.row：创建的viewport在父节点layout的行位置</li>
+<li>layout.pos.col：创建的viewport在父节点layout的列位置</li>
+</ul>
+<p>我们来看一下<code>grid.layout()</code>的参数：</p>
+<ul>
+<li>nrow：将该区域拆分为几行</li>
+<li>ncol：将该区域拆分为几列</li>
+<li>widths：每个子区域的宽度，向量长度等于ncol</li>
+<li>heights：每个子区域的高度，向量长度等于nrow</li>
+</ul>
+<p>我们来演示下这种方法生成上图的过程：</p>
+<pre class="r"><code>grid.newpage()
+pushViewport(viewport(layout = grid.layout(3, 3)))
+print(p.scatter, vp=viewport(layout.pos.row=2:3, layout.pos.col=1:2))
+print(p.hist.len, vp=viewport(layout.pos.row=1, layout.pos.col=1:2))
+print(p.hist.wid, vp=viewport(layout.pos.row=2:3, layout.pos.col=3))</code></pre>
+<p><img src="r_grid_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

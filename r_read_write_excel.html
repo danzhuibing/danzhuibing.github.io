@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>R读写Excel</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">R读写Excel</h1>
+
+</div>
+
+
+<div class="section level2">
+<h2>前言</h2>
+<p>Excel是数据分析师最常用的工具之一，相比其他数据分析工具有自己无可替代的一些特性，特别是在交互式分析这种强依赖分析师思维与创意的工作中特别奏效。但是，Excel的缺点也很明显：不适合做重复性比较高的工作。可重复性是科学研究的重要标准，我们作为有学院做派的数据分析师，只依赖Excel是不够的，还需要掌握一门python或R这样的编程语言。那么在不同的工具之间进行数据的相互转换，变成了数据分析师的一个基本能力。</p>
+<p>本文讲解R和Excel的数据转换工具集，主要使用以下两个包：</p>
+<pre class="r"><code>install.packages(c(&quot;xlsx&quot;, &quot;readxl&quot;))</code></pre>
+</div>
+<div id="read-excel" class="section level2">
+<h2>Read Excel</h2>
+<p>R读写Excel有许多包提供了解决方案，其中基于Java有一个很成熟的方案：<code>xlsx</code>。这个包提供了两套读写Excel的工具函数：<code>read.xlsx</code>，<code>read.xlsx2</code>，<code>write.xlsx</code>，<code>write.xlsx2</code>。此外，<code>xlsx</code>在输出Excel时还提供了控制文件格式的功能函数集，可以按照要求生成图文并茂的Excel分析报告。下图从<a href="http://www.sthda.com/english/wiki/r-xlsx-package-a-quick-start-guide-to-manipulate-excel-files-in-r">这里</a>取来，很好地诠释了xlsx的核心功能。本文只介绍使用频度最大的数据读写功能。</p>
+<div class="figure">
+<img src="images/r_excel.png" />
+
+</div>
+<p><code>read.xlsx</code>在读取Excel时，会自动推测每个字段的类型，但效率较低，适合读取小数据集；<code>read.xlsx2</code>更多地依赖Java实现功能，因此读取效率高，但是每个字段的类型需要用户自行指定，否则全部当做字符串<code>character</code>处理，默认转化为<code>factor</code>类型。另外，<code>read.xlsx</code>读取中文时需要显示指定编码方式，否则会变为乱码；<code>read.xlsx2</code>不需要。</p>
+<pre class="r"><code>library(&quot;xlsx&quot;)
+file &lt;- system.file(&quot;tests&quot;, &quot;test_import.xlsx&quot;, package = &quot;xlsx&quot;)
+res &lt;- read.xlsx(file, 1, encoding=&quot;UTF-8&quot;)  # 需要指定读取的Sheet编号或者名称，中文需要指定编码
+str(res)
+
+res2 &lt;- read.xlsx2(file, 1, stringsAsFactors=FALSE) # 将字符串按照字符串处理
+str(res2)
+
+res3 &lt;- read.xlsx2(file, 1, colClasses=c(&quot;character&quot;, rep(&quot;numeric&quot;, ncol(res2) - 1))) # 显示指定每个字段的类型，字符串会被转变为factor
+str(res3)</code></pre>
+<p>在读取Excel数据时，一个很重要的问题是对日期时间<code>datetime</code>类型的处理。从微软官方文档，我们知道Excel处理日期时间的底层逻辑是：</p>
+<blockquote>
+<p>Excel 将所有日期存储为整数，将所有时间存储为小数。有了此系统，Excel 可以像处理任何其他数字一样对日期和时间进行加、减或比较操作，而且所有的日期都可以使用此系统进行处理。在此系统中，序数 1 代表 1/1/1900 12:00:00 a.m.。时间存储为 .0 到 .99999 之间的小数，其中 .0 为 00:00:00，.99999 为 23:59:59。日期整数和时间小数可以组合在一起，生成既有小数部分又有整数部分的数字。例如，数字 32331.06 代表的日期和时间为 7/7/1988 1:26:24 a.m.。</p>
+</blockquote>
+<p>而一般的编程语言采用的是<strong>Unix时间戳</strong>，即距离1970-01-01 00:00:00 GMT的秒数。</p>
+<p>我们来看一下这两套系统的原点差了多少天：</p>
+<pre class="r"><code># 此处只为演示两个系统换算方法的推演过程，关于lubridate包的使用请参考本系列日期时间专题文章
+library(lubridate)
+span &lt;- interval(start=ymd(&quot;1900-01-01&quot;, tz=&quot;GMT&quot;), end=ymd(&quot;1970-01-02&quot;, tz=&quot;GMT&quot;)) # 时间段为前闭后开区间，即[1900-01-01, 1970-01-02)
+span / ddays(1) + 1 # 相差天数，加1的原因是微软的原点取值为1，Unix时间戳的原点设置为0.</code></pre>
+<pre><code>## [1] 25569</code></pre>
+<p>所以读取Excel时转化日期的方法如下：</p>
+<pre class="r"><code># To convert an Excel datetime colum to POSIXct, do something like:
+#   as.POSIXct((x-25569)*86400, tz=&quot;GMT&quot;, origin=&quot;1970-01-01&quot;)
+# For Dates, use a conversion like:
+#   as.Date(x-25569, origin=&quot;1970-01-01&quot;) </code></pre>
+<p>注：<code>POSIXct</code>是R日期时间的一种类型；Excel中的日期没有时区的概念，都是GMT时间。所以在调用<code>as.POSIXct</code>指定时区的时候要使用GMT。<code>xlsx</code>的官方文档描述如下：</p>
+<blockquote>
+<p>Excel internally stores dates and datetimes as numeric values, and does not keep track of time zones and DST. When a datetime column is brought into R, it is converted to POSIXct class with a GMT timezone. Occasional rounding errors may appear and the R and Excel string representation my differ by one second. For read.xlsx2 bring in a datetime column as a numeric one and then convert to class POSIXct or Date.</p>
+</blockquote>
+<p>在读取Excel方面，<code>xlsx</code>用起来还是有些不方便，需要考虑性能选择不同的函数、是否自己提供每列的类型、中文编码、日期时间转换等问题。R语言的泰斗<strong>Hadley Wickham</strong>领头制作的<code>readxl</code>包提供了一个更优雅的解决方案。这个方案基于C和C++实现，安装时不需要依赖外部环境，所以很容易安装使用。在读取Excel方面，它的性能明显优于<code>xlsx</code>。此外，它会将non-ASCII的字符（包括中文）自动重新编码为UTF-8，解决乱码的困扰；自动将日期时间转化为<code>POSIXct</code>类型，且支持Windows(1900)和Max(1904)两个平台，让用户无需了解Excel底层日期时间的原理就可以正确使用。</p>
+<pre class="r"><code>library(readxl)
+datasets &lt;- system.file(&quot;extdata/datasets.xlsx&quot;, package = &quot;readxl&quot;)
+res4 &lt;- read_excel(datasets)
+str(res4)</code></pre>
+<pre><code>## Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:    150 obs. of  5 variables:
+##  $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+##  $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+##  $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+##  $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+##  $ Species     : chr  &quot;setosa&quot; &quot;setosa&quot; &quot;setosa&quot; &quot;setosa&quot; ...</code></pre>
+</div>
+<div id="write-excel" class="section level2">
+<h2>Write Excel</h2>
+<p><code>xlsx</code>提供了两个函数实现将R的<code>data.frame</code>写出为Excel。<code>write.xlsx</code>的实现依赖于<code>xlsx</code>对每个单元格单独定制处理的底层机制，对<code>data.frame</code>进行两层循环，逐个元素写入到Excel的单元格，性能较低。<code>write.xlsx2</code>的实现依赖于<code>xlsx</code>对一个矩形范围的单元格统一定制处理的底层机制，一次性将<code>data.frame</code>写入到Excel的Sheet中，性能较高。</p>
+<pre class="r"><code>write.xlsx2(iris, file=&quot;data/iris.xlsx&quot;, sheetName=&quot;IRIS&quot;,  append=FALSE) # append表示在指定的文件中添加一个新sheet</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

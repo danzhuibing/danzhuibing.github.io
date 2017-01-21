@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>使用tidyr对数据整形</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">使用tidyr对数据整形</h1>
+
+</div>
+
+
+<p><strong>tidyr</strong>的作用主要是对<code>data.frame</code>进行形状的改变，包括两大类功能：行列转化（宽表与长表转换）、列合并拆分。</p>
+<div class="section level2">
+<h2>宽表与长表</h2>
+<p>我们用下面的案例来说明长表与宽表的含义：</p>
+<p><strong>表1：长表</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>车辆</th>
+<th>道路等级</th>
+<th>日均覆盖里程</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>车辆1</td>
+<td>高速</td>
+<td>100</td>
+</tr>
+<tr class="even">
+<td>车辆2</td>
+<td>高速</td>
+<td>111</td>
+</tr>
+<tr class="odd">
+<td>车辆1</td>
+<td>快速路</td>
+<td>125</td>
+</tr>
+<tr class="even">
+<td>车辆2</td>
+<td>快速路</td>
+<td>110</td>
+</tr>
+<tr class="odd">
+<td>车辆1</td>
+<td>主要道路</td>
+<td>30</td>
+</tr>
+<tr class="even">
+<td>车辆2</td>
+<td>主要道路</td>
+<td>76</td>
+</tr>
+</tbody>
+</table>
+<p><strong>表2：宽表</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>车辆</th>
+<th>高速覆盖里程</th>
+<th>快速路覆盖里程</th>
+<th>主要道路覆盖里程</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>车辆1</td>
+<td>100</td>
+<td>125</td>
+<td>30</td>
+</tr>
+<tr class="even">
+<td>车辆2</td>
+<td>111</td>
+<td>110</td>
+<td>76</td>
+</tr>
+</tbody>
+</table>
+<p>按照Hadley Wickham的说法，长表是tidy的，因为每一行是一个observation，每一列是一个variable。</p>
+<p><strong>tidyr</strong>提供了两个函数完成两种形式的转换：<code>gather()</code>将宽表变为长表；<code>spread()</code>将长表变为宽表。</p>
+<pre class="r"><code>library(tidyr)
+
+table1 &lt;- table2 %&gt;% gather(道路等级, 日均覆盖里程,  one_of(c(&quot;高速覆盖里程&quot;, &quot;快速路覆盖里程&quot;, &quot;主要道路覆盖里程&quot;)))
+table2 &lt;- table11 %&gt;% spread(道路等级, 日均覆盖里程)</code></pre>
+<p>这里着重说一下<code>gather()</code>的最后一个参数，用于指定要gather的列，x:y表示从x到y的列，-z表示不包括z列。还可以使用<strong>dplyr</strong>包的<code>select()</code>的<code>option</code>表达式进行列的选取，示例代码使用了<code>one_of()</code>表达式。</p>
+</div>
+<div class="section level2">
+<h2>列合并与拆分</h2>
+<p><strong>tidyr</strong>还提供了两个重要函数：<code>separate()</code>用于将一个列按照指定的分隔符分为多个列；<code>unite()</code>用于将多个列按照指定的分隔符合并为一个列。</p>
+<pre class="r"><code># 合并列
+## unite()直接使用列名即可，unite_()需要在列名两边使用引号
+demo &lt;- iris %&gt;% 
+  unite(unite_sepal, Sepal.Length, Sepal.Width, sep=&quot;_&quot;, remove=TRUE) %&gt;%
+  unite_(&quot;unite_petal&quot;, c(&quot;Petal.Length&quot;, &quot;Petal.Width&quot;), sep=&quot;_&quot;, remove=TRUE)
+
+# 拆分列
+## separate()直接使用列名，separate_()需要在列名两边使用引号
+demo %&gt;%
+  separate(unite_sepal, c(&quot;Sepal.Length&quot;, &quot;Sepal.Width&quot;), sep=&quot;_&quot;) %&gt;%
+  separate_(&quot;unite_petal&quot;, c(&quot;Petal.Length&quot;, &quot;Petal.Width&quot;), sep=&quot;_&quot;)</code></pre>
+<p>需要指出的是，<strong>tidyr</strong>的拆分列功能只能拆分为固定列数，如果某一行的拆分结果不足这个列数或超出这个列数，需要选择不足时的填充策略和过多时的处理策略，具体设置参看<code>fill</code>和<code>extra</code>选项。</p>
+<p>如果想要将一列按照分隔符拆分成多行，<strong>tidyr</strong>无法完成这个功能，请移步<strong>splitstackshape</strong>包的<code>cSplit()</code>函数。</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

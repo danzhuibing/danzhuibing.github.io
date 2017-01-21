@@ -1,0 +1,39 @@
+---
+title: "R表格可视化"
+output:
+  html_document:
+    highlight: textmate
+    toc: yes
+    toc_float:
+      collapsed: no
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = TRUE, message=F, warning=F)
+```
+
+## 前言
+DT包是RStudio公司谢益辉大师的作品，能够交互式展示表格型数据，功能十分强大。
+
+## 基本用法
+
+``` {r}
+library(DT)
+datatable(iris, options = list(pageLength = 5), filter="top")
+```
+
+## 定制UI
+
+DT包提供大量UI定制功能，即修改展示的HTML、CSS和js。
+
+``` {r}
+m = matrix(
+    c('<b>Bold</b>', 
+        '<em>Emphasize</em>', 
+        '<a href="#" onclick="alert(\'Hello\');">Hello</a>', 
+         '<a href="#" onclick="alert(\'World\');">World</a>'
+    ), 2
+)
+colnames(m) = c('<span style="color:red">Column 1</span>', '<em>Column 2</em>')
+datatable(m) # 默认不处理HTML标签
+datatable(m, escape = FALSE) # 处理HTML标签
+```

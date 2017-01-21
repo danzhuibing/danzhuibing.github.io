@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>ggplot2入门指南</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">ggplot2入门指南</h1>
+
+</div>
+
+
+<div class="section level2">
+<h2>前言</h2>
+<p><strong>ggplot2</strong>是R语言最流行的第三方扩展包，是RStudio首席科学家Hadley Wickham读博期间的作品，是R相比其他语言一个独领风骚的特点。包名中“gg”是grammar of graphics的简称，是一套优雅的绘图语法。Wickham Hadley将这套语法诠释如下：</p>
+<blockquote>
+<p>一张统计图形就是从<strong>数据</strong>到<strong>几何对象</strong>（geometric object，缩写geom）的<strong>图形属性</strong>（aesthetic attribute，缩写aes）的一个映射。此外，图形中还可能包含数据的<strong>统计变换</strong>（statistical transformation，缩写stats），最后绘制在某个特定的<strong>坐标系</strong>（coordinate system，缩写coord）中，而<strong>分面</strong>（facet）则可以用来生成数据不同子集的图形。</p>
+</blockquote>
+<p>这个解释读起来还是有点抽象，我们先抽取出ggplot2这门绘图语言提供的一组概念：</p>
+<ul>
+<li>数据：data</li>
+<li>统计变换：stats</li>
+<li>几何对象：geom</li>
+<li>图形属性：aes</li>
+<li>标尺：scale</li>
+<li>图层：layer</li>
+<li>坐标系：coord</li>
+<li>分面：facet</li>
+</ul>
+<p>我们举个具体的例子来解读这些概念。假设现在我们要对一批连续取值的数据绘制直方图。首先，要定义清楚需要几个分组或者每个分组的区间，根据分组定义统计落在这个分组里的个数，这个步骤就是把<strong>data</strong>变为<strong>stats</strong>。然后，需要选定表达数据的几何对象，这个例子选用的是条块bar，这个步骤就是选<strong>geom</strong>。<strong>geom</strong>有一堆属性需要设定，比如x、y、颜色等，称为<strong>aes</strong>，哪个<strong>aes</strong>由哪个<strong>stats</strong>指定，需要指定一个映射关系<strong>mapping</strong>，即指定谁对谁。知道谁对谁后，还需要知道怎么个对法，需要由<strong>scale</strong>决定，比如stats的color字段取值为1应该对到什么颜色上，取值为2应该对到什么颜色上。这些完成了以后，统计图形的主体部分就成形了，但是假如我们希望在直方图上，再画一个概率密度曲线图，怎么办？ggplot2的思想非常精妙，把上面的主体部分称为一个图层<strong>layer</strong>，一个统计图形可以拥有多个图层，每个图层叠加起来形成我们要的效果。接下来，再选定一个坐标系统<strong>coord</strong>，一张统计图形<strong>plot</strong>就做好了。假如我们有多组数据，每组数据都要按照相同的方法画一张图，每张图重复敲代码很繁琐，就可以使用分面<strong>facet</strong>快速绘制多张统计图形。这个过程用图形总结如下：</p>
+<div class="figure">
+<img src="images/r_ggplot2_framework.png" />
+
+</div>
+<p>我们可以看到ggplot2相比其他绘图系统的几个特性：</p>
+<ul>
+<li>标准化：任何一个统计图形遵循相同的绘图流程，所以语法高度统一；</li>
+<li>面向数据：上面的绘图流程只与数据有关，与数据无关的绘图细节封装在单独的<code>theme()</code>方法里，数据相关绘图与数据无关绘图分离；</li>
+</ul>
+<p>这两大特性解放了数据分析师的思维，做到绘图时所思即所见，非常优雅高效。下面我们来逐步剖析每个元素的内容。</p>
+</div>
+<div class="section level2">
+<h2>数据</h2>
+<p>ggplot2接受的输入数据一般是<code>data.frame</code>，这是一个表格型结构，每一行是一个观测（observation），每一列是一个变量（variable）。R语言内置了许多著名的数据集，本文选取其中的iris进行讲解。iris中文名是鸢尾花，有四个属性，分别是Sepal.Length（花萼长度），Sepal.Width（花萼宽度），Petal.Length（花瓣长度），Petal.Width（花瓣宽度），以及一个类别标签Species。我在网上找了一个图片，做个标注，方便朋友理解。</p>
+<div class="figure">
+<img src="images/R_ggplot2_iris.png" />
+
+</div>
+<p>我们可以使用<code>str()</code>查看数据集的结构，用<code>summary()</code>对每一个变量进行统计。</p>
+<pre class="r"><code>str(iris)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    150 obs. of  5 variables:
+##  $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+##  $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+##  $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+##  $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+##  $ Species     : Factor w/ 3 levels &quot;setosa&quot;,&quot;versicolor&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<pre class="r"><code>summary(iris)</code></pre>
+<pre><code>##   Sepal.Length    Sepal.Width     Petal.Length    Petal.Width   
+##  Min.   :4.300   Min.   :2.000   Min.   :1.000   Min.   :0.100  
+##  1st Qu.:5.100   1st Qu.:2.800   1st Qu.:1.600   1st Qu.:0.300  
+##  Median :5.800   Median :3.000   Median :4.350   Median :1.300  
+##  Mean   :5.843   Mean   :3.057   Mean   :3.758   Mean   :1.199  
+##  3rd Qu.:6.400   3rd Qu.:3.300   3rd Qu.:5.100   3rd Qu.:1.800  
+##  Max.   :7.900   Max.   :4.400   Max.   :6.900   Max.   :2.500  
+##        Species  
+##  setosa    :50  
+##  versicolor:50  
+##  virginica :50  
+##                 
+##                 
+## </code></pre>
+<p>Hadley对<code>data.frame</code>提出了一个是否<strong>tidy</strong>的概念，抽象来讲就是一个变量必须有自己独立的一列，一个观测必须有自己独立的一行，每个取值必须有自己独立的一个单元格。为了便于理解，我们从<a href="http://r4ds.had.co.nz/tidy-data.html">R for Data Science</a>这本书截取出这个图进行解释：</p>
+<div class="figure">
+<img src="images/tidy_data_frame.png" />
+
+</div>
+<p>左边的数据是tidy的，右边的数据是不tidy的，通过另一个包<strong>tidyr</strong>可以轻松完成二者的转换。ggplot2的数据要求是tidy的。</p>
+</div>
+<div class="section level2">
+<h2>几何对象、图形属性、图层</h2>
+<div class="section level3">
+<h3>几何对象</h3>
+<p>几何对象，说的直观一些，就是你要画什么图来表示这组数据。ggplot2提供了众多几何对象<code>geom_xyz()</code>供大家选择。举两个常见的例子，<code>geom_point()</code>用于表示两个连续变量之间的关系，几何形状是点；<code>geom_bar()</code>用于表示x轴为离散变量，y轴为连续连续变量之间的关系，几何形状是条块。完整的几何对象请下载RStudio公司总结的<a href="files/ggplot2-cheatsheet.pdf">ggplot2 cheetsheet</a>。</p>
+<p>几何对象有一个<code>position</code>选项，用于指定如何在空间内布置相同取值的集合对象。<code>dodge</code>为并排模式；<code>fill</code>为堆叠模式，并归一化为相同的高度；<code>stack</code>为纯粹的堆叠模式；<code>jitter</code>会在X和Y两个方向增加随机的扰动来防止对象之间的覆盖。</p>
+</div>
+<div class="section level3">
+<h3>图形属性</h3>
+<p>每个几何对象都有自己的属性，这些属性的取值需要通过数据提供。数据与图形属性之间的映射关系称为<strong>mapping</strong>，在ggplot2中用<code>aes()</code>进行定义。常见的图形属性有：<code>x</code>，<code>y</code>，<code>size</code>，<code>color</code>，<code>group</code>。图形属性的任意一项都可以用数据的某一个变量来表示。</p>
+</div>
+<div class="section level3">
+<h3>图层</h3>
+<p>ggplot2的绘图过程有点像Photoshop，有一个图层的理念，每个图层可以有自己的图形对象和图形属性，通过<code>+</code>将不同图层叠加起来生成最后的统计图形。如果将数据定义在<code>ggplot()</code>中，那么所有图层都可以共用这个数据；如果将数据定义在<code>geom_xyz()</code>中，那么这个数据就只供这个几何对象使用。</p>
+<p>掌握了数据、几何对象、图形属性和图层的概念后，我们就可以开始绘制常见的统计图形了。</p>
+</div>
+<div class="section level3">
+<h3>基本绘图</h3>
+<p>Kaggle数据挖掘竞赛里有一个经典的探索性分析例子，对iris数据集进行了各种形式的可视化，帮助人通过直观的图形更深地理解特征与label的关系。Kaggle官网给出了<a href="https://www.kaggle.com/benhamner/d/uciml/iris/python-data-visualizations/notebook">Python版本的实现</a>。本节用R对该notebook的代码进行重现。</p>
+<pre class="r"><code>library(ggplot2)
+
+# Make scatter plot of Sepal.Length and Sepal.Width
+p.scatter &lt;- ggplot(iris) + geom_point(aes(x=Sepal.Length, y=Sepal.Width))
+p.scatter</code></pre>
+<p><img src="R_ggplot2_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code># One piece of information missing in the plots above is what species each plant is
+p.scatter &lt;- ggplot(iris) + geom_point(aes(x=Sepal.Length, y=Sepal.Width, color=Species))
+p.scatter</code></pre>
+<p><img src="R_ggplot2_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<pre class="r"><code># Boxplot to explore numeric variable
+p.box &lt;- ggplot(iris) + geom_boxplot(aes(x=Species, y=Petal.Length))
+p.box</code></pre>
+<p><img src="R_ggplot2_files/figure-html/unnamed-chunk-2-3.png" width="672" /></p>
+<pre class="r"><code># One way we can extend this plot is adding a layer of individual points on top of it
+p.box.jitter &lt;- p.box + geom_jitter(aes(x=Species, y=Petal.Length))
+p.box.jitter</code></pre>
+<p><img src="R_ggplot2_files/figure-html/unnamed-chunk-2-4.png" width="672" /></p>
+<pre class="r"><code># A violin plot combines the benefits of the previous two plots and simplifies them
+# Denser regions of the data are fatter, and sparser thiner in a violin plot
+p.violin &lt;- ggplot(iris) + geom_violin(aes(x=Species, y=Petal.Length))
+p.violin</code></pre>
+<p><img src="R_ggplot2_files/figure-html/unnamed-chunk-2-5.png" width="672" /></p>
+<pre class="r"><code># A final plot useful for looking at univariate relations is the kdeplot,
+p.density &lt;- ggplot(iris) + geom_density(aes(x=Petal.Length, colour=Species)) 
+p.density</code></pre>
+<p><img src="R_ggplot2_files/figure-html/unnamed-chunk-2-6.png" width="672" /></p>
+</div>
+</div>
+<div class="section level2">
+<h2>分面与布局</h2>
+<p>分面，就是分组绘图，根据定义的规则，将数据分为多个子集，每个子集按照统一的规则单独制图，排布在一个页面上。ggplot2提供两种分面模式：<code>facet_grid()</code>和<code>facet_wrap()</code>。</p>
+<p>我们先来看一下<code>facet_grid()</code>的效果。</p>
+<pre class="r"><code>library(tidyr)
+library(dplyr)
+# 将数据变为tidy的
+tidy_iris &lt;- iris %&gt;% 
+  gather(feature_name, feature_value, one_of(c(&quot;Sepal.Length&quot;, &quot;Sepal.Width&quot;, &quot;Petal.Length&quot;, &quot;Petal.Width&quot;)))
+
+p.box.facet &lt;- ggplot(tidy_iris) + geom_boxplot(aes(x=Species, y=feature_value)) + facet_grid(feature_name~Species)
+p.box.facet</code></pre>
+<p><img src="R_ggplot2_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>可以看到<code>facet_grid()</code>是一个二维的矩形布局，每个子集的位置由<code>行位置变量~列位置变量</code>的决定，在上面的例子中就是每一个Species的取值作为一行，每一个feature_name的取值作为一列。</p>
+<p>再来看一下<code>facet_wrap()</code>的效果。</p>
+<pre class="r"><code>p.box.facet &lt;- ggplot(tidy_iris) + geom_boxplot(aes(x=Species, y=feature_value)) + facet_wrap(~feature_name+Species, scales=&quot;free&quot;)
+p.box.facet</code></pre>
+<p><img src="R_ggplot2_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><code>facet_wrap()</code>生成一个动态调整的一维布局，根据<code>~位置变量1+位置变量2+...</code>来确定每个子集的位置，先逐行排列，放不下了移动到下一行。<code>scales=&quot;free&quot;</code>让每个子图的坐标系适合自己的数据，便于在有限的空间里充分展示子图的细节，但也失去了不同子图之间比较的作用，需要谨慎使用。</p>
+<p>分面的特点是可以快速生成多个子图，每个子图的生成方式是一样的，因此只需要指定分组的规则即可。但是有时候我们希望绘制多个子图，每个子图的生成方法却不一样，这个时候分面就不起作用了，需要使用<strong>grid</strong>包提供的布局功能。下面我们用ggplot2和grid的布局实现一个较为复杂的统计图形效果：</p>
+<pre class="r"><code>library(grid)
+# Show bivariate scatter plot and univariate histogram
+p.hist.len &lt;- ggplot(iris) + geom_histogram(aes(x=Sepal.Length))
+p.hist.wid &lt;- ggplot(iris) + geom_histogram(aes(x=Sepal.Width)) + coord_flip()
+grid.newpage()
+pushViewport(viewport(layout = grid.layout(3, 3)))
+print(p.scatter, vp=viewport(layout.pos.row=2:3, layout.pos.col=1:2))
+print(p.hist.len, vp=viewport(layout.pos.row=1, layout.pos.col=1:2))
+print(p.hist.wid, vp=viewport(layout.pos.row=2:3, layout.pos.col=3))</code></pre>
+<p><img src="R_ggplot2_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>在做数据分析时，我们经常需要观察变量自身与变量之间的两两关系。这个过程中需要绘制大量的图表，且每个业务的数据分析都需要这么做，因此算是一种重复性比较大的工作。我们可以使用<strong>GGally</strong>包来快速完成这个探索性分析的任务。</p>
+<pre class="r"><code>library(GGally)
+# Another useful seaborn plot is the pairplot, which shows the bivariate relation
+# between each pair of features
+# 
+# From the pairplot, we&#39;ll see that the Iris-setosa species is separataed from the other
+# two across all feature combinations
+
+ggpairs(iris, aes(colour=Species), alpha=0.4) # R could be better!!</code></pre>
+<p><img src="R_ggplot2_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>Kaggle数据挖掘竞赛剩下的例子是绘制Parallel coordinate graph、Andrews Curve、radviz，前两个的实现参考如下，最后一个暂时没找到对应的方法。</p>
+<pre class="r"><code># Parallel coordinate graph &amp; Andrews Curve
+# 修改自：http://cos.name/2009/03/parallel-coordinates-and-andrews-curve/
+# 轮廓图的思想非常简单、直观，它是在横坐标上取n个点，依次表示各个指标(即变量)；横坐标上则对应各个指标的值(或者经过标准化变换后的值)，然后将每一组数据对应的点依次连接即可
+# 调和曲线图的思想和傅立叶变换十分相似：
+# 根据三角变换方法将 n 维空间的点映射到二维平面上的曲线上，其中x取值范围为[-pi,pi]。
+
+# Another multivariate visualization technique pandas has is parallel_coordinates
+# Parallel coordinates plots each feature on a separate column &amp; then draws lines
+# connecting the features for each data sample
+
+p.paral &lt;- ggplot(cbind(iris %&gt;% gather(feature_name, feature_value, one_of(c(&quot;Sepal.Length&quot;, &quot;Sepal.Width&quot;, &quot;Petal.Length&quot;, &quot;Petal.Width&quot;))), id=1:nrow(iris))) + geom_line(aes(x=feature_name, y=feature_value, group=id, colour=Species))
+p.paral</code></pre>
+<p><img src="R_ggplot2_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code># One cool more sophisticated technique pandas has available is called Andrews Curves
+# Andrews Curves involve using attributes of samples as coefficients for Fourier series
+# and then plotting these
+andrews_curve &lt;- function(data, x_col, y_col, step=pi/30){
+  x = as.matrix(data[, x_col])
+  t = seq(-pi, pi, pi/30)
+  m = nrow(x)
+  n = ncol(x)
+  f = matrix(0, m, length(t))
+  for(i in 1:m) {
+    f[i,] = x[i,1]/sqrt(2)
+    for(j in 2:n) {
+      if (j%%2 == 0)
+        f[i, ] = f[i, ] + x[i, j] * sin(j/2 * t)
+      else f[i, ] = f[i, ] + x[i, j] * cos(j%/%2 * t)
+    }
+  }
+  colnames(f) &lt;- t
+  label &lt;- data[, y_col]
+  id &lt;- c(1:nrow(f))
+  res &lt;- cbind(as.data.frame(f), label, id)  %&gt;%
+    gather(x, y, -label, -id, convert = TRUE)
+}
+
+iris.andrew &lt;- andrews_curve(iris, x_col=c(&quot;Sepal.Length&quot;, &quot;Sepal.Width&quot;, &quot;Petal.Length&quot;, &quot;Petal.Width&quot;), y_col=&quot;Species&quot;)
+p.andrew &lt;- ggplot(iris.andrew) + geom_line(aes(x, y, group=id, color=label))
+p.andrew</code></pre>
+<p><img src="R_ggplot2_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code># A final multivariate visualization technique pandas has is radviz
+# Which puts each feature as a point on a 2D plane, and then simulates
+# having each sample attached to those points through a spring weighted
+# by the relative value for that feature
+
+# 暂时没能力实现</code></pre>
+</div>
+<div class="section level2">
+<h2>标尺</h2>
+<p>前面提到<code>aes()</code>设定了数据与图形属性的映射关系，但是数据怎么映射为属性，这就是标尺（Scales）的功能。对于任何一个图形属性，如<code>x</code>，<code>y</code>，<code>alpha</code>，<code>color</code>，<code>fill</code>，<code>linetype</code>，<code>shape</code>，<code>size</code>，ggplot2都提供以下四种标尺：</p>
+<ul>
+<li><code>scale_*_continuous()</code>：将数据的连续取值映射为图形属性的取值</li>
+<li><code>scale_*_discrete()</code>：将数据的离散取值映射为图形属性的取值</li>
+<li><code>scale_*_identity()</code>：使用数据的值作为图形属性的取值</li>
+<li><code>scale_*_mannual()</code>：将数据的离散取值作为手工指定的图形属性的取值</li>
+</ul>
+<p>举个例子</p>
+<pre class="r"><code>group_iris &lt;- iris %&gt;% group_by(Species) %&gt;% dplyr::summarise(avg_sepal_length=mean(Sepal.Length))
+str(group_iris)</code></pre>
+<pre><code>## Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:    3 obs. of  2 variables:
+##  $ Species         : Factor w/ 3 levels &quot;setosa&quot;,&quot;versicolor&quot;,..: 1 2 3
+##  $ avg_sepal_length: num  5.01 5.94 6.59</code></pre>
+<pre class="r"><code>p &lt;- ggplot(group_iris) + geom_bar(aes(x=Species, weight=avg_sepal_length, fill=Species))
+p</code></pre>
+<p><img src="R_ggplot2_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>p + scale_fill_manual(
+  values = c(&quot;skyblue&quot;, &quot;royalblue&quot;, &quot;navy&quot;), # mannual类scale特有的选项，指定图形属性的取值范围
+  limits = c(&quot;setosa&quot;, &quot;versicolor&quot;, &quot;virginica&quot;), # 数据的取值范围
+  breaks = c(&quot;setosa&quot;, &quot;versicolor&quot;, &quot;virginica&quot;), # 图例和轴要显示的分段点
+  name = &quot;Species&quot;,  # 图例和轴使用的名称
+  labels = c(&quot;set&quot;, &quot;ver&quot;, &quot;vir&quot;)  # 图例使用的标签
+)</code></pre>
+<p><img src="R_ggplot2_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
+<p>除了上述四大类通用的标尺，特定的图形属性还有一些专门的标尺类型。对于<code>x</code>和<code>y</code>类图形属性，有如下几种特殊的标尺：</p>
+<ul>
+<li><code>scale_x_date(labels=date_format(&quot;%m/%d&quot;), breaks=date_breaks(&quot;2 weeks&quot;))</code></li>
+<li><code>scale_x_datetime()</code></li>
+<li><code>scale_x_log10()</code></li>
+<li><code>scale_x_reverse()</code></li>
+<li><code>scale_x_sqrt()</code></li>
+</ul>
+<p>对于<code>color</code>和<code>fill</code>类的图形属性，有如下几类特殊标尺：</p>
+<ul>
+<li><code>scale_fill_brewer(palette=&quot;Blues&quot;)</code>：根据调色盘生成颜色标尺，可用的调色盘可以通过<code>RColorBrewer::display.brewer.all()</code>命令查看；对于具体的一个调色盘，可以通过<code>RColorBrewer::brewer.pal(n=4, name=&quot;Blues&quot;)</code>查看具体某个名字调色盘的<code>n</code>个配色值。</li>
+<li>`scale_fill_grey(start=0.2, end=0.8, na.value=“red”)：灰度标尺</li>
+<li><code>scale_fill_gradient(low=&quot;red&quot;, high=&quot;yellow&quot;)</code>：双色渐变标尺</li>
+<li><code>scale_fill_gradient2(low=&quot;red&quot;, high=&quot;blue&quot;, mid=&quot;white&quot;, midpoint=25)</code>：三色渐变标尺</li>
+<li><code>scale_fill_gradientn(colours=terrain.colors(6))</code>：n色渐标尺，其他的调色盘有<code>rainbow()</code>，<code>heat.colors()</code>，<code>topo.colors()</code>，<code>cm.colors()</code>以及<strong>RColorBrewer</strong>包的调色盘。</li>
+</ul>
+<p>对于<code>shape</code>类的图形属性，我们可以手工指定形状：<code>scale_shape_manual(values=c(3:7)</code>。每个形状用数字表示，根据下图可以选择自己需要的形状。</p>
+<div class="figure">
+<img src="images/ggplot2_shape.png" />
+
+</div>
+</div>
+<div class="section level2">
+<h2>坐标系</h2>
+<p>ggplot2默认的坐标系是笛卡尔坐标系，可以用如下方法指定取值范围：<code>coord_cartesian(xlim=c(0,5), ylim=c(0,3))</code>。如果想要让x轴和y轴换位置，比如将柱形图换成条形图，可以使用<code>coord_flip()</code>函数。<code>coord_polar(theta=&quot;x&quot;, direction=1)</code>是角度坐标系,theta指定角度对应的变量，start指定起点离12点钟方向的偏离值，direction若为1表示顺时针方向，若为-1表示逆时针方向。</p>
+</div>
+<div class="section level2">
+<h2>主题</h2>
+<p>所有与数据不相关的图形控制细节都放在<code>theme()</code>这个函数里。ggplot2内置了一些常见的主题：<code>theme_bw()</code>，<code>theme_classic()</code>，<code>theme_grey()</code>，<code>theme_minimal()</code>。如果需要更多的主题可以安装<code>ggthemes</code>包，也可以自定义主题。</p>
+</div>
+<div class="section level2">
+<h2>图例</h2>
+<p>ggplot2可以设定图例的位置：<code>theme(legend.position=&quot;bottom&quot;)</code>，其他选项有top、left和right。</p>
+<p>每个图形属性都会有一个图例，图例的类型共有三种：colorbar为颜色条，适合连续变量；legend为键值对，适合有限取值的变量；none，将一个图形属性的图例设置为none，则不显示这个图形属性的图例。</p>
+</div>
+<div class="section level2">
+<h2>标签</h2>
+<p>常用的绘图标签有：</p>
+<ul>
+<li><code>ggtitle(&quot;New Plot Title&quot;)</code>：指定图形名称</li>
+<li><code>xlab(&quot;New X label&quot;)</code>：指定x轴标签</li>
+<li><code>ylab(&quot;New Y label&quot;)</code>：指定y轴标签</li>
+<li>图例标签需要使用<code>scale_*()</code>的<code>name</code>和<code>labels</code>选项进行指定</li>
+</ul>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

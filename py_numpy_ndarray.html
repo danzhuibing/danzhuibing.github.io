@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>numpy ndarray详解</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">numpy ndarray详解</h1>
+
+</div>
+
+
+<div class="section level2">
+<h2>前言</h2>
+<p>如果没有<strong>numpy</strong>，Python内部只能用<code>list</code>或<code>array</code>来表示矩阵。假如用list来表示<code>[1,2,3]</code>，由于<code>list</code>的元素可以是任何对象，因此<code>list</code>中所保存的是对象的指针，这样就需要有3个指针和三个整数对象，比较浪费内存和CPU计算时间。Python的<code>array</code>和<code>list</code>不同，它直接保存数值，和C语言的一维数组比较类似，但是不支持多维，表达形式很简陋，写科学计算的算法很难受。<strong>numpy</strong>弥补了这些不足，核心贡献就是提供了<code>ndarray</code>这个存储单一数据类型的多维数组结构，实现上采用预编译好的C语言代码，性能上的表现十分不错。</p>
+</div>
+<div id="ndarray" class="section level2">
+<h2>ndarray内存结构</h2>
+<p>使用下面的代码可以生成本文讲解的<code>ndarray</code>案例：</p>
+<pre class="python"><code>from numpy import np
+
+a = np.array([[0,1,2],[3,4,5],[6,7,8]], dtype=np.float32)</code></pre>
+<p>我们来看一下ndarray如何在内存中储存的：关于数组的描述信息保存在一个数据结构中，这个结构引用两个对象，一块用于保存数据的存储区域和一个用于描述元素类型的dtype对象。</p>
+<div class="figure">
+<img src="images/python_numpy_ndarray.png" />
+
+</div>
+<p>数据存储区域保存着数组中所有元素的二进制数据，dtype对象则知道如何将元素的二进制数据转换为可用的值。数组的维数、大小等信息都保存在ndarray数组对象的数据结构中。</p>
+<p>strides中保存的是当每个轴的下标增加1时，数据存储区中的指针所增加的字节数。例如图中的strides为12,4，即第0轴的下标增加1时，数据的地址增加12个字节：即a[1,0]的地址比a[0,0]的地址要高12个字节，正好是3个单精度浮点数的总字节数；第1轴下标增加1时，数据的地址增加4个字节，正好是单精度浮点数的字节数。</p>
+</div>
+<div id="structured-array" class="section level2">
+<h2>Structured Array</h2>
+<p>由于<strong>numpy</strong>只支持单一数据类型，对于常见的表格型数据，我们需要通过<strong>numpy</strong>提供的Structrued Array机制自定义<code>dtype</code>。</p>
+<p><strong>numpy</strong>支持的类型包括：</p>
+<ul>
+<li>b1, i1, i2, i4, i8, u1, u2, u4, u8, f2, f4, f8, c8, c16, a<n> (representing bytes, ints, unsigned ints, floats, complex and fixed length strings of specified byte lengths)</li>
+<li>int8,…,uint8,…,float16, float32, float64, complex64, complex128 (this time with bit sizes)</li>
+</ul>
+<p>定义结构化数组有四种方式：1) string, 2) tuple, 3) list, or 4) dictionary。本文推荐使用后两种方式。</p>
+<pre class="python"><code>import numpy as np
+
+# list方式：a list of tuples. Each tuple has 2 or 3 elements specifying: 1) The name of the field (‘’ is permitted), 2) the type of the field, and 3) the shape (optional)
+persontype = [(&#39;name&#39;, &#39;S32&#39;), (&#39;age&#39;, &#39;i&#39;), (&#39;weight&#39;, &#39;f&#39;)]
+  
+# dict方式：需要指定的键值有names和formats
+persontype = np.dtype({
+        &#39;names&#39;: [&#39;name&#39;, &#39;age&#39;, &#39;weight&#39;], 
+        &#39;formats&#39;: [&#39;S32&#39;, &#39;i&#39;, &#39;f&#39;]
+    })
+a = np.array([(&quot;Zhang&quot;, 32, 75.5), (&quot;Wang&quot;, 24, 65.2)], dtype=persontype)
+</code></pre>
+</div>
+<div id="ndarray" class="section level2">
+<h2>创建ndarray</h2>
+<p>共有三类基本方法：一是从Python内置的array-like数据结构转化得到；二是利用<strong>numpy</strong>提供的创建函数直接生成；三是使用<code>genfromtxt()</code>方法生成。</p>
+<pre class="python"><code># -*- coding: utf-8 -*-
+import numpy as np
+
+# 从python的list转换
+x = np.array([[1,2.0],[0,0],(1+1j,3.)])
+
+
+np.zeros((2, 3))
+np.arange(2, 3, 0.1) # start, end, step
+np.linspace(1., 4., 6) # start, end, num
+np.indices((3, 3)) # 返回一个array，元素0是行下标，元素1是列下标；行下标为一个3*3二维array，对应3*3矩阵的行下标；列下标为一个3*3二维array，对应3*3矩阵的列下标
+
+
+ndtype=[(&#39;a&#39;,int), (&#39;b&#39;, float), (&#39;c&#39;, int)]
+names = [&quot;A&quot;, &quot;B&quot;, &quot;C&quot;]
+np.genfromtxt(&quot;file_name.txt&quot;, 
+  delimiter=&quot;,&quot;,
+  names=names,
+  dtype=ndtype, 
+  autostrip=True,
+  comments=&quot;#&quot;,
+  skip_header=3, 
+  skip_footer=5,
+  usecols=(0, -1))
+
+
+# ndarray to list
+a = np.array([[1, 2], [3, 4]])
+a.tolist()</code></pre>
+</div>
+<div class="section level2">
+<h2>索引</h2>
+<p><code>ndarray</code>索引的基本使用方法示例如下；</p>
+<pre class="python"><code>x = np.arange(10)
+x.shape = (2,5) 
+x[0][2]
+x[:,0:5:2]
+</code></pre>
+<blockquote>
+<p>以下内容总结自Numpy官方文档<a href="http://docs.scipy.org/doc/numpy/user/quickstart.html">Numpy basics</a></p>
+</blockquote>
+<p>关于<code>ndarray</code>的索引方式，有以下几个重点需要记住：</p>
+<ul>
+<li>虽然<code>x[0,2] = x[0][2]</code>，但是前者效率比后者高，因为后者在应用第一个索引后需要先创建一个temporary array，然后再应用第二个索引，最后找到目标值。</li>
+<li>分片操作不会引发copy操作，而是创建原ndarray的view；他们所指向的内存是同一片区域，无论是修改原ndarray还是修改view，都会同时改变二者的值。</li>
+<li>index array和boolean index返回的是copy，不是view。</li>
+</ul>
+<p>关于上面列举的<strong>分片操作不会引发copy操作</strong>，我们来进一步探讨一下。先看一下<strong>numpy</strong>的例子：</p>
+<pre class="python"><code>import numpy as np
+a = np.arange(10)
+a.shape = (2,5)
+print &quot;input a:&quot;, a
+
+b = a[0, ]
+print &quot;copy b:&quot;, b
+
+b[1] = -1
+print &quot;modify b:&quot;, b
+print &quot;final a:&quot;, a </code></pre>
+<pre><code>## input a: [[0 1 2 3 4]
+##  [5 6 7 8 9]]
+## copy b: [0 1 2 3 4]
+## modify b: [ 0 -1  2  3  4]
+## final a: [[ 0 -1  2  3  4]
+##  [ 5  6  7  8  9]]</code></pre>
+<p>再来看一下R的例子：</p>
+<pre class="r"><code>a &lt;- matrix(0:9, nrow=2, byrow=TRUE)
+a</code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5]
+## [1,]    0    1    2    3    4
+## [2,]    5    6    7    8    9</code></pre>
+<pre class="r"><code>b &lt;- a[1,]
+b[2] &lt;- -1
+b</code></pre>
+<pre><code>## [1]  0 -1  2  3  4</code></pre>
+<pre class="r"><code>a</code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5]
+## [1,]    0    1    2    3    4
+## [2,]    5    6    7    8    9</code></pre>
+<p>可以看到numpy和R在矩阵的分片操作有不同的设计理念：在R里分片操作会引起数据的复制，在numpy里不会。事实上，R的设计理念很多时候可以用一句话来概括：copy on modify，一旦对数据有修改就会引起内存上的复制操作，这个操作要花不少时间，因此经常会听到人们抱怨R费内存且速度慢。所以，我们可以看到numpy在处理这件事情上明显要用心很多，根据场景设计了不同的策略，不是简单地采用R的一刀切方式。当然，这也带来了一些学习成本，需要对numpy足够熟悉才能避免踩坑。R社区里对copy on modify的哲学也有诟病并在努力改变，比如同是data.frame操作库的data.table和dplyr，data.table性能比dplyr高很多，部分原因也是data.table规避了copy on modify的方式。</p>
+<p>再来看一下Structured Array的索引效率。</p>
+<pre class="python"><code>import time
+start = time.clock()
+a[1]
+end = time.clock()
+print &quot;a[1] cost time: %f&quot; % (end-start)
+
+start = time.clock()
+a[&#39;name&#39;]
+end = time.clock()
+print &quot;a[&#39;name&#39;] cost time: %f&quot; % (end-start)
+
+start = time.clock()
+a[1][&#39;name&#39;]
+end = time.clock()
+print &quot;a[1][&#39;name&#39;] cost time: %f&quot; % (end-start)
+
+start = time.clock()
+a[&#39;name&#39;][1]
+end = time.clock()
+print &quot;a[&#39;name&#39;][1] cost time: %f&quot; % (end-start)</code></pre>
+<p>从上面的结果，我们发现，获取相同的数据有多种操作，不同的操作性能差别很大。我做了一个推测，纯粹是瞎猜：numpy在建立结构化数组时，将整个结构体连续存储在一起，即按行存储，因此<code>a[1]</code>的速度最快；但是为了保证提取列的效率，对<code>a['name']</code>建立了索引，因此<code>a['name']</code>的效率也很高；但是这个索引只对整个a起作用，如果输入只有a的一部分，仍然需要遍历整个a，去提取出对应的数据，因此<code>a[1]['name']</code>比<code>a['name'][1]</code>的效率差很多。</p>
+<p><strong>参考文献</strong></p>
+<ul>
+<li><a href="http://old.sebug.net/paper/books/scipydoc/index.html">用Python做科学计算</a></li>
+<li><a href="https://docs.scipy.org/doc/numpy/user/basics.rec.html">Numpy User Guide</a></li>
+</ul>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
