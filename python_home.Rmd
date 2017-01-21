@@ -4,43 +4,60 @@ output:
     highlight: textmate
 ---
 
+<br>
 
-## Python与数据科学
-### Matrix
-- [numpy多维数组](py_numpy_ndarray.html)
+### Machine Learning
+- [矩阵运算](py_numpy_ndarray.html)：**numpy**
+- 机器学习：**scikit-learn**
+    - 估计器（Estimator）：分类器模型，主要包含两个方法`fit()`和`predict()`。
+    - 转换器（Transformer）：数据预处理与数据转换，主要包含三个方法`fit()`、`transform()`、`fit_transform()`。
+    - 流水线（Pipeline）：流水线的输入时一连串的数据挖掘步骤，最后一步必须是估计器，前几步是转换器；每步用元组（'名称'，步骤）来表示。
+    - 预处理（Preprocessing）
+        + 规范化：`MinMaxScaler`，最大最小值规范化；`Normalizer`，每条数据各特征的和为1；`StandardScaler`，使各特征均值为0，方差为1
+        + 编码：`LabelEncoder`，将字符串类型的数据转化为整型；`OneHotEncoder`，特征用一个二进制数字来表示；`Binarizer`，将数值特征二值化；`MultiLabelBinarizer`，将多标签二值化。
+    - 特征（Feature）
+        + 特征抽取：`sklearn.feature_extraction`
+        + 特征选择：`sklearn.feature_selection`
+    - 降维：`sklearn.decomposition`
+    - 组合：`sklearn.ensemble`
+    - 评估：`sklearn.metrics`，包括`accuracy_score`，`confusion_matrix`，`classification_report`，`precision_recall_fscore_support`等
+    - 交叉验证：`sklearn.cross_validation`
+    - 网格搜索：`sklearn.grid_search`
+- 深度学习：**tensorflow**
 
-### Data Frame
-- [pandas数据分析](python_pandas.html)
+### Data Analysis
+- [数据框](python_pandas.html)：**pandas**
+- [日期时间处理](Python_datetime.html)：**datetime**
+- 统计绘图
+    - [**matplotlib**](python_matplotlib.html)
+    - **seaborn**
+    - **bokeh**
 
-### Visualise
-- [matplotlib绘图](python_matplotlib.html)
+### Tool
+- 环境管理：**virtualenv**
+- 命令行工具开发：**click**
+- [多进程、多线程并发](python_parallel.html)：**multiprocessing**，**multiprocessing.dummy**
+- 单元测试：**unittest**
+- 日志：**logging**
 
-### Model
-- 估计器（Estimator）：分类器模型，主要包含两个方法`fit()`和`predict()`。
-- 转换器（Transformer）：数据预处理与数据转换，主要包含三个方法`fit()`、`transform()`、`fit_transform()`。
-- 流水线（Pipeline）：流水线的输入时一连串的数据挖掘步骤，最后一步必须是估计器，前几步是转换器；每步用元组（'名称'，步骤）来表示。
-- 预处理（Preprocessing）
-    + 规范化：`MinMaxScaler`，最大最小值规范化；`Normalizer`，每条数据各特征的和为1；`StandardScaler`，使各特征均值为0，方差为1
-    + 编码：`LabelEncoder`，将字符串类型的数据转化为整型；`OneHotEncoder`，特征用一个二进制数字来表示；`Binarizer`，将数值特征二值化；`MultiLabelBinarizer`，将多标签二值化。
-- 特征（Feature）
-    + 特征抽取：`sklearn.feature_extraction`
-    + 特征选择：`sklearn.feature_selection`
-- 降维：`sklearn.decomposition`
-- 组合：`sklearn.ensemble`
-- 评估：`sklearn.metrics`，包括`accuracy_score`，`confusion_matrix`，`classification_report`，`precision_recall_fscore_support`等
-- 交叉验证：`sklearn.cross_validation`
-- 网格搜索：`sklearn.grid_search`
+### Web Server
+- 数据库：**pymysql**
+- ORM：**SQLAlchemy**
+- WSGI工具：**werkzeug**
+- HTML模板：**jinja2**
+- Web框架：**flask**
+
+### Web Client
+- HTTP请求：**requests**
+- [JSON解析](Python_JSON.html)：**json**
+- HTML解析：**beautifulsoup**
+- XML解析：**ElementTree**，**lxml**
+- 爬虫：**scrapy**
 
 <hr>
 
+## 其他
 
+**R与Python对比**
 
-
-
-本系列文章介绍Python的编程基础。
-
-+ [日期时间处理-Python篇](Python_datetime.html)
-+ [JSON处理-Python篇](Python_JSON.html)
-+ [矩阵处理-Numpy基础](python_numpy.html)
-+ [并发编程](python_parallel.html)
 + [左手python右手R](left_python_right_r.html)
