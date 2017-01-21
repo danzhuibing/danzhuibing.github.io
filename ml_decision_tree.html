@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>决策树</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">决策树</h1>
+
+</div>
+
+
+<div class="section level2">
+<h2>基本算法</h2>
+<p>决策树分类算法的一般流程如下：</p>
+<ul>
+<li>一开始，所有的观测均属于根节点，所有特征的取值均离散化；</li>
+<li>根据<strong>启发规则</strong>选择一个特征，根据特征取值的不同对观测进行分割；</li>
+<li>对分割后得到的节点进行同样的启发式特征选择与观测分割过程，如此往复，直到
+<ul>
+<li>分割得到的观测集合属于同一类；</li>
+<li>特征用完，以子集中绝大多数的观测类别作为该叶节点的类别</li>
+</ul></li>
+</ul>
+<p>流程中最重要的一个环节是启发规则，本文称之为<strong>特征选择规则</strong>。在每一个节点进行特征选择时，由于有众多的选项，需要一个选择规则。基本的原则是使最后构造出的决策树规模最小。基于这个基本原则，我们启发式地定义规则为使分割后得到的子节点纯度最大。于是特征选择规则问题就转化为了纯度定义的问题。目前常见的决策树有三种算法，分别对应三种定义：</p>
+<ul>
+<li>ID3：信息增益</li>
+<li>C4.5：信息增益比</li>
+<li>CART：基尼系数</li>
+</ul>
+</div>
+<div class="section level2">
+<h2>参数选择规则</h2>
+<div id="id3" class="section level3">
+<h3>ID3与信息增益</h3>
+<p>我们利用熵(Entropy)的概念去描述“不纯度”，熵值越大，说明这个节点的纯度越低：当节点的类别均匀分布时，熵值为1；当只包含一类时，熵值为0.熵的计算公式如下图，以2为底的概率对数与概率乘积之和的相反数。</p>
+<p><span class="math display">\[Info(D) = -\sum_{i=1}^mp_i\log_2(p_i)\]</span></p>
+<p>基于熵的概念，我们可以得到特征选择的第一个规则：信息增益(Info Gain)。信息增益的定义是分裂前的节点熵减去分裂后子节点熵的加权和，即不纯度的减少量，也就是纯度的增加量。特征选择的规则是：选择使信息增益最大的特征分割该节点。</p>
+<p>我们举一个例子来说明这个概念。</p>
+<p>假设我们的数据集如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>age</th>
+<th>income</th>
+<th>student</th>
+<th>credit_rating</th>
+<th>buys_computer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>&lt;=30</td>
+<td>high</td>
+<td>no</td>
+<td>fair</td>
+<td>no</td>
+</tr>
+<tr class="even">
+<td>&lt;=30</td>
+<td>high</td>
+<td>no</td>
+<td>excellent</td>
+<td>no</td>
+</tr>
+<tr class="odd">
+<td>(30,40]</td>
+<td>high</td>
+<td>no</td>
+<td>fair</td>
+<td>yes</td>
+</tr>
+<tr class="even">
+<td>&gt;40</td>
+<td>medium</td>
+<td>no</td>
+<td>fair</td>
+<td>yes</td>
+</tr>
+<tr class="odd">
+<td>&gt;40</td>
+<td>low</td>
+<td>yes</td>
+<td>fair</td>
+<td>yes</td>
+</tr>
+<tr class="even">
+<td>&gt;40</td>
+<td>low</td>
+<td>yes</td>
+<td>excellent</td>
+<td>no</td>
+</tr>
+<tr class="odd">
+<td>(30,40]</td>
+<td>low</td>
+<td>yes</td>
+<td>excellent</td>
+<td>yes</td>
+</tr>
+<tr class="even">
+<td>&lt;=30</td>
+<td>medium</td>
+<td>no</td>
+<td>fair</td>
+<td>no</td>
+</tr>
+<tr class="odd">
+<td>&lt;=30</td>
+<td>low</td>
+<td>yes</td>
+<td>fair</td>
+<td>yes</td>
+</tr>
+<tr class="even">
+<td>&gt;40</td>
+<td>medium</td>
+<td>yes</td>
+<td>fair</td>
+<td>yes</td>
+</tr>
+<tr class="odd">
+<td>&lt;=30</td>
+<td>medium</td>
+<td>yes</td>
+<td>excellent</td>
+<td>yes</td>
+</tr>
+<tr class="even">
+<td>(30,40]</td>
+<td>high</td>
+<td>yes</td>
+<td>fair</td>
+<td>yes</td>
+</tr>
+<tr class="odd">
+<td>(30,40]</td>
+<td>medium</td>
+<td>no</td>
+<td>excellent</td>
+<td>yes</td>
+</tr>
+<tr class="even">
+<td>&gt;40</td>
+<td>medium</td>
+<td>no</td>
+<td>excellent</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<p>其中y变量为buys_computer，特征x包括age，income，student，credit_rating。</p>
+<p>我们现在根据信息增益来选择下一步要拆分的特征。</p>
+<p>拆分前的信息熵<span class="math inline">\(Info(D)\)</span>：9个正例，5个负例</p>
+<p><span class="math display">\[Info(D)=I(9,5)=-\frac{9}{14}\log_2\frac{9}{14}-\frac{5}{14}\log_2\frac{5}{14}=0.940\]</span></p>
+<p>按照age特征拆分观测：&lt;=30的正例2个，负例3个，信息熵为<span class="math inline">\(I(2,3)=0.971\)</span>；[31,40)的正例4个，负例0个，信息熵为<span class="math inline">\(I(4,0)=0\)</span>；&gt;40的正例3个，负例2个，信息熵为<span class="math inline">\(I(3,2)=0.971\)</span>。上述信息汇总为表格如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>age</th>
+<th><span class="math inline">\(p_i\)</span></th>
+<th><span class="math inline">\(n_i\)</span></th>
+<th>I(p_i, n_i)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>&lt;=30</td>
+<td>2</td>
+<td>3</td>
+<td>0.971</td>
+</tr>
+<tr class="even">
+<td>[31,40)</td>
+<td>4</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>&gt; 40</td>
+<td>3</td>
+<td>2</td>
+<td>0.971</td>
+</tr>
+</tbody>
+</table>
+<p>那么按照age拆分观测的信息为上面各项的加权平均：</p>
+<p><span class="math display">\[Info_{age}(D)=\frac{5}{14}I(2,3)+\frac{4}{14}I(4,0)+\frac{5}{14}I(3,2)=0.694\]</span></p>
+<p>那么按照age拆分的信息增益如下：</p>
+<p><span class="math display">\[Gain(age)=Info(D) - Info_{age}(D)=0.246\]</span></p>
+<p>同理，按照income、student和credit_rating拆分得到的信息增益分别是：</p>
+<p><span class="math display">\[Gain(income)=0.029\]</span> <span class="math display">\[Gain(student)=0.151\]</span> <span class="math display">\[Gain(credit_rating)=0.048\]</span></p>
+<p>可以看到，选择age划分观测带来的信息增益最大，所以，我们第一个选择的特征是age。</p>
+</div>
+<div id="c4.5" class="section level3">
+<h3>C4.5与信息增益比</h3>
+<p>信息增益存在的问题是：倾向于选择包含多取值的参数，因为参数的取值越多，其分割后的子节点纯度可能越高。为了避免这个问题，我们引入了增益比例(Gain Ratio)的选择指标，其定义如下：</p>
+<p><span class="math display">\[SplitInfo_A(D)=-\sum_{j=1}^{v}\frac{|D_j|}{|D|}\log_2\frac{|D_j|}{|D|}\]</span></p>
+<p><span class="math display">\[GainRatio(A)=Gain(A)/SplitInfo(A)\]</span></p>
+<p>特征A共有<span class="math inline">\(v\)</span>个取值，宗观测数为<span class="math inline">\(|D|\)</span>；取值为<span class="math inline">\(j\)</span>的观测数为<span class="math inline">\(|D_j|\)</span>。从<span class="math inline">\(SplitInfo_A(D)\)</span>的定义可以看出，当A的取值只有一个时，取值为0；当A的取值有多个，且每个取值的观测数完全一样时，取值最大。因此信息增益比存在的问题是：倾向于选择分割不均匀的分裂方法，举例而言，一个拆分若分为两个节点，一个节点特别多的观测，一个节点特别少的观测，那么这种拆分有利于被选择。</p>
+<p>为了克服信息增益和增益比例各自的问题，一个综合性的解决方案如下：首先利用信息增益概念，计算每一个特征分割的信息增益，获得平均信息增益；选出信息增益大于平均值的所有特征集合，对该集合计算信息增益比，选择其中增益比例最大的特征进行决策树分裂。</p>
+</div>
+<div id="cart" class="section level3">
+<h3>CART与基尼系数</h3>
+<p>上面介绍的是基于熵概念的参数选择规则，另一种流行的规则称为基尼指数（Gini Index），其定义如下：</p>
+<p><span class="math display">\[gini(D)=1-\sum_{j=1}^np_j^2\]</span></p>
+<p>其中<span class="math inline">\(n\)</span>是决策树的分类数，在上面提到的例子中为2；<span class="math inline">\(p_j\)</span>是类别为<span class="math inline">\(j\)</span>的观测数与D观测数的商。</p>
+<p>对于上例，拆分前的基尼系数为：</p>
+<p><span class="math display">\[gini(D)=g(9,5)=1-(\frac{9}{14})^2-(\frac{5}{14})^2=0.459\]</span></p>
+<p>按照age拆分的基尼系数为：</p>
+<p><span class="math display">\[gini_{age}(D)=\frac{5}{14}g(2,3)+\frac{4}{14}g(4,0)+\frac{5}{14}g(3,2)\]</span></p>
+<p>基尼系数在节点取值分布均匀时取最大值1-1/n，在只包含一个类别时取最小值0. 所以与熵类似，也是一个描述不纯度的指标。</p>
+<p>基于基尼系数的规则是：选择不纯度减少量(Reduction in impurity)最大的参数。不纯度减少量是分割前的Gini index减去分割后的Gini index。基尼系数的特点与信息增益的特点类似。</p>
+</div>
+</div>
+<div class="section level2">
+<h2>过拟合与剪枝</h2>
+<p>过度拟合问题是对训练数据完全拟合的决策树对新数据的预测能力较低。为了解决这个问题，有两种解决方法。第一种方法是前剪枝(prepruning)，即事先设定一个分裂阈值，若分裂得到的信息增益不大于这个阈值，则停止分裂。第二种方法是后剪枝（postpruning），首先生成与训练集完全拟合的决策树，然后自下而上地逐层剪枝，如果一个节点的子节点被删除后，决策树的准确度没有降低，那么就将该节点设置为叶节点（基于的原则是Occam剪刀：具有相似效果的两个模型选择较简单的那个）。</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

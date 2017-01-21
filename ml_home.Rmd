@@ -7,7 +7,7 @@ output:
 
 ## 分类
 + 线性模型
-+ 树模型
++ [决策树](ml_decision_tree.html)：ID3、C4.5、CART
 + SVM
 + 神经网络
 
