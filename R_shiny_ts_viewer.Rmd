@@ -2,7 +2,6 @@
 title: "Shiny时间序列可视化"
 output:
   html_document:
-    code_folding: show
     highlight: textmate
     toc: yes
     toc_float:
@@ -37,10 +36,10 @@ Shiny让数据分析师写完分析与可视化代码后，稍微再花几十分
 ## 代码
 废话不多说，拷贝以下代码至RStudio，运行APP即可。有朋友反馈说表格画不出来，我推测是DT控件没装好，重装一下试试。将代码中的debug=TRUE改为debug=FALSE，添加自己需要的数据接口就可以直接使用了。
 
-``` {r, eval=F}
+``` {r, eval=T, warning=F, message=F}
 #########################
-# 时间序列数据可视化工具
-# @author: shuiping.chen@alibaba-inc.com
+# Time Series Shiny Viewer
+# @author: Shuiping Chen
 # @date: 2016-07-10
 #########################
 
@@ -71,7 +70,7 @@ ui <- fluidPage(
   useShinyjs(),
   titlePanel("时间序列数据可视化工具"),
   # 第一部分：SQL命令提交界面
-  div(id="download"，
+  div(id="download",
       fluidRow(
         column(12,
                textOutput(outputId="download_info")

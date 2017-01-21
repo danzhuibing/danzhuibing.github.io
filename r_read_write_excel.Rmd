@@ -30,7 +30,7 @@ R读写Excel有许多包提供了解决方案，其中基于Java有一个很成�
 
 `read.xlsx`在读取Excel时，会自动推测每个字段的类型，但效率较低，适合读取小数据集；`read.xlsx2`更多地依赖Java实现功能，因此读取效率高，但是每个字段的类型需要用户自行指定，否则全部当做字符串`character`处理，默认转化为`factor`类型。另外，`read.xlsx`读取中文时需要显示指定编码方式，否则会变为乱码；`read.xlsx2`不需要。
 
-``` {r}
+``` {r, eval=F}
 library("xlsx")
 file <- system.file("tests", "test_import.xlsx", package = "xlsx")
 res <- read.xlsx(file, 1, encoding="UTF-8")  # 需要指定读取的Sheet编号或者名称，中文需要指定编码

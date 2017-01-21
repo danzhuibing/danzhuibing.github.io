@@ -2,17 +2,13 @@
 title: "Storm基础"
 output:
   html_document:
-    code_folding: hide
     toc: true
     toc_float: 
       collapsed: false
-    theme: cosmo
     highlight: textmate
-    number_sections: true
-    
 ---
 
-# Storm介绍
+## Storm介绍
 Storm是一个分布式调度系统，用户按照接口实现一个计算任务，然后把这个任务交给Storm系统。Storm将这个任务跑起来，并且7*24小时运行，一旦中间一个Worker挂了，调度器会立即重启一个Work替换这个失效的Worker。
 
 本文所说的Storm均指阿里开发的JStorm。
@@ -21,21 +17,21 @@ Storm是一个分布式调度系统，用户按照接口实现一个计算任务
 
 Storm最适合的场景是**无状态计算**，即计算依赖的数据全部在接收的消息里，且一个消息的计算不依赖于另一个消息。典型应用场景有：日志分析、管道系统、消息转化器、统计分析器。
 
-# 基本组件
+## 基本组件
 * Spout：数据源，可以是Kafka、HBase、HDFS等。核心接口是`nextTuple`，用于获取下一条消息。Storm框架会不断地调用这个接口，从数据源拉取数据，发送给下游Bolt。
 * Bolt：任务处理逻辑；Bolt之间可以建立连接关系，从而形成一个处理流水线；通常最后一个Bolt会做一些数据的存储工作，如写入DB、HBase等，供前台业务查询和展现。核心接口是`execute`，内容是具体业务逻辑的实现。
 
 Spout和Bolt组合起来就是一个任务，称为Topology。向Storm集群提交一个Topology后，框架会对它进行调度和执行。
 
-# 调度和执行
+## 调度和执行
 提交Topology的时候，用户可以指定总worker数，即系统处理这个任务所使用的进程数。用户还可以指定每个组件的并行度。比如一个Topology含有一个Spout和一个Bolt，Spout的并行度是5，Bolt的并行度是10。那么我们最终会有15个线程，5个Spout线程，10个Bolt线程。Storm中，每个执行线程都有一个task id，从1开始递增，每一个组件的task id是连续的。
 
 于是这个Topology共有3个进程和15个线程。线程会分布在3个进程中。Storm使用了一种均匀的调度算法，因此在执行的时候，你会看到，每个进程分别都各有5个线程在执行。当然，由于spout是5个线程，不能均匀地分配到3个进程中，会出现一个进程只有1个spout线程的情况；同样地，也会出现一个进程中有4个bolt线程的情况。
 
-# 消息通信
+## 消息通信
 Spout的消息会发送给特定的Bolt，Bolt也可以发送给其他的Bolt，这之间的通信机制如下：从Spout发送消息的时候，Storm会计算出消息要发送的目标task id列表，然后看目标task id是在本进程中还是在其他进程中。如果在本进程中，直接走进程内部通信；如果是跨进程，会通过netty将消息发送到目标task中。
 
-# Grouping方式
+## Grouping方式
 * `fieldsGrouping`：保证相同的key的数据会发送到相同的task，原理是对某个或某几个字段做hash，然后用hash结果求模得到目标task id。
 * `globalGrouping`：发送到目标组件的第一个task。
 * `shuffleGrouping`：平均分配tuple到目标组件的各个task。
@@ -44,7 +40,7 @@ Spout的消息会发送给特定的Bolt，Bolt也可以发送给其他的Bolt，
 * `directGrouping`：发送指定目标task。
 
 
-# WordCount
+## WordCount
 Maven的pom.xml如下：
 
 ``` {xml}
@@ -235,8 +231,8 @@ public class WordCountTopology {
 }
 ```
 
-# 数据分流与合流
-## 分流
+## 数据分流与合流
+### 分流
 第一种情况，发送相同的tuple到下一级不同的bolt。这个很简单，对每个bolt设定接收同一个源即可。
 
 第二种情况，发送不同的tuple到下一级不同的bolt。这个时候，需要引入stream的概念，发送方发送a消息给接收方A'时使用stream A，发送b消息给B'时使用stream B。
@@ -309,7 +305,7 @@ if (input.getSourceStreamId().equals(TRADE_STREAM_ID) ) {
 }
 ```
 
-## 合流
+### 合流
 合流很简单，发送方无需做什么改动，提交Topology的时候，让合流的Bolt同时接受上游多个Bolt或Spout的消息即可。
 
 合流Bolt接受消息时判断消息来自哪个源组件即可。

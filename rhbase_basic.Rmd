@@ -1,6 +1,10 @@
 ---
 title: "R使用HBase"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
 ---
 
 ```{r setup, include=FALSE}
@@ -243,38 +247,3 @@ shinyApp(ui=ui, server=server)
 ![每日流量曲线](images/rhbase_day.png)
 
 
-
-## 补充：HBase的理论知识
-HDFS和MapReduce的配合赋予了廉价计算机集群处理海量数据的能力，然而这种配合尚缺乏实时随机存取的能力。HBase完善了Hadoop生态系统进行随机存取的能力。
-### HBase表
-HBase与关系型数据库类似，按照表来组织数据。表由若干行组成，每个行由行键唯一确定，行键按照字典序排序。一行由若干列族组成，每个列族下面又含若干列。相同列族的列存储在同一个底层的文件HFile里。每一列的值具有时间戳，用于保存不同的版本。综上，HBase的表结构可以表示为：{Table, RowKey, Family, Column, Timestamp} -> Value. HBase的可扩展性体现在region，region本质上是以行键排序的连续存储空间。
-
-HBase不支持SQL，只支持API模式，提供了建表、删表、增加列族和删除列族操作，并能对表和列族进行修改。客户端还可以通过API对给定的键值进行增加、删除和查找。另外，scan API提供了高效遍历某个范围的行的功能。通过设置过滤器可以匹配返回的列，通过设置起始和终止的时间范围可以选择查询版本。
-
-### 实现原理
-HBase的数据存储在store file中，即HFile。每个HFile内的键值都是排序的。HFile内部由连续的块组成。store file通常保存在HDFS上，以利用HDFS的冗余功能，保证数据不丢失。
-
-更新数据时，会先将数据记录在提交日志中，称为预写日志（Write-ahead log，WAL），然后将这些数据写入内存中的memstore中。当数据超过了memstore的阈值，系统会将数据移出内存持久化到磁盘中生成HFile。相对应的提交日志在持久化后会被丢弃。memstore中的数据已经在内存中按照行健进行排序，所以持久化时只需要按照顺序写就行。
-删除数据时，因为store file不能改变，所以只对该行做个删除标记。
-
-检索数据时，首先查找memstore中还没有写入磁盘的数据，没找到的话再查找磁盘上的HFile。
-
-当HFile数量越来越多时，HBase会启动进程将多个文件合并为一个较大的文件。合并分两种，第一种minor compaction，就是进行多路归并，第二种major compaction，将一个region中一个列族的若干个HFile重写为一个新HFile，即扫描所有的键值对，顺序重写全部的数据，重写数据的过程中忽略做了删除标记的数据。
-
-上述过程的理论被称为LSM树，和B+树的对比请参考[这篇文章](http://www.oschina.net/question/565065_113615)
-
-### ZooKeeper在HBase中的作用
-ZooKeeper的功能总结起来是文件系统+通知机制。在HBase中，ZooKeeper大致有三个作用。首先会存储-ROOT-表，里面包含了主节点HMaster的地址。然后，RegionServer会在ZooKeeper指定路径下创建临时节点，HMaster通过监控临时节点感知RegionServer的状态。最后，HMaster的选举也会通过ZooKeeper进行。
-
-### 应用场景
-#### 快速查找
-假设现在要查找一个指定行健指定列族的某个列值。为了实现这个目标，关键是要在大量的数据中定位出行键的位置。假设我们有10亿条记录，一共1TB的存储量。
-
-首先，HBase会查找到包含该行键的region。如果有500个region，那么我们实际要读取的磁盘数据量只剩下1TB/500=2GB。
-
-其次，HBase是按列族存储的。假设表中共有3个列族，每个列族的数据量平均是2GB/3=666M。我们要查询的只是其中一个列族，因此只需要扫描666M。一个列族包含一个或多个HStoreFile，我们要查找的行键可能在HStoreFile的开始、中间、末尾，平均下来我们按顺序扫描需要扫300M。
-
-最后，每个HStoreFile存储的是key-value，我们只需要遍历key，不需要遍历value。假设key和value的大小为1:19，那么我们只需要扫描15M就能获得对应记录。磁盘访问速度约为100M/s，只需要0.15s。
-
-#### 实时查询
-由于LSM树架构的特点，最新的数据都保存在内存中。所以实时的数据通过内存即可获得，因此响应速度很快。

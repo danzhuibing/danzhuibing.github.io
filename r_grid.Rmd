@@ -1,13 +1,20 @@
 ---
 title: "R绘图布局grid"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
+    highlight: textmate
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 ```
 
-在一个空间上绘制多张统计图形，需要有一个布局工具。本文讲解`grid`包在绘图布局上的重要概念和基本模式。
+在本博客的[ggplot2入门指南](R_ggplot2.html)一文里提到，ggplot2的`facet`功能支持快速生成多张相同制作流程的统计图形，但是不能支持生成多张制作流程不同的统计图形。其实这很正常，制作流程不同，那就只能一张一张地制作——那么问题来了：这单独制作的多张图怎么随心所欲地按照你的设想进行摆放呢？
+
+本文将对这个问题展开深入的讨论，代码里用到了R的一个包**grid**，原来是第三方的，由于其在R图形领域极其重要的地位，现在已经随R语言一同打包下载了。本文详细讲解grid包图形布局的核心概念**viewport**，并演示三种结合ggplot2绘制上图的方法。
 
 ## viewport
 `viewport`是**grid**包的核心对象，说简单点就是一个矩形的绘图区域。

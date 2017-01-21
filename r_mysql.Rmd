@@ -1,6 +1,11 @@
 ---
 title: "R连接MySQL"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
+    highlight: textmate
 ---
 
 ```{r setup, include=FALSE}

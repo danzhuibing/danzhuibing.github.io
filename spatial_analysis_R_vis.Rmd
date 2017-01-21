@@ -1,13 +1,11 @@
 ---
-title: "R空间分析：可视化"
+title: "R空间数据可视化"
 output:
   html_document:
-    code_folding: hide
     toc: true
     toc_float: 
       collapsed: false
     highlight: textmate
-    number_sections: true
 ---
 
 ```{r setup, include=FALSE}

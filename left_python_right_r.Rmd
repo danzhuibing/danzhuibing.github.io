@@ -2,7 +2,6 @@
 title: "左手python，右手R"
 output:
   html_document:
-    code_folding: show
     toc: true
     toc_float: 
       collapsed: false

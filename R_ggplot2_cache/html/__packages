@@ -2,6 +2,7 @@ base
 ggplot2
 lubridate
 jsonlite
+DT
 tidyr
 dplyr
 GGally

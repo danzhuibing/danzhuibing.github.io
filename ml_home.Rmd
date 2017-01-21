@@ -3,9 +3,19 @@ output:
   html_document
 ---
 
-本系列文章介绍机器学习算法基础。
+<br>
 
+## 分类
++ 线性模型
++ 树模型
++ SVM
++ 神经网络
+
+## 聚类
++ [KMeans](kmeans.html)：基于划分的聚类
++ DBSCAN：基于密度的聚类
+
+## 其他
 + [推荐系统-协同过滤算法](collaborative_filtering.html)
-+ [KMeans聚类](kmeans.html)
-+ [吴恩达深度学习基础课程R版答案](ml_deep_mining_course_r.html)
+
 

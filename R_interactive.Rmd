@@ -2,7 +2,6 @@
 title: "数据分析交互化"
 output:
   html_document:
-    code_folding: show
     highlight: textmate
     toc: yes
     toc_float:
@@ -11,7 +10,7 @@ output:
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(eval = FALSE)
+knitr::opts_chunk$set(eval = TRUE, message=F, warning=F)
 ```
 
 

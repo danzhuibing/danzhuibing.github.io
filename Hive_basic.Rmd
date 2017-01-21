@@ -2,16 +2,13 @@
 title: "Hive基础"
 output:
   html_document:
-    code_folding: hide
     toc: true
     toc_float: 
       collapsed: false
-    theme: cosmo
     highlight: textmate
-    number_sections: true
 ---
 
-# 如何理解SQL与MapReduce之间的关系
+## 如何理解SQL与MapReduce之间的关系
 ``` sql
 SELECT udtf_group_points(A.id,A.timestamp,A.x,A.y)
 AS (id,stime,etime,elapse,length,count,points)
@@ -24,7 +21,7 @@ FROM (
 ```
 轨迹切分是交通大数据基础架构的重要组成部分，功能是把GPS点切分为每个车辆一次有明确起点和终点的GPS点序列。上述SQL是轨迹切分业务的基本实现，业务逻辑封装在udtf中。请指出这个语句，哪些部分对应mapper，哪些部分对应partitioner，哪些部分对应reducer。
 
-# PV、UV统计
+## PV、UV统计
 需求：统计移动交通台每个城市、每个厂商的每5分钟的用户数（即UV）、访问次数（即PV）
 输入说明：
 
@@ -67,7 +64,7 @@ adcode,
 cpcode;
 ```
 
-# 留存分析
+## 留存分析
 高德的数据能够得到每辆车经过的区域。现在我们对3个区域感兴趣，想求出以下数字：经过区域1的车数，同时经过区域1和2的车数，同时经过区域1、2、3的车数，怎么办？
 
 输入示例：

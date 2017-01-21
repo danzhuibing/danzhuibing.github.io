@@ -2,16 +2,13 @@
 title: "Spark基础"
 output:
   html_document:
-    code_folding: hide
     toc: true
     toc_float: 
       collapsed: false
-    theme: cosmo
     highlight: textmate
-    number_sections: true
 ---
 
-# Spark RDD概念及Spark与Hadoop的区别
+## Spark RDD概念及Spark与Hadoop的区别
 
 RDD是Spark的核心。关于它的定义，简单来说，就是能够保存在内存里的分布式数据集。官方定义如下：
 
@@ -26,7 +23,7 @@ Spark创造的RDD机制可以很好地解决这个问题。一般而言，Spark�
 如果把Spark的这个过程和Hadoop作对比，最大的区别就是用RDD替代了HDFS作为不同数据处理环节的媒介；当然，还有一个重要的区别，Hadoop只提供了Map和Reduce两种操作，Spark提供了更加灵活的操作方法，后面会有更详细的阐述。
 
 
-# Spark WordCount代码解析
+## Spark WordCount代码解析
 ``` python
 from pyspark import SparkContext
 sc = SparkContext("local", "wordcount")
@@ -48,13 +45,13 @@ print wordCounts.collect()
 
 transformation输入是RDD，输出是RDD；action输入是RDD，输出不是RDD。以上操作collect为action，其余为transformation。RDD的操作不会立刻执行，只有碰到action才会触发任务。
 
-# 常用的RDD操作汇总
+## 常用的RDD操作汇总
 ![](images/spark_basic_rdd_operations.png)
 
-# 宽依赖 VS 窄依赖
+## 宽依赖 VS 窄依赖
 TBD
 
-# 资源配置参数解读
+## 资源配置参数解读
 
 ``` shell
 #!/bin/sh
@@ -105,7 +102,7 @@ application提交后，一共会占据24个核（即每台机器6个核）；每
 
 client mode下driver运行在本地机器；cluster mode下driver运行在Spark集群中，driver的资源开销都会算到集群上。
 
-# 并发调试原理
+## 并发调试原理
 
 RDD的action操作会触发一个Job。Spark的job根据宽窄依赖会被拆分为若干个stage，每个stage包含了若干个task，task内部是串行处理数据，因此task的个数是决定程序性能的最重要参数。
 
@@ -119,7 +116,7 @@ task的个数与stage中上一个RDD的partition个数相同。而一个RDD的pa
 
 如果是从其他stage引入获得的partition，在引发stage边界的操作会接受一个numPartitions的参数，通过实验的方法来确定它的最优值，不停地将partition的个数从上次实验的partition个数乘以1.5，直到性能不再提升位置。
 
-# 资源配置与并发调试经验总结
+## 资源配置与并发调试经验总结
 
 首先确定内存。Spark使用两种类型的内存，一是数据缓存，二是计算。数据缓存就是用户调用cache()方法存储在内存中的数据，一般占比50%。计算分为两类，一类是用户定义的计算，另一类是spark自行的shuffle计算，经验上来讲分别占比约为30%和20%。
 
@@ -127,6 +124,6 @@ task的个数与stage中上一个RDD的partition个数相同。而一个RDD的pa
 
 RDD Cache的内存占用量乘以2得到需要申请的内存总数。每个CPU处理5G内存，于是可以得到CPU核数。每个CPU处理2-3个task。task数取决于partition数。
 
-# Spark Streaming原理
+## Spark Streaming原理
 [腾讯-广点通教程](https://github.com/lw-lin/CoolplaySpark/tree/master/Spark%20Streaming%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E7%B3%BB%E5%88%97)
 

@@ -44,18 +44,20 @@ R社区需要感谢一家有情怀的公司**RStudio**，里面有许多大家�
 
 ### Visualise
 
-- [统计绘图](R_ggplot2.html)：**ggplot2**
-- 统计绘图交互化：**plotly**
-- 表格可视化：**DT**
-- 时间序列处理与可视化：**zoo**，**xts**，**dygraphs**
-- [空间数据处理与可视化](spatial_analysis_R_vis.html)：**sp**，**rgeos**，**rgdal**, **leaflet**
+- [统计绘图](R_ggplot2.html)：**ggplot2**，**GGally**
+- [统计绘图交互化](r_plotly.html)：**plotly**
+- [复杂绘图布局](R_grid.html)：**grid**
+- [表格可视化](r_dt.html)：**DT**
+- 时间序列可视化：**zoo**，**xts**，**dygraphs**
+- [空间数据可视化](spatial_analysis_R_vis.html)：**sp**，**rgeos**，**rgdal**, **leaflet**
 
 
 ### Model
 
-- [线性模型]：`lm`, `glm`
-- [树模型]：`rpart`，`randomForest`，`gbm`
 - [机器学习基础](ml_deep_mining_course_r.html)：线性回归、逻辑回归、梯度下降、牛顿法、正则化
+- 线性模型：`lm`, `glm`
+- 树模型：`rpart`，`randomForest`，`gbm`
+
 
 
 ### Communicate
@@ -65,8 +67,8 @@ R社区需要感谢一家有情怀的公司**RStudio**，里面有许多大家�
 
 ### Big Data
 
-- [HDFS](rhdfs_basic.html)，内容待更新：**rhdfs**
-- MapReduce：rmr2
+- HDFS：**rhdfs**
+- MapReduce：**rmr2**
 - [HBase](rhbase_basic.html)：**rhbase**
 - [Spark](R_spark.html)：**SparkR**
 - [阿里云ODPS](R_ODPS.html)：**RODPS**
@@ -87,38 +89,7 @@ R社区需要感谢一家有情怀的公司**RStudio**，里面有许多大家�
 
 <hr>
 
-## 资料备份
-
-**R工具箱**
-
-+ [R工具箱01：Excel读写](r_read_write_excel.html)
-
-
-
-**R数据分析系列**
-
-+ [R数据分析进阶01：数据读取与处理](R_read_preprocess_old.html)
-+ [R数据分析进阶02：日期时间处理-lubridate版](R_datetime.html)
-+ [R数据分析进阶03：字符串处理](R_string.html)
-+ [R数据分析进阶04：JSON处理](R_JSON.html)
-+ [R数据分析进阶05：数据框打理-dplyr/tidyr版](R_dplyr_tidyr.html)
-+ [R数据分析进阶06：统计绘图-ggplot2](R_ggplot2.html)
-+ [R数据分析进阶07：分析交互化](R_interactive.html)
-+ [R数据分析进阶08：空间可视化](spatial_analysis_R_vis.html)
-
-**R作品**
-
-+ [用shiny实现Excel数据透视图](R_shiny_ts_viewer.html)
-+ [R包发布-线性回归为例](R_package_dev.html)
-+ [R天池最后一公里](R_tianchi_logistics.html)
-+ [吴恩达深度学习基础课程R版答案](ml_deep_mining_course_r.html)
-
-**R与大数据**
-
-+ [R使用阿里云ODPS](R_ODPS.html)
-+ [R使用Spark](R_spark.html)
-+ [R使用HDFS](rhdfs_basic.html)
-+ [R使用HBase](rhbase_basic.html)
+## 其他
 
 **R与Python对比**
 
@@ -131,10 +102,4 @@ R社区需要感谢一家有情怀的公司**RStudio**，里面有许多大家�
 + [dplyr/tidyr cheatsheet](files/dplyr-tidyr-cheatsheet.pdf)
 + [shiny cheatsheet](files/shiny-cheatsheet.pdf)
 
-
-不推荐使用的过期技术，仅供查阅。
-
-+ [R数据分析进阶02：日期时间处理-POSIXct版](R_datetime_old.html)
-+ [R数据分析进阶05(a)：数据框打理-plyr](R_plyr.html)
-+ [R数据分析进阶05(b)：数据框打理-reshape2](R_reshape2.html)
 

@@ -2,7 +2,6 @@
 title: "深度学习基础练习-R语言"
 output:
   html_document:
-    code_folding: show
     toc: true
     toc_float: 
       collapsed: false
@@ -156,11 +155,11 @@ plot_x <- c(min(x[,2])-2, max(x[,2])+2)
 plot_y <- (-1/theta[3])*(theta[2]*plot_x+theta[1])
 p + geom_point() + theme_bw() + geom_segment(x=plot_x[1],xend=plot_x[2],y=plot_y[1],yend=plot_y[2], colour="black") + scale_colour_hue(name="Admit result",breaks=c(0,1),labels=c("Not admitted","Admitted")) + xlab("Test 1 score") + ylab("Test 2 score")
 
-# 此处尝试用梯度下降法求解逻辑回归，发现很久不收敛，不知道是不是写错了
+# 此处尝试用梯度下降法求解逻辑回归，一开始发现很久不收敛，原因是没有对x做标准化，尝试执行与不执行下面这行代码，对比区别
+x[, 2:3] <- scale(x[, 2:3]) 
 # Gradient dscend algorithm implementation
-iter_num <- 10000
-#alpha <- c(0.01, 0.03, 0.1, 0.3, 1, 1.3)
-alpha <- c(0.00001,0.00003,0.0001,0.0003,0.001,0.0013,0.0014)
+iter_num <- 100
+alpha <- c(0.01, 0.03, 0.1, 0.3, 1, 1.3)
 plot_data <- NULL
 for(j in 1:length(alpha)){
   Jtheta <- rep(0, iter_num)
@@ -184,9 +183,6 @@ p <- ggplot(plot_data)
 p <- p + geom_line(aes(x=iter, y=cost, colour=as.factor(rate), group=rate))
 p + theme_bw() + scale_colour_hue(name="learning rate")
 ```
-
-注：梯度下降久久不收敛，估计是代码哪里写错了，暂时没搞明白。
-
 
 
 # 练习5-正则化

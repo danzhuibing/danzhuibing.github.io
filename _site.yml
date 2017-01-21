@@ -1,35 +1,18 @@
-name: "丹追兵|算法"
+name: "Level's Blog"
 output_dir: "."
 navbar:
-  title: "PYTRAFFICR"
+  title: "LEVEL"
   left:
-    - text: "大数据"
+    - text: "Big Data"
       href: bigdata_home.html
-    - text: "机器学习"
+    - text: "Machine Learning"
       href: ml_home.html
-    - text: "空间分析"
-      href: spatial_home.html
     - text: "Python"
       href: python_home.html
     - text: "R"
       href: r_home.html
-    - text: "Java"
-      href: java_home.html
-    - text: "More"
-      icon: fa-gear
-      menu:
-        - text: "人文"
-        - text: "人文笔记"
-          href: other_home.html
-        - text: "---------"
-        - text: "友情链接"
-        - text: "segmentfault"
-          href: "https://segmentfault.com/blog/pytrafficr"
 output:
   html_document:
-    theme: cosmo
+    theme: paper
     highlight: textmate
-    include:
-      after_body: 
-        [duoshuo_comment.html, footer.html]
-      
+    

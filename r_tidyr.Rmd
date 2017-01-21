@@ -1,6 +1,11 @@
 ---
 title: "使用tidyr对数据整形"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
+    highlight: textmate
 ---
 
 ```{r setup, include=FALSE}
@@ -9,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 
 **tidyr**的作用主要是对`data.frame`进行形状的改变，包括两大类功能：行列转化（宽表与长表转换）、列合并拆分。
 
-## 宽表与长表转换
+## 宽表与长表
 
 我们用下面的案例来说明长表与宽表的含义：
 

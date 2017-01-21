@@ -2,7 +2,6 @@
 title: "R数据分析进阶03：plyr"
 output:
   html_document:
-    code_folding: show
     highlight: textmate
     toc: yes
     toc_float:
