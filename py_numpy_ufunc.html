@@ -11,7 +11,7 @@
 
 
 
-<title></title>
+<title>numpy ufunc详解</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,6 +19,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-1.1/highlight.js"></script>
@@ -161,6 +164,107 @@ $(document).ready(function () {
 
 
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
 
 
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
@@ -199,25 +303,48 @@ $(document).ready(function () {
 
 
 
+<h1 class="title toc-ignore">numpy ufunc详解</h1>
 
 </div>
 
 
-<p><br></p>
 <div class="section level2">
-<h2>大数据框架</h2>
+<h2>含义</h2>
+<blockquote>
+<p>A universal function (or ufunc for short) is a function that operates on ndarrays in an element-by-element fashion, supporting array broadcasting, type casting and several other standard features.</p>
+</blockquote>
+</div>
+<div id="broadcast" class="section level2">
+<h2>Broadcast</h2>
+<p>broadcast规则：</p>
+<ol style="list-style-type: decimal">
+<li>The arrays all have exactly the same shape.</li>
+<li>The arrays all have the same number of dimensions and the length of each dimensions is either a common length or 1.</li>
+<li>The arrays that have too few dimensions can have their shapes prepended with a dimension of length 1 to satisfy property 2.</li>
+</ol>
+<p><strong>Example</strong></p>
+<p>If a.shape is (5,1), b.shape is (1,6), c.shape is (6,) and d.shape is () so that d is a scalar, then a, b, c, and d are all broadcastable to dimension (5,6); and</p>
 <ul>
-<li><a href="Hadoop_basic.html">Hadoop</a></li>
-<li><a href="Hive_basic.html">Hive</a></li>
-<li><a href="Storm_basic.html">Storm</a></li>
-<li><a href="Spark_basic.html">Spark</a></li>
-<li><a href="hbase_basic.html">HBase</a></li>
-<li><a href="zookeeper_basic.html">ZooKeeper</a></li>
+<li>a acts like a (5,6) array where a[:,0] is broadcast to the other columns,</li>
+<li>b acts like a (5,6) array where b[0,:] is broadcast to the other rows,</li>
+<li>c acts like a (1,6) array and therefore like a (5,6) array where c[:] is broadcast to every row, and finally,</li>
+<li>d acts like a (5,6) array where the single value is repeated.</li>
+</ul>
+</div>
+<div id="ufunc" class="section level2">
+<h2>常见的ufunc</h2>
+<ul>
+<li>数学操作：<code>add</code>、<code>substract</code>、<code>multiply</code>、<code>divide</code>、<code>absolute</code>、<code>exp</code>、<code>log</code>、<code>log10</code>、<code>sqrt</code>、<code>square</code></li>
+<li>三角函数：<code>sin</code>、<code>cos</code>、<code>tan</code>、<code>arcsin</code>、<code>arccos</code>、<code>arctan</code>、<code>sinh</code>、<code>cosh</code>、<code>tanh</code>、<code>arctanh</code>、<code>deg2rad</code>、<code>rad2deg</code></li>
+<li>比较函数：<code>greater</code>、<code>less_equal</code>、<code>not_equal</code>、<code>equal</code>、<code>maximum</code>、<code>minimum</code></li>
+<li>浮点函数：<code>isinf</code>、<code>isnan</code>、<code>floor</code>、`ceil</li>
 </ul>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 

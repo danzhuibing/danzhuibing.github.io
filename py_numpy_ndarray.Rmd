@@ -2,11 +2,9 @@
 title: "numpy ndarray详解"
 output:
   html_document:
-    code_folding: show
     toc: true
     toc_float: 
       collapsed: false
-    highlight: textmate
 ---
 
 ```{r setup, include=FALSE}
@@ -35,15 +33,32 @@ a = np.array([[0,1,2],[3,4,5],[6,7,8]], dtype=np.float32)
 
 strides中保存的是当每个轴的下标增加1时，数据存储区中的指针所增加的字节数。例如图中的strides为12,4，即第0轴的下标增加1时，数据的地址增加12个字节：即a[1,0]的地址比a[0,0]的地址要高12个字节，正好是3个单精度浮点数的总字节数；第1轴下标增加1时，数据的地址增加4个字节，正好是单精度浮点数的字节数。
 
+## 深入dtype
+Python内置的基本数据类型，每个类别只有一种，比如只有一种整数int，只有一种浮点数float。对于不需要关心计算机如何存储数据的应用，只提供一种选择是非常方便的。但是对于科学计算而言，这是不够的，为了性能和精度往往需要根据具体场景控制更多的细节。为此，NumPy内置了24种基本类型，基本上可以和C语言的数据类型对应上，其中部分类型对应为Python内置的类型。下表列举了常用NumPy基本类型。
+
+| 类型 | 注释 |
+| --- | --- |
+| `bool_` | 兼容Python内置的bool类型 |
+| `bool8` | 8位布尔 |
+| `int_` | 兼容Python内置的int类型 |
+| `int8` | 8位整数 |
+| `int16` | 16位整数 |
+| `int32` | 32位整数 |
+| `int64` | 64位整数 |
+| `uint8` | 无符号8位整数 |
+| `uint16` | 无符号16位整数 |
+| `uint32` | 无符号32位整数 |
+| `uint64` | 无符号64位整数 |
+| `float_` | 兼容Python内置的float类型 |
+| `float16` | 16位浮点数 |
+| `float32` | 32位浮点数 |
+| `float64` | 64位浮点数 |
+| `str_` | 兼容Python内置的str类型 | 
+
+24个scalar types并不是dtype，但是可以作为参数传递给`np.dtype()`构造函数产生一个dtype对象，如`np.dtype(np.int32)`。在NumPy中所有需要dtype作为参数的函数都可以使用scalar types代替，会自动转化为对应的dtype类型。
 
 ## Structured Array
 由于**numpy**只支持单一数据类型，对于常见的表格型数据，我们需要通过**numpy**提供的Structrued Array机制自定义`dtype`。
-
-**numpy**支持的类型包括：
-
-+ b1, i1, i2, i4, i8, u1, u2, u4, u8, f2, f4, f8, c8, c16, a<n> (representing bytes, ints, unsigned ints, floats, complex and fixed length strings of specified byte lengths)
-+ int8,...,uint8,...,float16, float32, float64, complex64, complex128 (this time with bit sizes)
-
 
 定义结构化数组有四种方式：1) string, 2) tuple, 3) list, or 4) dictionary。本文推荐使用后两种方式。
 
@@ -51,12 +66,12 @@ strides中保存的是当每个轴的下标增加1时，数据存储区中的指
 import numpy as np
 
 # list方式：a list of tuples. Each tuple has 2 or 3 elements specifying: 1) The name of the field (‘’ is permitted), 2) the type of the field, and 3) the shape (optional)
-persontype = [('name', 'S32'), ('age', 'i'), ('weight', 'f')]
+persontype = [('name', np.str_), ('age', np.int16), ('weight', np.float32)]
   
 # dict方式：需要指定的键值有names和formats
 persontype = np.dtype({
         'names': ['name', 'age', 'weight'], 
-        'formats': ['S32', 'i', 'f']
+        'formats': [np.str_, np.int16, np.float32]
     })
 a = np.array([("Zhang", 32, 75.5), ("Wang", 24, 65.2)], dtype=persontype)
 
@@ -73,12 +88,10 @@ import numpy as np
 # 从python的list转换
 x = np.array([[1,2.0],[0,0],(1+1j,3.)])
 
-
 np.zeros((2, 3))
 np.arange(2, 3, 0.1) # start, end, step
 np.linspace(1., 4., 6) # start, end, num
 np.indices((3, 3)) # 返回一个array，元素0是行下标，元素1是列下标；行下标为一个3*3二维array，对应3*3矩阵的行下标；列下标为一个3*3二维array，对应3*3矩阵的列下标
-
 
 ndtype=[('a',int), ('b', float), ('c', int)]
 names = ["A", "B", "C"]
@@ -91,7 +104,6 @@ np.genfromtxt("file_name.txt",
   skip_header=3, 
   skip_footer=5,
   usecols=(0, -1))
-
 
 # ndarray to list
 a = np.array([[1, 2], [3, 4]])
@@ -108,9 +120,6 @@ x[0][2]
 x[:,0:5:2]
 
 ```
-
-
-> 以下内容总结自Numpy官方文档[Numpy basics](http://docs.scipy.org/doc/numpy/user/quickstart.html)
 
 关于`ndarray`的索引方式，有以下几个重点需要记住：
 
@@ -155,8 +164,13 @@ a
 
 再来看一下Structured Array的索引效率。
 
-```{python,eval=F}
+```{python}
+import numpy as np
 import time
+
+persontype = [('name', np.str_), ('age', np.int16), ('weight', np.float32)]
+a = np.array([("Zhang", 32, 75.5), ("Wang", 24, 65.2)], dtype=persontype)
+
 start = time.clock()
 a[1]
 end = time.clock()
@@ -185,3 +199,7 @@ print "a['name'][1] cost time: %f" % (end-start)
 
 + [用Python做科学计算](http://old.sebug.net/paper/books/scipydoc/index.html)
 + [Numpy User Guide](https://docs.scipy.org/doc/numpy/user/basics.rec.html)
+- [Data type objects](https://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html)
+- [Scalars](https://docs.scipy.org/doc/numpy/reference/arrays.scalars.html)    
+
+

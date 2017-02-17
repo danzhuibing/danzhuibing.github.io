@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>ZooKeeper基础知识</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">ZooKeeper基础知识</h1>
+
+</div>
+
+
+<div class="section level2">
+<h2>前言</h2>
+<p>网上有许多关于ZooKeeper的资料，为我们深入学习创造了良好的条件。本文的目的是把这些资料整理到一块，方便零基础的同学了解ZooKeeper的绝大部分知识。</p>
+<p>第一部分：讲解ZooKeeper的功能，分布式协调，帮助大家理解协调的概念。</p>
+<p>第二部分：讲解ZooKeeper的使用场景，方便大家做技术选型。</p>
+<p>第三部分：讲解ZooKeeper的内部实现细节，包括ZooKeeper的议会运转方式，选主算法，Observer与ZK的扩展性，Follower与Leader的读写处理流程。</p>
+<p>第四部分：讲解ZooKeeper的客户端API，方便进行基于ZooKeeper的分布式系统开发。</p>
+</div>
+<div id="zookeeper" class="section level2">
+<h2>ZooKeeper是什么</h2>
+<blockquote>
+<p>参考来源：<a href="http://www.cnblogs.com/yuyijq/p/3391945.html" class="uri">http://www.cnblogs.com/yuyijq/p/3391945.html</a></p>
+</blockquote>
+<p>Google的三篇论文奠定了大数据和云计算的基础，于是在开源界有了HDFS、MapReduce和HBase。值得注意的是，Google的三篇论文都提到了一个锁服务Chubby，于是对应的在开源界我们有了ZooKeeper。</p>
+<blockquote>
+<p>ZooKeeper is a service for coordinating processes of distributed applications</p>
+</blockquote>
+<p>“分布式协调服务”，这是ZooKeeper的定位。码农们对协调这个高雅的词汇总是感觉到云蒸雾罩，其实说成大白话，就是并发环境下的锁机制。</p>
+<p>不管使用哪种编程语言，基本上都可以找到完善的锁方案。然而分布式协调比同一个进程里的协调复杂得多，复杂的原因是网络是不可靠的。ZooKeeper是分布式协调的基础服务，久经考验。</p>
+</div>
+<div id="zookeeper" class="section level2">
+<h2>ZooKeeper可以干什么</h2>
+<blockquote>
+<p>参考来源：<a href="http://www.open-open.com/lib/view/open1415453633887.html" class="uri">http://www.open-open.com/lib/view/open1415453633887.html</a></p>
+</blockquote>
+<div id="zookeeper" class="section level3">
+<h3>ZooKeeper的数据模型</h3>
+<p>ZooKeeper=文件系统+通知机制</p>
+<div class="figure">
+<img src="http://7xpfxp.com1.z0.glb.clouddn.com/github_0022QsiTzy6POfi5sCQf0.png" title="出处：http://www.open-open.com/lib/view/open1415453633887.html" alt="出处：http://www.open-open.com/lib/view/open1415453633887.html" />
+<p class="caption">出处：<a href="http://www.open-open.com/lib/view/open1415453633887.html" class="uri">http://www.open-open.com/lib/view/open1415453633887.html</a></p>
+</div>
+<p>上面这张图是理解ZooKeeper的关键，既展现了ZooKeeper内置的数据结构，又展现了典型应用场景。ZooKeeper内部实现了一个类似文件系统的树结构，每个节点被称为znode。znode可以看做是文件系统的中文件夹+文件。说它是文件夹，因为它下面可以放子节点；说它是文件，因为它本身存储了数据。</p>
+<p>每个znode可以被客户端注册监听，当znode发生变化（存储的数据发生改变、被删除、子节点增加和删除时），ZooKeeper会通知客户端。</p>
+</div>
+<div id="zookeeper" class="section level3">
+<h3>ZooKeeper的典型应用场景</h3>
+<div class="section level4">
+<h4>命名服务</h4>
+<p>对应上图的NameService。只要在ZooKeeper的文件系统里创建一个znode，就能获得唯一的path。这个path就能作为一个名称。</p>
+</div>
+<div class="section level4">
+<h4>配置管理，又称为数据发布与订阅</h4>
+<p>对应数据模型的Configuration节点。</p>
+<div class="figure">
+<img src="http://7xpfxp.com1.z0.glb.clouddn.com/github_0022QsiTzy6POfSmkLg92.png" title="出处：http://www.open-open.com/lib/view/open1415453633887.html" />
+
+</div>
+<p>一般而言，应用程序=代码+配置。单机时，往往给程序设立一个配置文件，代码内部读取配置文件。由于配置文件不常修改，且数量少，所以是个好办法。然而当配置文件很多，许多服务器都需要这些相同的配置，且配置文件需要动态修改时，在每个服务器上都单独建立配置文件的维护运营成本太高。因此我们考虑采用集中管理配置，在集中的位置修改配置，所有对配置感兴趣的服务器都可以获得变更，如上图所示。为了提高集中管理的可靠性，我们一般用一个集群来提供配置服务，所以ZooKeeper往往是一个集群。既然是集群，就涉及到如何保证集群中不同机器的一致性。这个问题在ZooKeeper中得到了很好的解决，后面再进行详解。</p>
+<p>具体示例：a）应用中用到的一些配置信息集中管理，在应用启动的时候主动来获取一次，并且在节点上注册一个Watcher，以后每次配置有更新，实时通知到应用，获取最新配置信息；b）业务逻辑中需要用到的一些全局变量，比如一些消息中间件的消息队列通常有个offset，这个offset存放在zk上，这样集群中每个发送者都能知道当前的发送进度。</p>
+</div>
+<div class="section level4">
+<h4>集群管理</h4>
+<p>对应于数据模型中的GroupMembers节点。 <img src="http://7xpfxp.com1.z0.glb.clouddn.com/github_0022QsiTzy6POgByhQV55.png" title="出处：http://www.open-open.com/lib/view/open1415453633887.html" alt="此处输入图片的描述" /></p>
+<p>集群管理，主要是两点：一是机器的加入和退出，二是选举master。</p>
+<p>机器加入和退出：所有的机器作为client，在目录GroupMembers下创建临时目录节点，然后监听GroupMembers的子节点变化消息。当一个机器挂掉的时候，该机器与ZooKeeper断开了连接，ZooKeeper会自动删除该机器创建的临时目录节点，并通知所有其他的机器。新机器加入，会创建它的临时目录节点，GroupMembers发生状态改变，于是ZooKeeper的通知机制会让所有注册了的client获得该信息。能够实时知道机器的增减情况后，就可以做些后续处理，做成监控系统了。</p>
+<p><strong>Master选举</strong>：ZooKeeper最经典的使用场景。ZooKeeper具有最终一致性，即多个Client请求创建/CurrentMaster节点，最终一定只有一个客户端请求能够创建成功。</p>
+<p>参照机器加入和退出，也可以实现动态Master选举。首先让Client在目录CurrentMaster下创建临时目录节点，节点存储了一个编号。每次选择编号最小的作为master。当当前master挂掉后，立马选择下一个最小编号的作为master。</p>
+</div>
+<div class="section level4">
+<h4>分布式锁</h4>
+<p>锁服务分为两类，一个是保持独占，另一个是控制时序。</p>
+<p><strong>保持独占</strong>：把一个znode看做是一把锁，让客户端都去创建/distribute_lock节点，最终成功创建的那个客户端就拥有了这把锁。用完后删除掉自己创建的distribute_lock节点，释放锁。</p>
+<p><strong>控制时序</strong>：/distribute_lock已经创建，所有客户端在它下面创建临时有序节点，编号最小的获得锁，用完之后节点自动删除，下一个获得锁。</p>
+</div>
+<div class="section level4">
+<h4>分布式通知/协调</h4>
+<p>ZooKeeper中的通知机制，能够很好地实现分布式环境下不同系统之间的通知与协调，实现对数据变更的实时处理。使用方法是不同的系统都对ZooKeeper上同一个znode进行注册，监听znode的变化（包括znode存储的信息与子节点信息），其中一个系统更新了znode，那么另一个系统能够收到通知，并做出相应处理。</p>
+<p>因此ZooKeeper可以用作另外一种心跳检测机制：检测系统和被检测系统之间并不直接关联，而是通过ZooKeeper上某个节点关联，减少系统耦合，如Storm。</p>
+<p>ZooKeeper可以作为另外一种系统调度模式：某系统有控制台和推送系统两部分组成，控制台的职责是控制推送系统并进行相应的推送工作；管理人员在控制台的一些操作，实际上是修改ZooKeeper上某些节点的状态，而ZooKeeper就把这些变化通知给客户端，即推送系统，从而做出相应的推送任务。</p>
+<p>ZooKeeper能够作为另外一种工作汇报模式：一些类似于任务分发系统，子任务启动后，到ZooKeeper来注册一个临时节点，并且定时将自己的进度进行汇报（将进度写到这个临时节点），这样任务管理者就能够实时知道任务进度。</p>
+</div>
+<div class="section level4">
+<h4>分布式队列</h4>
+<p>第一种队列，是常规的先进先出队列，这个和分布式锁服务中的控制时序场景一样，变通一下即可。</p>
+<p>第二种队列，是等到队列成员聚齐以后才同意按序执行。典型场景是，分布式环境中一个大任务Task A，需要在很多子任务完成或条件就绪的情况下才能进行。这个时候，凡是其中一个子任务完成，那么就去/taskList下建立自己的临时有序节点。/taskList下会预先建立一个/taskList/num节点，并且复制为n，表示队列大小，每次有队列成员加入后，就判断下是否已经达到队列大小，决定是否可以开始执行了。当/taskList发现自己下面的子节点满足指定个数，就可以进行下一步按序进行处理了。</p>
+</div>
+</div>
+</div>
+<div id="zookeeper" class="section level2">
+<h2>ZooKeeper实现原理</h2>
+<p>首先，我们来看一下ZooKeeper的系统结构：</p>
+<div class="figure">
+<img src="http://7xpfxp.com1.z0.glb.clouddn.com/github_0022QsiTzy6POld6B1Ffb.jpeg" title="出处：http://zookeeper.apache.org/doc/trunk/zookeeperOver.html" />
+
+</div>
+<p>正如前面提到的，ZooKeeper的服务是通过一个集群进行提供，以增加可靠性。然而，可靠性增加带来的问题是如何保持一致性。</p>
+<div class="section level3">
+<h3>一致性概念</h3>
+<p>一致性分为强一致性和弱一致性性。强一致性，要求读操作可以读到已提交的更新操作。弱一致性，提交的更新操作，不一定立即会被读操作读到，此种情况下，会存在一个不一致的窗口，即读操作可以读到最新值需要经过一段时间。</p>
+<p>强一致性要求无论更新操作是在哪个数据副本上执行，之后所有的读操作都要能获得最新的数据。这当然是很理想的结果，然而追求强一致性意味着可用性不好，因为多副本间的同步需要耗费大量的网络传输和分布式锁，用时很大，会导致读写操作需要阻塞更长的时间。</p>
+<p>所以一般而言系统只实现弱一致性。最终一致性是一种典型的应用方案：事务更新一份数据，保证在没有其他事务更新同样的值的话，最终所有的事务都会读到之前事务更新的最新值——ZooKeeper是这种方案的一个开源实现。</p>
+</div>
+<div id="paxos" class="section level3">
+<h3>Paxos算法</h3>
+<p>假设集群每个节点具有一致的初始状态，那么我们只需要保证在集群启动后，每个节点都执行相同的操作序列，那么它们最后能得到一个一致的状态。</p>
+<p>Paxos算法的作用是，保证每个节点都执行相同的操作序列。ZooKeeper集群中有一台服务器是Leader，Leader维护一个全局的写队列，所有写操作都必须要放入这个队列编号，那么无论我们写多少个节点，只要写操作是按编号来的，就能保证一致性。</p>
+<p>Paxos算法通过投票来对写操作进行全局编号，同一时刻，只有一个写操作被批准；并发的写操作要去争取选票，只有获得半数选票的写操作才会被批准，因此任意时刻永远只会有一个写操作被批准。其他写操作竞争失败只好再发起一轮投票。在不断的投票过程中，所有写操作都被严格编号排序。假设一台机器接受了编号为100的写操作，之后又接受到编号为99的写操作，它马上能意识到自己数据不一致了，自动停止对外服务并和Leader同步状态。</p>
+</div>
+<div id="paxos" class="section level3">
+<h3>Paxos算法白话版</h3>
+<blockquote>
+<p>以下摘抄自：<a href="http://blog.csdn.net/cxhzqhzq/article/details/6568040" class="uri">http://blog.csdn.net/cxhzqhzq/article/details/6568040</a></p>
+</blockquote>
+<p>有一个叫做Paxos的小岛，上面住了一批居民，岛上所有事情都由一群议员做决定。议员的总数确定，不能更改。岛上每次环境事务的变更都需要通过一个提议Proposal，每个提议都有一个编号PID，该编号一直增长，不能倒退。每个提议都需要超过半数议员同意才能生效。每个议员只会同意大于当前编号的提议，包括已生效的和未生效的。如果议员收到小于等于当前编号的提议，他会拒绝，并告知对方：你的提议已经有人提过了。这里的当前编号是每个议员在自己记事本上面记录的编号，他不断更新这个编号。</p>
+<p>最开始的时候，议员的记事本上记录编号都为0。有一个议员发了一个提议：将电费设定为1元/度。他首先看了下记事本，恩，当前编号为0，那么我的这个提议的编号就是1，于是他给所有议员发消息：1号提议，设定电费1元/度。其他议员收到消息后查了一下记事本，哦，当前编号是0，这个提议可接受，于是他记录下这个提议并回复：我接受你的1号提议；同时他在记事本上记录：当前提议编号为1。发起提议的议员收到了超过半数的回复，立即给所有人发通知：1号提议生效！收到的议员会修改他的记事本，将1号提议由记录改为法令，当有人问他电费多少时，他会查看法令并告知对方：1元/度。</p>
+<p>现在来看看同时有多个提议提出的情况。假设总共有三个议员S1-S3，S1和S2同时发起了一个提议：1号提议，设定电费。S1想设为1元/度，S2想设为2元/度。结果S3先收到了S1提议，于是他做了和前面同样的操作。紧接着他又收到了S2的提议，结果他一查记事本，咦，这个提议的编号小于等于我的当前编号1，于是他拒绝了这个提议：对不起，这个提议先前提过了。于是S2的提议被拒绝。假设S1发布的提议同时也被S1接受了，那么S1获得了超过半数的支持，于是S1正式发布了提议：1号提议生效。S2向S1或者S3打听并更新了1号法令的内容，然后他可以选择继续发起2号提议。</p>
+<p>现在我们来一一对应Paxos算法与ZooKeeper的概念。下图是ZooKeeper的角色图，其中Observer可以先不管，后文会有介绍。</p>
+<div class="figure">
+<img src="http://7xpfxp.com1.z0.glb.clouddn.com/github_0022QsiTzy6POnjRtaMb8.jpeg" title="出处：http://www.cnblogs.com/lpshou/archive/2013/06/14/3136904.html" alt="此处输入图片的描述" />
+<p class="caption">此处输入图片的描述</p>
+</div>
+<p>议员——跟随者</p>
+<p>居民——客户端</p>
+<p>提议——znode状态改变（创建、删除、更改等）</p>
+<p>提议编号PID——Zxid（ZooKeeper Transaction ID）</p>
+<p>正式法令——所有znode及其数据</p>
+<p>ZooKeeper实现的算法叫做FastPaxos，与Paxos算法的区别在于所有的提议必须通过Leader（这里类比为Paxos小岛的总统）提出，如果议员有自己的提议，必须发给总统由总统来提出。</p>
+<p>于是算法分为两个问题：一是怎么选出总统，这个后面再说；二是这个ZooKeeper议会怎么运转。</p>
+<p><strong>Case 1</strong></p>
+<p>居民甲（Client）到某个议员（ZK Server）那里询问（Get）某条法令的情况（ZNode的数据），议员毫不犹豫地拿出他的记事本（local storage），查阅法令并告诉他结果，同时声明：我的数据不一定是最新的。你想要最新的数据？没问题，等着，等我找总统Sync一下再告诉你。</p>
+<p><strong>Case 2</strong></p>
+<p>居民乙（Client）到某个议员（ZK Server）那里要求政府归还他的一万元，议员让他在办公室等着，自己将问题反映给了总统，总统询问所有议员的意见，多数议员表示欠钱要还，于是总统发表声明，从国库中拿出一万元还债，国库总资产由100万变成99万。居民乙拿着钱回去了（Client函数返回）</p>
+<p><strong>Case 3</strong></p>
+<p>总统突然驾崩了，议员接二连三地发现联系不上总统，于是各自发表声明，推选新的总统，总统大选期间政府停业，拒绝居民的请求。</p>
+<p><strong>Leader选举算法</strong></p>
+<p>这里讲解ZooKeeper的默认算法FastLeaderElection算法。</p>
+<p>首先，需要了解ZooKeeper的服务器有以下几种状态：LOOKING寻找leader状态，LEADING领导状态，FOLLOWING跟随者状态，OBSERVING观察者状态。</p>
+<p>第二，选举过程需要进行多轮。每一轮选举中，机器会生成一张选票，然后群发给集群的其他机器。生成一张选票，那么机器保存的字段logicalClock/epoch会自增1。</p>
+<p>第三，每个机器选择Leader的逻辑是：每台机器有一个zxid和id；选主机器会优先选择zxid最大的机器，当zxid相同时，选择id最大的机器。</p>
+<blockquote>
+<p>算法的流程摘录自：<a href="http://blog.csdn.net/lovingprince/article/details/6826510" class="uri">http://blog.csdn.net/lovingprince/article/details/6826510</a></p>
+</blockquote>
+<p>FastLeaderElection. lookForLeader():</p>
+<ol style="list-style-type: decimal">
+<li><p>logicalclock++，表示是新一轮leader选举，它是一个内存值，服务器重启就会导致该值归0，所以如果服务器活得越久，这个值随着应该越大，每一轮选举会保持所有机器该值始终是其中相同的最大值。</p></li>
+<li><p>推举自己作为leader,并将自己服务器上存储的最大zxid，自己的服务器id,自己的状态(looking)notify所有的服务器，告知大家我想当leader.</p></li>
+<li><p>等待其他服务器的反馈消息，如果有消息回来，分为以下几个情况：</p></li>
+</ol>
+<ul>
+<li>自己还在looking,该消息标记的服务器也在looking</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>消息的epoch&lt;自己的logicalclock，表示这条消息是前面一轮的消息，于是回发一条消息告诉对方当前的机器的logicalclock和推举的leader和zxid。</li>
+<li>消息epoch&gt;自己的logicalclock，表示对方已经开始新一轮选举了，更新logicalclock为epoch,清空接收到的所有服务器状态recvset.对比消息的zxid和本地的lastzxid，选取最大的作为leader，如果相同，则选取serverid最大的作为leader.然后sendNotifications()通知所有服务器我的选择。</li>
+<li>消息epoch=自己的logicalclock,表示是同一轮选举，对比消息的zxid和本地的lastzxid，选取最大的作为leader，如果相同，则选取serverid最大的作为leader.如果返回的消息是最后选择，则sendNotifications()通知所有服务器我的选择，否则不理睬这条消息，不发送任何回应。 经过上面的选择之后，(a) 如果收集到了所有服务器的投票，(b)如果此时收集的投票大于1/2服务器数，那么再等待一个时段，如果没有其他响应到来或者到来的响应没有新的选票产生。此时看下此时选举出来的proposedLeader是否是自己，是则更改自己的状态为leading,否则更改为following，然后跳出选举阶段。如果不满足上面的两条条件，则继续等待消息。</li>
+</ol>
+<ul>
+<li>自己还在looking,该消息标记的服务器已经没有looking了</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>消息的epoch=自己的logicalclock，如果消息状态是leading,那么就认为他是leading，更改自己的状态返回。如果消息认为自己是leader,那么需要有1/2以上服务器认为自己是leader,就更改状态并返回。</li>
+<li>消息的epoch&lt;&gt;自己的logicalclock，那么投票将加入到outofelection中，如果有1/2服务器以上的投票选择这条消息推荐的leader，那么更改自身的状态并返回。</li>
+</ol>
+<ul>
+<li><p>自己没有looking,该消息标记的服务器还在looking 获得当前的leader信息，直接通知对方已经选择的leader.</p></li>
+<li><p>自己没有looking,该消息标记的服务器没有looking 不做任何处理。</p></li>
+</ul>
+<p><strong>Observer与ZooKeeper的扩展</strong></p>
+<blockquote>
+<p>以下内容摘自：<a href="http://www.yanyufly.com/2011/04/29/转zookeeper的原理介绍/" class="uri">http://www.yanyufly.com/2011/04/29/转zookeeper的原理介绍/</a></p>
+</blockquote>
+<p>为了提高吞吐量通常我们只要增加服务器到Zookeeper集群中。但是当服务器增加到一定程度，会导致投票的压力增大从而使得吞吐量降低。因此我们引出了一个角色：Observer。</p>
+<p>Observers 的需求源于 ZooKeeper follower服务器在上述工作流程中实际扮演了两个角色。它们从客户端接受连接与操作请求，之后对操作结果进行投票。这两个职能在 ZooKeeper集群扩展的时候彼此制约。如果我们希望增加 ZooKeeper 集群服务的客户数量（我们经常考虑到有上万个客户端的情况），那么我们必须增加服务器的数量，来支持这么多的客户端。然而，从一致性协议的描述可以看到，增加服务器的数量增加了对协议的投票部分的压力。领导节点必须等待集群中过半数的服务器响应投票。于是，节点的增加使得部分计算机运行较慢，从而拖慢整个投票过程的可能性也随之提高，投票操作的会随之下降。这正是我们在实际操作中看到的问题——随着 ZooKeeper 集群变大，投票操作的吞吐量会下降。</p>
+<p>所以需要增加客户节点数量的期望和我们希望保持较好吞吐性能的期望间进行权衡。要打破这一耦合关系，引入了不参与投票的服务器，称为 Observers。 Observers 可以接受客户端的连接，将写请求转发给领导节点。但是，领导节点不会要求 Observers 参加投票。相反，Observers 不参与投票过程，仅仅和其他服务节点一起得到投票结果。</p>
+<p>这个简单的扩展给 ZooKeeper 的可伸缩性带来了全新的镜像。我们现在可以加入很多 Observers 节点，而无须担心严重影响写吞吐量。规模伸缩并非无懈可击——协议中的一歩（通知阶段）仍然与服务器的数量呈线性关系。但是，这里的穿行开销非常低。因此可以认为在通知服务器阶段的开销无法成为主要瓶颈。</p>
+<p><strong>Follower与Leader处理读写请求</strong> <img src="http://7xpfxp.com1.z0.glb.clouddn.com/github_0022QsiTgy6POvKJOdza9.png" title="出处：http://blog.csdn.net/xhh198781/article/details/10949697" alt="此处输入图片的描述" /></p>
+<div class="figure">
+<img src="http://7xpfxp.com1.z0.glb.clouddn.com/github_0022QsiTgy6POvMogbM7a.png" title="出处：http://blog.csdn.net/xhh198781/article/details/10949697" alt="此处输入图片的描述" />
+<p class="caption">此处输入图片的描述</p>
+</div>
+</div>
+</div>
+<div id="zookeeperapi" class="section level2">
+<h2>ZooKeeper的API</h2>
+<blockquote>
+<p>以下摘抄自：<a href="http://www.cnblogs.com/yuyijq/p/4117634.html" class="uri">http://www.cnblogs.com/yuyijq/p/4117634.html</a></p>
+</blockquote>
+<p>Zookeeper的client是通过Zookeeper类提供的。Zookeeper的client api给我们提供以下这些API：</p>
+<p><strong>create</strong> 在给定的path上创建节点，这个path就像文件系统的路径，比如/myapp/data/1，在创建节点的时候还可以指定节点的类型：是永久节点，永久顺序节点，临时节点，临时顺序节点。这个节点类型是非常强大的。永久节点一经创建就永久保留了，就像我们在文件系统上创建一个普通文件，这个文件的生命周期跟创建它的应用没有任何关系。而临时节点呢，当创建这个临时节点的应用与zookeeper之间的会话过期之后就会被zookeeper自动删除了。这个特性是实现很多功能的关键。比如我们做集群感知，我们的应用启动的时候将自己的ip地址作为临时节点创建在某个节点下面。当我们的应用因为某些原因，比如网络断掉或者宕机，它与zookeeper的会话就会过期了，过期后这个临时节点就删除了。这样我们就可以通过这个特性来感知到我们的服务的集群有哪些机器是活者的。那么顺序节点又是什么呢。一般，如果我们在指定的path上创建节点，如果这个节点已经被创建了，则会抛出一个NodeExistsException的异常。如果我们在指定的路径上创建顺序节点，则Zookeeper会自动的在我们给定的path上加上一个顺序编号。这个特性就是实现分布式锁的关键。假设我们有几个节点共享一个资源，我们这几个节点都想争用这个资源，那我们就都向某个路径创建临时顺序节点。然后顺序最小的那个就获得锁，然后如果某个节点释放了锁，那顺序第二小的那个就获得锁，以此类推，这样一个分布式的公平锁就实现了。</p>
+<p>除此之外，每个节点上还可以保存一些数据。</p>
+<p><strong>delete</strong> 删除给定节点。删除节点的时候还可以给定一个version，只有路径和version都匹配的时候节点才会被删除。有了这个version在分布式环境种我们就可以用乐观锁的方式来确保一致性。比如我们先读取一下节点，获得了节点的version，然后删除，如果删除成功了则说明在这之间没有人操作过这个节点，否则就是并发冲突了。</p>
+<p><strong>exists</strong> 这个节点会返回一个Stat对象，如果给定的path不存在的话则返回null。这个方法有一个关键参数，可以提供一个Watcher对象。Wathcer是Zookeeper强大功能的源泉。Watcher就是一个事件处理器，一个回调。比如这个exists方法，调用后，如果别人对这个path上的节点进行操作，比如创建，删除或设置数据，这个Wather都会接收到对应的通知。</p>
+<p><strong>setData/getData</strong> 设置或获取节点的数据，getData也可以设置Watcher</p>
+<p><strong>getChildren</strong> 获取子节点，可以设置Watcher</p>
+<p><strong>sync</strong> zookeeper是一个集群，创建节点的时候只要半数以上的节点确认就认为是创建成功了，但是如果读取的时候正好读取到一个落后的节点上，那就有可能读取到旧的数据，这个时候可以执行一个sync操作，这个操作可以确保读取到最新的数据。</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

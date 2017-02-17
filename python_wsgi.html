@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Python WSGI</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Python WSGI</h1>
+
+</div>
+
+
+<blockquote>
+<p><strong>WSGI</strong> is a protocal or convention that ensures that your web application can speak with the webserver and more importantly that web applications work nicely together. Source: <em>Tutorial of Werkzeug</em></p>
+</blockquote>
+<p>服务的代码，包括网络通信部分与业务逻辑部分。为了将两个部分解耦开，业界定义了WSGI协议，让一部分人专注在改进网络通信部分，即开发服务器；一部分人专注在自己的业务逻辑里，即我们市场上能看到的各种网站应用。只要两部分的人都按照WSGI协议开发，就能保证二者能够很好地配合运作起来。</p>
+<p>现在我们遵从WSGI协议开发一个HelloWorld的网页应用，文件名是<strong>wsgiapp.py</strong>。我们需要提供一个函数定义：</p>
+<pre class="python"><code>def application(environ, start_response):
+    status = &#39;200 OK&#39;
+    response_headers = [(&#39;Content-Type&#39;, &#39;text/plain&#39;)]
+    start_response(status, response_headers)
+    return [&#39;Hello World!&#39;]</code></pre>
+<p>这个函数接受两个参数：environ是一个字典，里面包含了所有需要知道的信息；start_response是一个函数，用于生成请求的响应的头部信息。这两个参数由遵从WSGI的服务器提供。网络应用开发者需要提供start_response函数需要的参数，主要是status和response_header，用于表明响应的状态和相应的头信息，application除了给start_response提供这两个参数外，还需要返回响应结果，响应结果是一个list。</p>
+<p>我们再来看一个遵从WSGI协议的简单服务器，看服务器和应用是怎么互相配合起来的。从前面的分析可以看出，服务器首先要能够提供environ字典。那么这个字典都包括哪些信息呢？一是客户端提交过来的请求。所以服务器需要有代码写socket，bind，listen这些底层的socket通信命令，用于解析从客户端发过来的HTTP请求，然后存到environ字典里。二是要提供一些服务器的基本信息，比如服务器的名字、端口。三是WSGI协议里要求提供的一些字段，比如wsgi.version，wsgi.input，wsgi.errors等。</p>
+<p>然后，服务器需要提供start_response函数，该函数主要接受两个参数，一是响应的status，二是响应的头信息response_headers。</p>
+<p>最后，通过提供environ字典和start_response函数，服务从应用那里取到了响应的status，响应的头信息和响应的结果，然后按照HTTP协议把这些信息封装为符合格式的响应，发送给客户端。</p>
+<p>那么，服务器的代码和网络应用的代码怎么配合起来？服务器会import网络应用的代码，从而完成二者的交互。一个简单的WSGI服务器代码示例如下，假设文件名为<strong>wsgiserver.py</strong>：</p>
+<pre class="python"><code>import socket
+import StringIO
+import sys
+
+
+class WSGIServer(object):
+
+    address_family = socket.AF_INET
+    socket_type = socket.SOCK_STREAM
+    request_queue_size = 1
+
+    def __init__(self, server_address):
+        # Create a listening socket
+        self.listen_socket = listen_socket = socket.socket(
+            self.address_family,
+            self.socket_type
+        )
+        # Allow to reuse the same address
+        listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # Bind
+        listen_socket.bind(server_address)
+        # Activate
+        listen_socket.listen(self.request_queue_size)
+        # Get server host name and port
+        host, port = self.listen_socket.getsockname()[:2]
+        self.server_name = socket.getfqdn(host)
+        self.server_port = port
+        # Return headers set by Web framework/Web application
+        self.headers_set = []
+
+    def set_app(self, application):
+        self.application = application
+
+    def serve_forever(self):
+        listen_socket = self.listen_socket
+        while True:
+            # New client connection
+            self.client_connection, client_address = listen_socket.accept()
+            # Handle one request and close the client connection. Then
+            # loop over to wait for another client connection
+            self.handle_one_request()
+
+    def handle_one_request(self):
+        self.request_data = request_data = self.client_connection.recv(1024)
+        # Print formatted request data a la &#39;curl -v&#39;
+        print(&#39;&#39;.join(
+            &#39;&lt; {line}\n&#39;.format(line=line)
+            for line in request_data.splitlines()
+        ))
+
+        self.parse_request(request_data)
+
+        # Construct environment dictionary using request data
+        env = self.get_environ()
+
+        # It&#39;s time to call our application callable and get
+        # back a result that will become HTTP response body
+        result = self.application(env, self.start_response)
+
+        # Construct a response and send it back to the client
+        self.finish_response(result)
+
+    def parse_request(self, text):
+        request_line = text.splitlines()[0]
+        request_line = request_line.rstrip(&#39;\r\n&#39;)
+        # Break down the request line into components
+        (self.request_method,  # GET
+         self.path,            # /hello
+         self.request_version  # HTTP/1.1
+         ) = request_line.split()
+
+    def get_environ(self):
+        env = {}
+        # The following code snippet does not follow PEP8 conventions
+        # but it&#39;s formatted the way it is for demonstration purposes
+        # to emphasize the required variables and their values
+        #
+        # Required WSGI variables
+        env[&#39;wsgi.version&#39;]      = (1, 0)
+        env[&#39;wsgi.url_scheme&#39;]   = &#39;http&#39;
+        env[&#39;wsgi.input&#39;]        = StringIO.StringIO(self.request_data)
+        env[&#39;wsgi.errors&#39;]       = sys.stderr
+        env[&#39;wsgi.multithread&#39;]  = False
+        env[&#39;wsgi.multiprocess&#39;] = False
+        env[&#39;wsgi.run_once&#39;]     = False
+        # Required CGI variables
+        env[&#39;REQUEST_METHOD&#39;]    = self.request_method    # GET
+        env[&#39;PATH_INFO&#39;]         = self.path              # /hello
+        env[&#39;SERVER_NAME&#39;]       = self.server_name       # localhost
+        env[&#39;SERVER_PORT&#39;]       = str(self.server_port)  # 8888
+        return env
+
+    def start_response(self, status, response_headers, exc_info=None):
+        # Add necessary server headers
+        server_headers = [
+            (&#39;Date&#39;, &#39;Tue, 31 Mar 2015 12:54:48 GMT&#39;),
+            (&#39;Server&#39;, &#39;WSGIServer 0.2&#39;),
+        ]
+        self.headers_set = [status, response_headers + server_headers]
+        # To adhere to WSGI specification the start_response must return
+        # a &#39;write&#39; callable. We simplicity&#39;s sake we&#39;ll ignore that detail
+        # for now.
+        # return self.finish_response
+
+    def finish_response(self, result):
+        try:
+            status, response_headers = self.headers_set
+            response = &#39;HTTP/1.1 {status}\r\n&#39;.format(status=status)
+            for header in response_headers:
+                response += &#39;{0}: {1}\r\n&#39;.format(*header)
+            response += &#39;\r\n&#39;
+            for data in result:
+                response += data
+            # Print formatted response data a la &#39;curl -v&#39;
+            print(&#39;&#39;.join(
+                &#39;&gt; {line}\n&#39;.format(line=line)
+                for line in response.splitlines()
+            ))
+            self.client_connection.sendall(response)
+        finally:
+            self.client_connection.close()
+
+
+SERVER_ADDRESS = (HOST, PORT) = &#39;&#39;, 8888
+
+
+def make_server(server_address, application):
+    server = WSGIServer(server_address)
+    server.set_app(application)
+    return server
+
+
+if __name__ == &#39;__main__&#39;:
+    if len(sys.argv) &lt; 2:
+        sys.exit(&#39;Provide a WSGI application object as module:callable&#39;)
+    app_path = sys.argv[1]
+    module, application = app_path.split(&#39;:&#39;)
+    module = __import__(module)
+    application = getattr(module, application)
+    httpd = make_server(SERVER_ADDRESS, application)
+    print(&#39;WSGIServer: Serving HTTP on port {port}   \n&#39;.format(port=PORT))
+    httpd.serve_forever()</code></pre>
+<p>在shell下执行：</p>
+<pre><code>python wsgiserver.py wsgiapp:application</code></pre>
+<p><strong>参考资料</strong> &gt; <a href="http://ruslanspivak.com/lsbaws-part2/" class="uri">http://ruslanspivak.com/lsbaws-part2/</a></p>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

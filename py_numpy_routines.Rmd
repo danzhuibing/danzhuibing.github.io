@@ -1,0 +1,35 @@
+---
+title: "numpy routines介绍"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## 创建array
+`zeros`、`ones`、`array`、`arange`、`linspace`
+
+## 操作array
+`reshape`、`ravel`、`ndarray.flatten`、`transpose`、`concatenate`、`stack`、`split`
+
+## 函数式编程
+`apply_along_axis`
+
+## 线性代数
+`matmul`、`np.linalg.lstsq`
+
+## 随机数
+`rand`、`randn`、`randint`、`choice`
+
+## 排序、查找
+`sort`、`argmax`、`where`
+
+## set操作
+`unique`、`intersect1d`、`setdiff1d`
+

@@ -1,0 +1,171 @@
+---
+title: "Python scoket编程"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE, message=FALSE)
+```
+
+## 引言：从工具到服务
+
+首先，一起看一段简单的代码，假设脚本名为tool.py。
+
+``` python
+import sys
+if len(sys.argv) == 1:
+    print "Hello, World!"
+else:
+    print "Hello, %s!" % " ".join(sys.argv[1:])
+```
+
+在终端中执行命令：
+
+``` bash
+python tool.py Zhuibing Dan
+```
+
+终端会输出：
+``` text
+Hello, Zhuibing Dan!
+```
+
+这是一个典型的python工具，启动程序后，读取输入参数，输出结果，然后程序结束。
+这个时候，很多人想，我这个工具，能不能做成Web服务：即客户端提交请求给服务端，告诉服务端输入参数是什么；服务端读取输入参数，输出结果，打包为请求，返回给客户端输出。服务的另一个特点是，程序一直执行，不结束。
+
+那么，写好工具以后，怎么转换成一个Web服务呢？
+
+## 最简单的Web服务器
+一个Web服务之所以不会执行一段时间就结束，本质上是因为它在代码里启动了一个while死循环。另外一个重要特征是，它能够跟客户端打交道，需要进行网络通信，因此需要用到socket这个东西。
+
+socket是一个4元组，标识TCP连接的两个终端：本地IP地址、本地端口、远程IP地址、远程端口。一个socket对唯一地标识着网络上的TCP连接。每个终端的IP地址和端口号，称为socket。服务器创建socket并开始接受客户端连接的流程如下：
+1. 创建一个TCP/IP socket，socket.socket()
+2. 设置一些socket选项，setsockopt()函数
+3. 绑定指定地址，bind()函数
+4. 将创建的socket变为监听socket，listen()函数
+
+做完这些以后，服务器开始循环地一次接受一个客户端连接。当有连接到达时，accept调用返回已连接的客户端socket。然后服务器从这个socket读取请求数据，处理后发送一个响应给客户端。然后服务器关闭客户端连接，准备好接受新的客户端连接。
+
+``` python
+# -*- coding=utf-8 -*-
+#
+# @author: csp11@tsinghua.org.cn
+# @date: 2015-12-31
+#
+import socket
+HOST, PORT = 'localhost', 8888
+# AF_INET是domain（协议族），表示使用ipv4地址
+# SCOK_STREAM是type，提供面向连接的稳定数据传输，即TCP协议
+listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# 默认情况下socket关闭后，端口没有释放，需要经过一个TIME_WAIT时间之后才能使用，以下方法实现端口的马上复用
+listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+listen_socket.bind((HOST, PORT))
+# listen参数backlog指定tcpserver可以同时接受多少个客户端的连接，超过以后拒绝
+# tcpserver尽管可以同时接受n个客户端连接，但只能和第一个连接的客户端通信，当第一个tcp连接的客户端关闭后才能和第二个连接的客户端通信
+listen_socket.listen(1)
+
+print 'Serving HTTP on port %s ...' % PORT
+while True:
+	client_connection, client_address = listen_socket.accept()
+	request = client_connection.recv(1024)
+	print "request received:", request
+	request_body = request.rstrip().split()[1][1:]
+	
+	if request_body == "":
+		request_body = "World"
+
+	http_response = """
+HTTP/1.1 200 OK
+
+Hello, %s!
+""" % request_body
+	client_connection.sendall(http_response)
+	client_connection.close()
+```
+## 并发是什么？
+之前的服务器，只能够逐个处理客户端发来的请求。其他请求只能在队列中等待，直到上一个请求被处理完了。那么怎么样才能实现并发呢？这需要用到神奇的**fork()**函数。
+
+``` python
+###########################################################################
+# Concurrent server - webserver3g.py                                      #
+#                                                                         #
+# Tested with Python 2.7.9 & Python 3.4 on Ubuntu 14.04 & Mac OS X        #
+###########################################################################
+import errno
+import os
+import signal
+import socket
+ 
+SERVER_ADDRESS = (HOST, PORT) = '', 8888
+REQUEST_QUEUE_SIZE = 1024
+ 
+def grim_reaper(signum, frame):
+    while True:
+        try:
+            pid, status = os.waitpid(
+                -1,          # Wait for any child process
+                 os.WNOHANG  # Do not block and return EWOULDBLOCK error
+            )
+        except OSError:
+            return
+ 
+        if pid == 0:  # no more zombies
+            return
+ 
+def handle_request(client_connection):
+    request = client_connection.recv(1024)
+    print(request.decode())
+    http_response = b"""
+HTTP/1.1 200 OK
+ 
+Hello, World!
+"""
+    client_connection.sendall(http_response)
+ 
+def serve_forever():
+    listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    listen_socket.bind(SERVER_ADDRESS)
+    listen_socket.listen(REQUEST_QUEUE_SIZE)
+    print('Serving HTTP on port {port} ...'.format(port=PORT))
+ 
+    signal.signal(signal.SIGCHLD, grim_reaper)
+ 
+    while True:
+        try:
+            client_connection, client_address = listen_socket.accept()
+        except IOError as e:
+            code, msg = e.args
+            # restart 'accept' if it was interrupted
+            if code == errno.EINTR:
+                continue
+            else:
+                raise
+ 
+        pid = os.fork()
+        if pid == 0:  # child
+            listen_socket.close()  # close child copy
+            handle_request(client_connection)
+            client_connection.close()
+            os._exit(0)
+        else:  # parent
+            client_connection.close()  # close parent copy and loop over
+ 
+if __name__ == '__main__':
+    serve_forever()
+```
+一旦调用fork，父进程会启动子进程，两个进程在fork()的那一刻完全一样。那么怎么区分谁是父进程，谁是子进程呢？如果返回值pid是0，说明是子进程；否则是父进程，返回的数字是子进程的pid。
+
+fork之后，有几个事情需要注意，否则会出现问题。
+
+第一个问题是，父进程需要关闭client_connection，子进程需要关闭父进程的listen_socket。当服务器创建子进程时，内核会增加socket的引用计数。当socket的引用计数为0时才会关闭socket。上面的代码fork了以后，客户端连接和监听socket的引用计数都变为了2。父进程现在只需要监听是否有请求，如果有请求，就fork一个子进程；子进程只需要负责处理客户端连接，返回响应给客户端。所以父进程关闭了client_connection，子进程关闭了listen_socket。
+
+第二个问题是，僵尸。僵尸就是一个子进程终止了，但是它的父进程没有等它，还没有收到它的终止状态。当一个子进程比父进程先终止，内核把子进程转成僵尸，存储进程的一些信息，等着它的父进程以后获取。僵尸杀必死，且占用资源，因此父进程必须处理子进程结束的信号。此外，因为信号是不排队的，并发服务器如果有许多子进程同时结束，信号如洪水般涌来，会导致部分信号没有处理，导致僵尸问题依然存在。解决方案就是设置一个SIGCHLD事件处理器，使用waitpid系统调用，带上WNOHANG参数，循环处理，确保所有的终止的子进程都被处理掉。
+
+## 参考资料：
+> http://ruslanspivak.com/lsbaws-part3/
+

@@ -1,0 +1,201 @@
+---
+title: "Python调用C"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE, message=FALSE)
+```
+
+除了本示例的方法外，可以用SWIG更快实现C的封装，参见http://www.swig.org/translations/chinese/tutorial.html。 
+
+## C代码
+实现一个计算阶乘的函数fac().
+
+``` {c}
+#include <stdio.h>
+#include <stdlib.h>
+
+int fac(int n){
+    if(n < 2){
+        return 1;
+    return n * fac(n-1);
+}
+```
+
+## 包装C代码
+### 包含python头文件
+
+在linux下用which python，找到python安装的位置，确保在对应的include/python2.x中有Python.h文件，在上面的C代码中加入 #include "Python.h".
+
+### 为每个模块的每一个函数增加一个格式为PyObject * Module_func()的包装函数
+
+包装函数的作用是把python的值传递给C，再调用C的函数得到计算结果，最后把计算结果转化为Python对象返回给python。
+需要为所有想让python直接调用的函数都增加一个静态函数，返回类型为PyObjecct *，函数名格式为模块名_函数名。
+
+``` {c}
+static PyObject * Extest_fac(PyObject *self, PyObject * args){
+    int res;
+    int num;
+    PyObject* retval;
+    
+    res = PyArg_ParseTuple(args, "i", &num);
+    if(!res){
+        return NULL; //包装函数返回NULL，会在Python调用中产生一个TypeError的异常
+    }
+    res = fac(num);
+    retval = (PyObject *)Py_BuildValue("i", res);
+    return retval;
+}
+```
+
+Python和C对应的类型转换表：
+
+| Format Code | Python Type| C Type|
+|--------------|---------------|-------------------|
+|s|str|char*|
+|z|str/None|char*/NULL|
+|i|int|int|
+|l|long|long|
+|c|str|char|
+|d|float|double|
+|D|complex|Py_Complex*|
+|O|(any)|PyObject*|
+|S| str|PyStringObject|
+
+### 为每个模块增加一个如PyMethodDef ModuleMethods[]的数组
+创建完包装函数以后，需要在某个地方列出来，方便python解释器导入并调用他们。这个由ModuleMethods[]数组完成，格式如下，每一个元组都包含一个函数的信息，最后一个元组防止两个NULL值，代表声明结束。
+
+``` C
+static PyMethodDef ExtestMethods[] = {
+    {"fac", Extest_fac, METH_VARARGS},
+    {NULL, NULL},
+};
+```
+METH_VARARGS代表参数以tuple的形式传入。
+
+### 增加模块初始化函数 void initMethod()
+
+``` {c}
+void initExtest(){
+    Py_InitModule("Extest", ExtestMethods);
+}
+```
+
+完整代码如下：
+``` {c}
+#include <stdio.h>
+#include <stdlib.h>
+#include "Python.h"
+
+int fac(int n){
+    if(n < 2){
+        return 1;
+    return n * fac(n-1);
+}
+
+static PyObject * Extest_fac(PyObject *self, PyObject * args){
+    int res;
+    int num;
+    PyObject* retval;
+    
+    res = PyArg_ParseTuple(args, "i", &num);
+    if(!res){
+        return NULL; //包装函数返回NULL，会在Python调用中产生一个TypeError的异常
+    }
+    res = fac(num);
+    retval = (PyObject *)Py_BuildValue("i", res);
+    return retval;
+}
+
+static PyMethodDef ExtestMethods[] = {
+    {"fac", Extest_fac, METH_VARARGS},
+    {NULL, NULL},
+};
+
+void initExtest(){
+    Py_InitModule("Extest", ExtestMethods);
+}
+```
+
+## 编译与测试
+### 创建setup.py
+为每一个扩展创建一个Extension实例，示例只有一个扩展，因此只需创建一个实例。
+Extension('Extest', sources=[""Extest.c])，第一个参数是扩展的名字；第二个参数是源代码文件列表。
+setup('Extest', ext_modules=[...])，第一个参数表示要编译哪个东西，第二个参数列出要编译的Extension对象。
+
+``` {python}
+#!/usr/bin/env python
+from distutils.core import setup, Extension
+MOD = 'Extest'
+setup(name=MOD, ext_modules=[Extension(MOD, sources=['Extest.c'])])
+```
+
+### 运行setup.py来编译和链接C代码
+``` shell
+python setup.py build
+``
+
+编译成功后，你的扩展就会被创建在bulid/lib.*目录下。你会看到一个.so文件，这是linux下的
+动态库文件Extest.so
+
+
+### 进行调试
+直接用Python测试动态库
+
+``` {python}
+#!/usr/bin/env python
+from ctypes import *
+import os 
+#需要使用绝对路径
+extest = cdll.LoadLibrary(os.getcwd() + '/Extest.so') 
+print extest.fac(4)
+
+```
+
+调试通过后，可以用以下命令，安装动态库到python路径下：
+
+``` shell
+python setup.py install
+```
+
+之后可以直接import Extest，并调用Extest.fac(10)测试下是否成功。
+
+## Python和C性能比较
+
+``` {python}
+#!/usr/bin/env python
+from ctypes import *
+import os
+import time
+
+extest = cdll.LoadLibrary(os.getcwd() + '/Extest.so')
+
+def fac(a):
+    if a < 2:
+        return 1
+    return a*fac(a-1)
+
+start = time.time()
+for i in range(0, 10000000):
+    a = extest.fac(10)
+timeC = time.time() - start
+print 'C costs', timeC, 'the result is', a
+
+start = time.time()
+for i in range(0, 10000000):
+    b = fac(10)
+timePython = time.time() - start
+print 'Python costs', timePython, 'the result is', b
+```
+
+结果如下：
+
+``` text
+C costs 2.85689616203 the result is 3628800
+Python costs 10.5376181602 the result is 3628800
+```

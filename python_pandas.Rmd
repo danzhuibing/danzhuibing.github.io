@@ -155,4 +155,6 @@ df[['column1', 'column2']].apply(sum) # return the sum of all values of column1 
 ```
 
 
+**资源**
 
+- [Pandas Cheatsheet](files/Pandas_Cheat_Sheet.pdf)

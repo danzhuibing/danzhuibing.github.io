@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Python使用zkpython库实现主备</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Python使用zkpython库实现主备</h1>
+
+</div>
+
+
+<div class="section level2">
+<h2>简介</h2>
+<p>ZooKeeper提供了C和Java两种语言的客户端。zkpython对C客户端的代码进行封装，变为python的一个模块zookeeper，import以后便可以在python中方便地调用C客户端提供的函数。这层封装以后，使用仍然不够方便，因为思想是面向过程的，所以又有人写了一个zkclient.py文件，将代码改造为面向对象的模式。本文首先介绍zkpython的基本使用方法，然后利用zkpython包和zkclient.py文件，利用临时顺序节点功能，实现服务的主备。</p>
+</div>
+<div id="zkpython" class="section level2">
+<h2>zkpython的使用</h2>
+<div class="section level3">
+<h3>建立连接</h3>
+<pre class="python"><code>handler = zookeeper.init(&quot;localhost:2181&quot;)</code></pre>
+<p>调用这个就认为与ZooKeeper建立了连接是错误的。该函数返回一个zookeeper客户端与服务器通信的句柄。初学者一般仅仅根据返回句柄的情况来判断zookeeper 客户端与zookeeper服务器是否建立连接。如果句柄为空则认为是失败，非空则成功。这种方法不对，zookeeper_init创建与ZooKeeper服务端通信的句柄以及对应于此句柄的会话，而会话的创建是一个异步的过程，仅当会话建立成功，zookeeper_init才返回一个可用句柄。</p>
+<p>因此，只有会话session创建成功，客户端才和ZooKeeper建立了可用的连接。正确的初始化方法介绍如下。 #### 方法1： 利用Watcher异步通知 在zookeeper_init中设置watcher，当zookeeper client与server会话建立后，触发watcher，当 watcher 的state = 3 （ZOO_CONNECTED_STATE）， type = -1（ZOO_SESSION_EVENT）时，确认 会话成功建立，此时zookeeper client 初始化成功，可进行后续操作。示例代码：</p>
+<pre class="python"><code>import zookeeper
+import threading
+
+# 全局锁
+conn_cv = threading.Condition()
+
+def connection_watcher(self, h, type, state, path):
+    if type == zookeeper.SESSION_EVENT and state == zookeeper.CONNECTED_STATE:
+        conn_cv.acquire()
+        conn_cv.notifyAll()
+        conn_cv.release()
+        
+if __name__ == &quot;__main__&quot;:
+    # config
+    servers = &quot;localhost:2181,localhost:2182,localhost:2183&quot; #多个server用逗号分开，此处为单机伪分布式部署
+    timeout = 10000 # 设置超时时间，超过这个时间客户端和服务端没有交互的话，就会触发超时事件；如果连接注册了临时节点，临时节点会被删除，该值的单位为zookeeper server的tick time，tick time为2000，则为5s
+
+    # 同步和异步编程同时存在，通过锁来进行二者的协调
+    conn_cv.acquire()
+    handle = zookeeper.init(servers, connection_watcher, timeout)
+    conn_cv.wait(timeout/1000)
+    conn_cv.release()
+    if zookeeper.state(handle) != zookeeper.CONNECTED_STATE:
+        print “Unable to connect to zookeeper servers”
+    else:
+        print &quot;Connected to zookeeper servers [%s]&quot; % servers</code></pre>
+<div class="section level4">
+<h4>方法二：主动轮询</h4>
+<p>while循环判断句柄的state是否为ZOO_CONNECTED_STATE状态，通过zoo_state(zh)判断状态值是否为ZOO_CONNECTED_STATE。</p>
+<pre class="python"><code>import zookeeper
+import time
+import sys
+servers = &quot;localhost:2181,localhost:2182,localhost:2183&quot;
+timeout = 10000
+
+handle = zookeeper.init(servers, connection_watcher, timeout)
+start_time = time.time()
+while zookeeper.state(handle) != zookeeper.CONNECTED_STATE:
+    cur_time = time.time()
+    if cur_time - start_time &gt; timeout / 1000:
+        print &quot;Unable to connect to zookeeper servers&quot;
+        sys.exit(-1)
+    time.sleep(1)
+print &quot;Connected to zookeeper servers [%s]&quot; % servers</code></pre>
+</div>
+</div>
+<div class="section level3">
+<h3>创建节点</h3>
+<pre class="python"><code>zookeeper.create(handler, &quot;/zkpython_test&quot;, &quot;mydata&quot;, [{&quot;perms&quot;:0x1f,&quot;scheme&quot;:&quot;world&quot;,&quot;id&quot;:&quot;anyone&quot;}]),0)</code></pre>
+<p>第一个参数是连接，第二个参数是znode路径，第三个是znode的数据，第四个是acl，第四个是节点的类型（0是永久，1是永久+序号，2是临时，3是临时加序号）</p>
+<p>对于acl，READ权限是1，WRITE权限是2，CREATE权限是4，DELETE权限是8，ADMIN权限是16. 0x1f是16进制，表示16*1+15 = 31。而READ+WRITE+CREATE+DELETE+ADMIN=31。所以0x1f表示所有权限都有。</p>
+<p>scheme有几种固定形式，一般用例子中的，其他的参考官方文档。</p>
+</div>
+<div class="section level3">
+<h3>查看子节点</h3>
+<pre class="python"><code>zookeeper.get_children(handler, &quot;/&quot;, None)</code></pre>
+</div>
+<div class="section level3">
+<h3>获取节点的数据</h3>
+<pre class="python"><code>zookeeper.get(handler, &quot;/zkpython_test&quot;)</code></pre>
+</div>
+<div class="section level3">
+<h3>修改节点的数据</h3>
+<pre class="python"><code>zookeeper.set(handler, &quot;/zkpython_test&quot;, &quot;mydata_new&quot;)</code></pre>
+</div>
+<div class="section level3">
+<h3>删除节点</h3>
+<pre class="python"><code>zookeeper.delete(handler, &quot;/zkpython_test&quot;)</code></pre>
+</div>
+<div class="section level3">
+<h3>关闭连接</h3>
+<pre class="python"><code>zookeeper.close(handler)</code></pre>
+</div>
+<div id="watch" class="section level3">
+<h3>使用Watch</h3>
+<p>ZooKeeper的getData()、getChildren()和exists()，都能设置一个Watch。Watch官方定义如下： &gt; a watch event is <strong>one-time trigger</strong>, <strong>sent to the client</strong> that set the watch, which occurs when <strong>the data for which the watch</strong> was set changes.</p>
+<p>基本使用方法：首先，定义一个watch方法，之后再调用get方法时，把watch传递进去就可以了。</p>
+<pre class="python"><code>import zookeeper
+
+def myWatch(handler, type, state, path):
+    print &quot;handler:&quot; + str(handler) +&quot;,type:&quot; + str(type) + &quot;,state:&quot; + str(state) + &quot;,path:&quot; + path
+    zookeeper.get(handler, path, myWatch) # one-time trigger的性质，加入这句后可以保证重复监听
+
+handler = zookeeper.init(&quot;localhost:2181&quot;) # 初学者常见的错误的初始化方法，需要按上文修改
+data = zookeeper.get(handler, &quot;/zkpython_test&quot;, myWatch)</code></pre>
+<p>Watch的参数含义 - handler：连接索引值，以0开始 - type：事件类型，用常量表示，取值有[zookeeper.NOTWATCHING_EVENT, zookeeper.SESSION_EVENT, zookeeper.CREATED_EVENT, zookeeper.DELETED_EVENT, zookeeper.CHANGED_EVENT, zookeeper.CHILD_EVENT] - status：客户端的状态，用常量表示，取值有[zookeeper.ASSOCIATING_STATE, zookeeper.AUTH_FAILED_STATE, zookeeper.CONNECTED_STATE, zookeeper.CONNECTING_STATE, zookeeper.EXPIRED_SESSION_STATE] - path：znode路径</p>
+</div>
+</div>
+<div id="zkpython-ha" class="section level2">
+<h2>zkpython HA的实现</h2>
+<div id="zkclient" class="section level3">
+<h3>封装对象ZKClient</h3>
+<p>首先用zkclient.py文件将zkpython封装为面向对象的使用模式。</p>
+<pre class="python"><code># /usr/bin/env python
+# -*- coding: utf-8 -*-
+# @author: 陈水平
+# @modfied from https://github.com/phunt/zk-smoketest/blob/master/zkclient.py
+
+import zookeeper, time, threading
+from collections import namedtuple
+
+
+DEFAULT_TIMEOUT = 30000
+VERBOSE = True
+
+ZOO_OPEN_ACL_UNSAFE = {&quot;perms&quot;:0x1f, &quot;scheme&quot;:&quot;world&quot;, &quot;id&quot; :&quot;anyone&quot;}
+
+# Mapping of connection state values to human strings.
+STATE_NAME_MAPPING = {
+    zookeeper.ASSOCIATING_STATE: &quot;associating&quot;,
+    zookeeper.AUTH_FAILED_STATE: &quot;auth-failed&quot;,
+    zookeeper.CONNECTED_STATE: &quot;connected&quot;,
+    zookeeper.CONNECTING_STATE: &quot;connecting&quot;,
+    zookeeper.EXPIRED_SESSION_STATE: &quot;expired&quot;,
+}
+
+# Mapping of event type to human string.
+TYPE_NAME_MAPPING = {
+    zookeeper.NOTWATCHING_EVENT: &quot;not-watching&quot;,
+    zookeeper.SESSION_EVENT: &quot;session&quot;,
+    zookeeper.CREATED_EVENT: &quot;created&quot;,
+    zookeeper.DELETED_EVENT: &quot;deleted&quot;,
+    zookeeper.CHANGED_EVENT: &quot;changed&quot;,
+    zookeeper.CHILD_EVENT: &quot;child&quot;, 
+}
+
+class ZKClientError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
+class ClientEvent(namedtuple(&quot;ClientEvent&quot;, &#39;type, connection_state, path&#39;)):
+    &quot;&quot;&quot;
+    A client event is returned when a watch deferred fires. It denotes
+    some event on the zookeeper client that the watch was requested on.
+    &quot;&quot;&quot;
+
+    @property
+    def type_name(self):
+        return TYPE_NAME_MAPPING[self.type]
+
+    @property
+    def state_name(self):
+        return STATE_NAME_MAPPING[self.connection_state]
+
+    def __repr__(self):
+        return  &quot;&lt;ClientEvent %s at %r state: %s&gt;&quot; % (
+            self.type_name, self.path, self.state_name)
+
+
+def watchmethod(func):
+    def decorated(handle, atype, state, path):
+        event = ClientEvent(atype, state, path)
+        return func(event)
+    return decorated
+
+class ZKClient(object):
+    def __init__(self, servers, timeout=DEFAULT_TIMEOUT):
+        self.timeout = timeout
+        self.connected = False
+        self.conn_cv = threading.Condition( )
+        self.handle = -1
+        
+        self.conn_cv.acquire()
+        if VERBOSE: print(&quot;Connecting to %s&quot; % (servers))
+        start = time.time()
+        self.handle = zookeeper.init(servers, self.connection_watcher, timeout)
+        self.conn_cv.wait(timeout/1000)
+        self.conn_cv.release()
+
+        if not self.connected:
+            raise ZKClientError(&quot;Unable to connect to %s&quot; % (servers))
+
+        if VERBOSE:
+            print(&quot;Connected in %d ms, handle is %d&quot;
+                  % (int((time.time() - start) * 1000), self.handle))
+
+    # modify connection_watcher
+    def connection_watcher(self, h, type, state, path):
+        if type == zookeeper.SESSION_EVENT and state == zookeeper.CONNECTED_STATE:
+            self.handle = h
+            self.conn_cv.acquire()
+            self.connected = True
+            self.conn_cv.notifyAll()
+            self.conn_cv.release()
+
+    def close(self):
+        return zookeeper.close(self.handle)
+    
+    def create(self, path, data=&quot;&quot;, flags=0, acl=[ZOO_OPEN_ACL_UNSAFE]):
+        start = time.time()
+        result = zookeeper.create(self.handle, path, data, acl, flags)
+        if VERBOSE:
+            print(&quot;Node %s created in %d ms&quot;
+                  % (path, int((time.time() - start) * 1000)))
+        return result
+
+    def delete(self, path, version=-1):
+        start = time.time()
+        result = zookeeper.delete(self.handle, path, version)
+        if VERBOSE:
+            print(&quot;Node %s deleted in %d ms&quot;
+                  % (path, int((time.time() - start) * 1000)))
+        return result
+
+    def get(self, path, watcher=None):
+        return zookeeper.get(self.handle, path, watcher)
+
+    def state(self):
+        return zookeeper.state(self.handle)
+
+    def exists(self, path, watcher=None):
+        return zookeeper.exists(self.handle, path, watcher)
+
+    def set(self, path, data=&quot;&quot;, version=-1):
+        return zookeeper.set(self.handle, path, data, version)
+
+    def set2(self, path, data=&quot;&quot;, version=-1):
+        return zookeeper.set2(self.handle, path, data, version)
+
+    def get_children(self, path, watcher=None):
+        return zookeeper.get_children(self.handle, path, watcher)
+
+    def async(self, path = &quot;/&quot;):
+        return zookeeper.async(self.handle, path)
+
+    def acreate(self, path, callback, data=&quot;&quot;, flags=0, acl=[ZOO_OPEN_ACL_UNSAFE]):
+        result = zookeeper.acreate(self.handle, path, data, acl, flags, callback)
+        return result
+
+    def adelete(self, path, callback, version=-1):
+        return zookeeper.adelete(self.handle, path, version, callback)
+
+    def aget(self, path, callback, watcher=None):
+        return zookeeper.aget(self.handle, path, watcher, callback)
+
+    def aexists(self, path, callback, watcher=None):
+        return zookeeper.aexists(self.handle, path, watcher, callback)
+
+    def aset(self, path, callback, data=&quot;&quot;, version=-1):
+        return zookeeper.aset(self.handle, path, data, version, callback)
+
+watch_count = 0
+
+&quot;&quot;&quot;Callable watcher that counts the number of notifications&quot;&quot;&quot;
+class CountingWatcher(object):
+    def __init__(self):
+        self.count = 0
+        global watch_count
+        self.id = watch_count
+        watch_count += 1
+
+    def waitForExpected(self, count, maxwait):
+        &quot;&quot;&quot;Wait up to maxwait for the specified count,
+        return the count whether or not maxwait reached.
+
+        Arguments:
+        - `count`: expected count
+        - `maxwait`: max milliseconds to wait
+        &quot;&quot;&quot;
+        waited = 0
+        while (waited &lt; maxwait):
+            if self.count &gt;= count:
+                return self.count
+            time.sleep(1.0);
+            waited += 1000
+        return self.count
+
+    def __call__(self, handle, typ, state, path):
+        self.count += 1
+        if VERBOSE:
+            print(&quot;handle %d got watch for %s in watcher %d, count %d&quot; %
+                  (handle, path, self.id, self.count))
+
+&quot;&quot;&quot;Callable watcher that counts the number of notifications
+and verifies that the paths are sequential&quot;&quot;&quot;
+class SequentialCountingWatcher(CountingWatcher):
+    def __init__(self, child_path):
+        CountingWatcher.__init__(self)
+        self.child_path = child_path
+
+    def __call__(self, handle, typ, state, path):
+        if not self.child_path(self.count) == path:
+            raise ZKClientError(&quot;handle %d invalid path order %s&quot; % (handle, path))
+        CountingWatcher.__call__(self, handle, typ, state, path)
+
+class Callback(object):
+    def __init__(self):
+        self.cv = threading.Condition()
+        self.callback_flag = False
+        self.rc = -1
+
+    def callback(self, handle, rc, handler):
+        self.cv.acquire()
+        self.callback_flag = True
+        self.handle = handle
+        self.rc = rc
+        handler()
+        self.cv.notify()
+        self.cv.release()
+
+    def waitForSuccess(self):
+        while not self.callback_flag:
+            self.cv.wait()
+        self.cv.release()
+
+        if not self.callback_flag == True:
+            raise ZKClientError(&quot;asynchronous operation timed out on handle %d&quot; %
+                             (self.handle))
+        if not self.rc == zookeeper.OK:
+            raise ZKClientError(
+                &quot;asynchronous operation failed on handle %d with rc %d&quot; %
+                (self.handle, self.rc))
+
+
+class GetCallback(Callback):
+    def __init__(self):
+        Callback.__init__(self)
+
+    def __call__(self, handle, rc, value, stat):
+        def handler():
+            self.value = value
+            self.stat = stat
+        self.callback(handle, rc, handler)
+
+class SetCallback(Callback):
+    def __init__(self):
+        Callback.__init__(self)
+
+    def __call__(self, handle, rc, stat):
+        def handler():
+            self.stat = stat
+        self.callback(handle, rc, handler)
+
+class ExistsCallback(SetCallback):
+    pass
+
+class CreateCallback(Callback):
+    def __init__(self):
+        Callback.__init__(self)
+
+    def __call__(self, handle, rc, path):
+        def handler():
+            self.path = path
+        self.callback(handle, rc, handler)
+
+class DeleteCallback(Callback):
+    def __init__(self):
+        Callback.__init__(self)
+
+    def __call__(self, handle, rc):
+        def handler():
+            pass
+        self.callback(handle, rc, handler)</code></pre>
+</div>
+<div class="section level3">
+<h3>选主实现</h3>
+<p>当有两个或多个服务运行时，同一时间只有一个服务接受请求工作，其他服务待命；当接受请求的服务异常挂掉时，从剩下待命的服务中选出一个服务接受请求工作。把类的初始化函数master_num设置为非1的情况，可以允许多个主。</p>
+<pre class="python"><code>#/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# @function: realize HA (high availability) by ZooKeeper
+# @author: 陈水平
+# @date: 2016-01-04
+#
+
+import sys, os
+from os.path import basename, join
+import time
+import subprocess
+import signal
+
+# import self-defined module
+from zkclient import ZKClient, ZKClientError, watchmethod, zookeeper
+import spark_manage_util
+
+
+import logging
+logging.basicConfig(
+    level = logging.DEBUG,
+    format = &quot;[%(asctime)s] %(levelname)-8s %(message)s&quot;
+)
+ 
+log = logging
+
+class HAZookeeper(object):
+    def __init__(self, host, worker_path, master_num=1, timeout=10000, verbose=True):
+        self.VERBOSE = verbose
+        self.masters = []
+        self.is_master = None
+        self.path = None
+        self.MASTERS_NUM = master_num
+        self.TIMEOUT = timeout
+        self.WORKERS_PATH = worker_path
+        self.ZK_HOST = host
+
+        self.login()
+        self.__init_zk()
+        self.register()
+        self.get_master()
+
+    def login(self):
+        &quot;&quot;&quot;
+        connect to ZooKeeper, exit if failed
+        &quot;&quot;&quot;
+        self.zk = ZKClient(self.ZK_HOST, timeout = self.TIMEOUT)
+        self.say(&quot;login ok!&quot;)
+    
+    def __init_zk(self):
+        &quot;&quot;&quot;
+        create the permanent node if not exist, permanent node represent a distributed lock
+        &quot;&quot;&quot;
+        nodes = self.WORKERS_PATH[1:].split(&quot;/&quot;)
+        for i in range(0, len(nodes)):
+            node = &quot;/&quot;+&quot;/&quot;.join(nodes[:i+1])
+            if not self.zk.exists(node):
+                try:
+                    self.zk.create(node, &quot;&quot;)
+                except:
+                    pass
+
+    def register(self):
+        &quot;&quot;&quot;
+        register a ephemeral and sequence node for this worker
+        &quot;&quot;&quot;
+        self.path = self.zk.create(self.WORKERS_PATH + &quot;/worker&quot;, &quot;1&quot;, flags=zookeeper.EPHEMERAL | zookeeper.SEQUENCE)
+        self.path = basename(self.path)
+        self.say(&quot;register ok! I&#39;m %s&quot; % self.path)
+
+    def get_master(self):
+        &quot;&quot;&quot;
+        get children, and check who is the smallest child
+        &quot;&quot;&quot;
+        @watchmethod
+        def watcher(event):
+            if event.type_name == &quot;session&quot; and event.state_name != &quot;connected&quot;:
+                self.say(&quot;session time out, shut down&quot;)
+                sys.exit(-1)
+            if event.type_name == &quot;child&quot;:
+                self.say(&quot;child changed, try to get master again.&quot;)
+                self.get_master()
+
+        children = self.zk.get_children(self.WORKERS_PATH, watcher)
+        children.sort()
+        self.say(&quot;%s&#39;s children: %s&quot; % (self.WORKERS_PATH, children))
+
+        # check if I&#39;m master
+        self.masters = children[:self.MASTERS_NUM]
+        
+        if self.path in self.masters:
+            # master-&gt;master
+            self.is_master = True
+            self.say(&quot;I&#39;ve been master!&quot;)
+        else:
+            if self.path in children:
+               self.is_master = False
+               self.say(&quot;%s is masters, I&#39;m slave&quot; % self.masters)
+            else:
+                self.say(&quot;%s is masters, my path %s not in children %s, reconnect&quot; % (self.masters, self.path, children))
+                self.path = None
+                self.login()
+                self.register()
+
+    def say(self, msg):
+        &quot;&quot;&quot;
+        print messages to screen
+        &quot;&quot;&quot;
+        if self.VERBOSE:
+            if self.path:
+                log.info(&quot;[ %s(%s) ] %s&quot; % (self.path, &quot;master&quot; if self.is_master else &quot;slave&quot;, msg))
+            else:
+                log.info(msg) 
+
+
+def test():
+    host = &quot;XXX.XXX.XXX.XXX:5063,XXX.XXX.XXX.XXX:5063,XXX.XXX.XXX.XXX:5063&quot;
+    worker_path = &quot;/app/zk_test&quot;
+    master_num = 1
+    timeout = 10000
+    ha_zookeeper = HAZookeeper(host, worker_path, master_num, timeout)
+    while True:
+        time.sleep(1)
+
+if __name__ == &quot;__main__&quot;:
+       test()</code></pre>
+</div>
+</div>
+<div id="zookeeper" class="section level2">
+<h2>ZooKeeper连接中断的解决方法</h2>
+<div id="1watchersession" class="section level3">
+<h3>方法1：在Watcher里处理session失效事件</h3>
+<pre class="python"><code>def watcher(event):
+    if event.type_name == &quot;session&quot; and event.state_name != &quot;connected&quot;:
+         self.say(&quot;session time out, shut down&quot;)
+         sys.exit(-1)</code></pre>
+</div>
+<div id="2" class="section level3">
+<h3>方法2：连接句柄的状态</h3>
+<pre class="python"><code>def test():
+    host = &quot;XXX.XXX.XXX.XXX:5063,XXX.XXX.XXX.XXX:5063,XXX.XXX.XXX.XXX:5063&quot;
+    worker_path = &quot;/app/zk_test&quot;
+    master_num = 1
+    timeout = 10000
+    ha_zookeeper = HAZookeeper(host, worker_path, master_num, timeout)
+    while True:
+        if ha_zookeeper.zk.state() != zookeeper.CONNECTED_STATE:
+            print &quot;connection with zookeeper server failed. shut down...&quot;
+            sys.exit(-1)
+        time.sleep(1)</code></pre>
+</div>
+<div id="3exists" class="section level3">
+<h3>方法3：通过调用句柄的exists等方法</h3>
+<pre class="python"><code>def test():
+    host = &quot;XXX.XXX.XXX.XXX:5063,XXX.XXX.XXX.XXX:5063,XXX.XXX.XXX.XXX:5063&quot;
+    worker_path = &quot;/app/zk_test&quot;
+    master_num = 1
+    timeout = 10000
+    ha_zookeeper = HAZookeeper(host, worker_path, master_num, timeout)
+    while True:
+        try:
+            if not ha_zookeeper.zk.exists(ha_zookeeper.WORKERS_PATH + &quot;/&quot; + ha_zookeeper.path)::
+                print &quot;path was unexpectly deleted, recreate.&quot;
+                ha_zookeeper.path = None
+                ha_zookeeper.login()
+                ha_zookeeper.register()
+        except Exception, e:    
+            print &quot;connection with zookeeper server failed. shut down...&quot;
+            sys.exit(-1)
+        time.sleep(1)</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>ARIMA模型详解</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">ARIMA模型详解</h1>
+
+</div>
+
+
+<div id="arima" class="section level2">
+<h2>ARIMA模型的组成结构</h2>
+<p><strong>ARIMA(p, d, q)</strong>由三个部分组成：</p>
+<ul>
+<li><strong>AR(p)</strong>：AR是autoregressive的缩写，表示自回归模型，含义是当前时间点的值等于过去若干个时间点的值的回归——因为不依赖于别的解释变量，只依赖于自己过去的历史值，故称为自回归；如果依赖过去最近的p个历史值，称阶数为p，记为AR(p)模型。</li>
+<li><strong>I(d)</strong>：I是integrated的缩写，含义是模型对时间序列进行了差分；因为时间序列分析要求平稳性，不平稳的序列需要通过一定手段转化为平稳序列，一般采用的手段是差分；d表示差分的阶数，t时刻的值减去t-1时刻的值，得到新的时间序列称为1阶差分序列；1阶差分序列的1阶差分序列称为2阶差分序列，以此类推；另外，还有一种特殊的差分是季节性差分S，即一些时间序列反应出一定的周期T，让t时刻的值减去t-T时刻的值得到季节性差分序列。</li>
+<li><strong>MA(q)</strong>：MA是moving average的缩写，表示移动平均模型，含义是当前时间点的值等于过去若干个时间点的预测误差的回归；预测误差=模型预测值-真实值；如果序列依赖过去最近的q个历史预测误差值，称阶数为q，记为MA(q)模型。</li>
+</ul>
+<p>I(d)很好理解，将不平稳序列差分得到平稳序列，略过不表。假设我们现在的时间序列已经是平稳的了。</p>
+<p>AR(p)模型很好理解，一般而言，时间序列的变量具有时序上的相关性。比如说一条道路的速度，当时间间隔足够小时，上一个时间点速度如果慢，下一个时间点也往往很慢慢。这种内在的相关性，使得我们可以根据最近几个时间点的观测值来预测下几个时间点的值。</p>
+<p><span class="math display">\[
+Y_t = \epsilon_t + \beta_1Y_{t-1} + \beta_2Y_{t-2} + ... + \beta_pY_{t-p} 
+\]</span></p>
+<p>MA(q)模型是我在学习ARIMA时最难理解的地方。说白了，MA模型就是无穷阶AR模型的等价表示。为什么这么说？我们来看一个特殊的无穷阶的AR模型。</p>
+<p><span class="math display">\[
+Y_t = \epsilon_t + \beta Y_{t-1} - \beta^2Y_{t-2} + \beta^3Y_{t-3} - \beta^4Y_{t-4} + ...       \ \ \ \ \ \  (1)
+\]</span></p>
+<p>将(1)中的t用t-1替代，得到(2)：</p>
+<p><span class="math display">\[
+Y_{t-1} = \epsilon_{t-1} + \beta Y_{t-2} - \beta^2Y_{t-3} + \beta^3Y_{t-4} - \beta^4Y_{t-5} + ...        \ \ \ \ \ \ (2)
+\]</span></p>
+<p>将(2)的左右两边同乘{% math %}:</p>
+<p><span class="math display">\[
+\beta Y_{t-1} = \beta\epsilon_{t-1} + \beta^2Y_{t-2} - \beta^3Y_{t-3} + \beta^4Y_{t-4} - \beta^5Y_{t-5} + ...      \ \ \ \ \ \  (3)
+\]</span></p>
+<ol style="list-style-type: decimal">
+<li><ul>
+<li>(2)，得到(4)：</li>
+</ul></li>
+</ol>
+<p><span class="math display">\[
+Y_t = \epsilon_t + \beta\epsilon_{t-1}\ \ \ \ \ \ (4)
+\]</span></p>
+<p>式(4)就是MA(1)。对比式(1)和式(4)，我们可以得到MA(1)相当于一个无穷阶的AR模型。同样的，对于任意的q，MA(q)均可以找到一个AR模型与之对应。因此，我们可以得到，时间序列数据归根到底，是可以用统一用AR模型来表示的。</p>
+<p>那么，为什么还要MA模型呢？如果只有AR模型，那么一些时间序列必然会需要很高的阶数p来刻画。阶数p，就是待估参数的个数。待估参数越多，需要付出的参数估计代价就越大，所以我们当然希望参数个数越少越好。因此我们自然希望能够用低阶的MA模型来替换高阶的AR模型；反之亦然。</p>
+<p>这也可以从自相关系数和偏自相关系数来理解。MA模型的阶数看自相关系数，AR模型的阶数看偏自相关系数。如果自相关系数q阶以后都趋于0，说明是MA(q)模型；这时去看偏自相关系数，必然是无穷阶后都不收敛于0——因为MA模型对应无穷阶的AR模型。同样的，如果偏自相关系数p阶以后都趋于0，说明是AR(p)模型；这时去看自相关系数，必然是无穷阶后都不收敛于0——因为AR模型对应无穷阶的MA模型。</p>
+<p>最后，来说说ARMA模型。当自相关系数和偏自相关系数都没有收敛于0，说明这个时间序列不能纯用低阶的AR模型或者纯用低阶的MA模型来解释，需要低阶的AR和低阶的MA模型混合来解释。也可以换个角度来思考，前面提到，任何一个时间序列都可以用纯粹的AR模型来刻画。但是偏自相关系数无穷阶后都不收敛于0，说明只能用一个高阶的AR来解释。但这样的话，阶数太高，待估参数太多，我们就不开心了。所以我们对这个高阶AR模型做分解，分解出一个低阶的AR模型和另一个特殊的高阶AR模型，其中分解出来的高阶AR模型恰好等价于一个低阶的MA模型。于是我们就可以用低阶的AR模型和低阶的MA模型来描述这个时间序列了，这就是ARMA模型。</p>
+</div>
+<div id="arima" class="section level2">
+<h2>ARIMA模型的实践心得</h2>
+<p>个人觉得ARIMA里面的MA很让人讨厌，因为没有MA，ARIMA就是一个特殊的线性回归模型，可以用大量现成的线性回归包进行参数估计。来自杜克大学的一段关于ARIMA模型的论述很好地阐述了这个点：</p>
+<blockquote>
+<p>Predicted value of <em>Y = a constant and/or a weighted sum of one or more recent values of Y and/or a weighted sum of one or more recent values of the errors.</em> <strong>If the predictors consist only of lagged values of Y, it is a pure autoregressive (“self-regressed”) model, which is just a special case of a regression model and which could be fitted with standard regression software.</strong> For example, a first-order autoregressive (“AR(1)”) model for Y is a simple regression model in which the independent variable is just Y lagged by one period (LAG(Y,1) in Statgraphics or Y_LAG1 in RegressIt). If some of the predictors are lags of the errors, an ARIMA model it is NOT a linear regression model, because there is no way to specify “last period’s error” as an independent variable: the errors must be computed on a period-to-period basis when the model is fitted to the data.<br />
+出处：<a href="http://people.duke.edu/~rnau/411arim.htm" class="uri">http://people.duke.edu/~rnau/411arim.htm</a></p>
+</blockquote>
+<p>所以我的感觉是，能不用MA就不用MA，这样会让问题的实现变得简单很多，参数估计问题可以自行解决，而不用依赖专业的统计软件，如R、SAS、SPSS等。统计软件固然方便，但是不便于做模型的扩展。比如，我们做时间序列时，除了时间序列的观测值外，还希望加入别的解释变量。举我做过的一个例子，我们想预测一条路未来一个小时的路况，输入数据除了这条路过去的历史路况和当前路况外，还希望把上下游联系紧密的道路的历史路况和当前路况也加进来，即对时间序列做空间上的扩展，得到空间时间序列，在学术上被称为ST-ARIMA（Spatial Temporal ARIMA）。另外，我们知道时间序列的预测，说白了就是认为历史的行为在将来会复现，因此如果有突发情况，肯定是预测不准的。但是如果这种突发情况，我们是能够事先捕获，并作为输入，加入到预测模型里去，就可以很好地改善模型的预测效果；这本质的作用类似用突发情况，对时间序列的训练机做分组，从而让每组的参数不一样。举个具体的例子，北京会时不时实行下单双号限行，尾号还会定期轮换，这些因素都可以作为解释变量加入到模型中去。因此，采用AR模型的话，我们就可以方便地引入各种解释变量，对时间序列数据做拓展，以机器学习的思路来建模。</p>
+<p>下面以Python为例介绍对AR模型进行工程实现的思路。</p>
+<p>首先，确定下输入数据的格式，以道路速度预测为例，每隔10分钟一个数据，长相如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>时间批次</th>
+<th>道路索引</th>
+<th>道路信息（实时速度，profile速度，关联系数）</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>20150807180200</td>
+<td>0</td>
+<td>42, 40, 100</td>
+</tr>
+<tr class="even">
+<td>20150807180200</td>
+<td>1</td>
+<td>20, 43, 69</td>
+</tr>
+<tr class="odd">
+<td>20150807180200</td>
+<td>2</td>
+<td>27, 40, 51</td>
+</tr>
+<tr class="even">
+<td>20150807181200</td>
+<td>0</td>
+<td>23, 45, 100</td>
+</tr>
+<tr class="odd">
+<td>20150807181200</td>
+<td>1</td>
+<td>18, 50, 69</td>
+</tr>
+<tr class="even">
+<td>20150807181200</td>
+<td>2</td>
+<td>25, 47, 51</td>
+</tr>
+</tbody>
+</table>
+<p>下一步，要解决怎么在Python中表示时间序列。显然，我们可以用一个二级dict，让第一级的key是时间批次，第二级的key是道路索引，value是道路信息。</p>
+<p>然后，我们要根据时间序列，生成机器学习的标准训练格式(label, feature)，因为我们往往想知道这组数据发生在什么时间，所以再加一个时间字段，输出为(t, label, feature)。伪代码如下：</p>
+<pre class="python"><code>ts_dict = 时间序列
+AR_P = AR模型的阶数
+NUM = 关联道路数
+final_list = []
+for t in range(start_time, stop_time, step_time):
+    if ts_dict.has_key[t]:
+        if ts_dict[t].has_key[0]:
+            label = 道路信息
+            feature = {}
+            for x in range(1, AR_P+1):
+                t_p = t - step_time * x
+                if ts_dict.has_key[t_p]:
+                    for 道路索引,道路信息 in ts_dict[t_p].iteritems()
+                    idx = 道路索引 + x * NUM
+                    feature[idx] = 道路信息
+            final_list.append((t, label, feature))</code></pre>
+<p>这里面需要注意的是，feature的下标idx的公式。</p>
+<p>整理成这样的格式后，可以用线性回归参数估计方法，得到AR模型的估计结果。事实上，整理成上述格式以后，我们已经可以不仅限于AR模型了，任何回归和分类模型都可以用上，如逻辑回归、支持向量机、决策树、随机森林、GBDT等。</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -204,15 +204,31 @@ $(document).ready(function () {
 
 
 <p><br></p>
-<div id="machine-learning" class="section level3">
-<h3>Machine Learning</h3>
+<div id="python" class="section level2">
+<h2>Python与机器学习</h2>
+<p>以下几个库奠定了Python今天在机器学习领域的地位：NumPy、scikit-learn和TensorFlow。</p>
+<div id="numpy" class="section level3">
+<h3>Numpy</h3>
 <ul>
-<li><a href="py_numpy_ndarray.html">矩阵运算</a>：<strong>numpy</strong></li>
-<li>机器学习：<strong>scikit-learn</strong>
+<li><a href="py_numpy_ndarray.html">多维数组</a>：<strong>ndarray</strong></li>
+<li><a href="py_numpy_ufunc.html">Universal function</a>：<strong>ufunc</strong></li>
+<li><a href="py_numpy_routines.html">常用函数</a>：<strong>routines</strong></li>
+<li>SciPy扩展
+<ul>
+<li>稀疏矩阵：<code>scipy.sparse</code>、<code>coo_matrix</code>、<code>csc_matrix</code>、<code>csr_matrix</code></li>
+<li>积分：<code>scipy.integrate</code></li>
+<li>插值：<code>scipy.interpolate</code></li>
+<li>最优化：<code>scipy.optimize</code></li>
+<li>统计：<code>scipy.stats</code></li>
+</ul></li>
+</ul>
+</div>
+<div id="scikit-learn" class="section level3">
+<h3>scikit-learn</h3>
 <ul>
 <li>估计器（Estimator）：分类器模型，主要包含两个方法<code>fit()</code>和<code>predict()</code>。</li>
 <li>转换器（Transformer）：数据预处理与数据转换，主要包含三个方法<code>fit()</code>、<code>transform()</code>、<code>fit_transform()</code>。</li>
-<li>流水线（Pipeline）：流水线的输入时一连串的数据挖掘步骤，最后一步必须是估计器，前几步是转换器；每步用元组（‘名称’，步骤）来表示。</li>
+<li>流水线（Pipeline）：流水线的输入是一连串的数据挖掘步骤，最后一步必须是估计器，前几步是转换器；每步用元组（‘名称’，步骤）来表示。</li>
 <li>预处理（Preprocessing）
 <ul>
 <li>规范化：<code>MinMaxScaler</code>，最大最小值规范化；<code>Normalizer</code>，每条数据各特征的和为1；<code>StandardScaler</code>，使各特征均值为0，方差为1</li>
@@ -228,12 +244,41 @@ $(document).ready(function () {
 <li>评估：<code>sklearn.metrics</code>，包括<code>accuracy_score</code>，<code>confusion_matrix</code>，<code>classification_report</code>，<code>precision_recall_fscore_support</code>等</li>
 <li>交叉验证：<code>sklearn.cross_validation</code></li>
 <li>网格搜索：<code>sklearn.grid_search</code></li>
-</ul></li>
-<li>深度学习：<strong>tensorflow</strong></li>
 </ul>
 </div>
-<div id="data-analysis" class="section level3">
-<h3>Data Analysis</h3>
+<div id="tensorflow" class="section level3">
+<h3>TensorFlow</h3>
+<p>TensorFlow是目前最流行的深度学习框架。我们先引用一段官网对于TensorFlow的介绍，来看一下Google对于它这个产品的定位。</p>
+<blockquote>
+<p>TensorFlow™ is an open source software library for numerical computation using data flow graphs. Nodes in the graph represent mathematical operations, while the graph edges represent the multidimensional data arrays (tensors) communicated between them. The flexible architecture allows you to deploy computation to one or more CPUs or GPUs in a desktop, server, or mobile device with a single API.</p>
+</blockquote>
+<p>上文并没有提到大红大紫的Deep Learning，而是聚焦在一个更广泛的科学计算应用领域。引文的关键词有：</p>
+<ul>
+<li>Numerical Computation：应用领域是数值计算，所以TensorFlow不仅能支持Deep Learning，还支持其他机器学习算法，甚至包括更一般的数值计算任务（如求导、积分、变换等）。</li>
+<li>Data Flow Graph：用graph来描述一个计算任务。</li>
+<li>Node：代表一个数学运算（mathmatical operations，简称ops），这里面包括了深度学习模型经常需要使用的ops。</li>
+<li>Edge：指向node的edge代表这个node的输入，从node引出来的edge代表这个node的输出，输入和输出都是multidimensional data arrays，即多维数组，在数学上又称之为tensor。这也是TensorFlow名字的由来，表示多维数组在graph中流动。</li>
+<li>CPUs/GPUs：支持CPU和GPU两种设备，支持单机和分布式计算。</li>
+</ul>
+<p>作者基于官方文档对TensorFlow进行了初步的学习，并对实践过程进行了记录：</p>
+<ul>
+<li><a href="https://segmentfault.com/a/1190000007484465">Hello World</a></li>
+<li><a href="https://segmentfault.com/a/1190000007966370">线性回归</a></li>
+<li><a href="https://segmentfault.com/a/1190000007969901">多元线性回归</a></li>
+<li><a href="https://segmentfault.com/a/1190000008011596">逻辑回归</a></li>
+<li><a href="http://yann.lecun.com/exdb/mnist/">MNIST数据集</a></li>
+<li><a href="https://segmentfault.com/a/1190000008110394">Softmax Regression</a></li>
+<li><a href="https://segmentfault.com/a/1190000008251179">CNN</a></li>
+<li><a href="https://segmentfault.com/a/1190000008346992">RNN</a></li>
+<li><a href="https://segmentfault.com/a/1190000008288459">Embeddings</a></li>
+<li><a href="https://segmentfault.com/a/1190000008302430">Tensor与Graph可视化</a></li>
+<li><a href="https://segmentfault.com/a/1190000008376957">分布式TensorFlow</a></li>
+</ul>
+<hr>
+</div>
+</div>
+<div id="python" class="section level2">
+<h2>Python与数据分析</h2>
 <ul>
 <li><a href="python_pandas.html">数据框</a>：<strong>pandas</strong></li>
 <li><a href="Python_datetime.html">日期时间处理</a>：<strong>datetime</strong></li>
@@ -244,29 +289,36 @@ $(document).ready(function () {
 <li><strong>bokeh</strong></li>
 </ul></li>
 </ul>
+<hr>
 </div>
-<div id="tool" class="section level3">
-<h3>Tool</h3>
+<div id="python" class="section level2">
+<h2>Python与工具开发</h2>
 <ul>
 <li>环境管理：<strong>virtualenv</strong></li>
 <li>命令行工具开发：<strong>click</strong></li>
 <li><a href="python_parallel.html">多进程、多线程并发</a>：<strong>multiprocessing</strong>，<strong>multiprocessing.dummy</strong></li>
 <li>单元测试：<strong>unittest</strong></li>
 <li>日志：<strong>logging</strong></li>
+<li><a href="python_zookeeper.html">服务主备</a>：<strong>zookeeper</strong></li>
+<li><a href="python_c_interface.html">将C代码变为Python库</a></li>
 </ul>
+<hr>
 </div>
-<div id="web-server" class="section level3">
-<h3>Web Server</h3>
+<div id="python" class="section level2">
+<h2>Python服务端开发</h2>
 <ul>
 <li>数据库：<strong>pymysql</strong></li>
 <li>ORM：<strong>SQLAlchemy</strong></li>
 <li>WSGI工具：<strong>werkzeug</strong></li>
 <li>HTML模板：<strong>jinja2</strong></li>
 <li>Web框架：<strong>flask</strong></li>
+<li><a href="python_socket.html">socket编程</a></li>
+<li><a href="python_wsgi.html">自行实现WSGI</a></li>
 </ul>
+<hr>
 </div>
-<div id="web-client" class="section level3">
-<h3>Web Client</h3>
+<div id="python" class="section level2">
+<h2>Python客户端开发</h2>
 <ul>
 <li>HTTP请求：<strong>requests</strong></li>
 <li><a href="Python_JSON.html">JSON解析</a>：<strong>json</strong></li>

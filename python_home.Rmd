@@ -1,31 +1,69 @@
 ---
-output:
-  html_document:
-    highlight: textmate
+output: html_document
 ---
 
 <br>
 
-### Machine Learning
-- [矩阵运算](py_numpy_ndarray.html)：**numpy**
-- 机器学习：**scikit-learn**
-    - 估计器（Estimator）：分类器模型，主要包含两个方法`fit()`和`predict()`。
-    - 转换器（Transformer）：数据预处理与数据转换，主要包含三个方法`fit()`、`transform()`、`fit_transform()`。
-    - 流水线（Pipeline）：流水线的输入时一连串的数据挖掘步骤，最后一步必须是估计器，前几步是转换器；每步用元组（'名称'，步骤）来表示。
-    - 预处理（Preprocessing）
-        + 规范化：`MinMaxScaler`，最大最小值规范化；`Normalizer`，每条数据各特征的和为1；`StandardScaler`，使各特征均值为0，方差为1
-        + 编码：`LabelEncoder`，将字符串类型的数据转化为整型；`OneHotEncoder`，特征用一个二进制数字来表示；`Binarizer`，将数值特征二值化；`MultiLabelBinarizer`，将多标签二值化。
-    - 特征（Feature）
-        + 特征抽取：`sklearn.feature_extraction`
-        + 特征选择：`sklearn.feature_selection`
-    - 降维：`sklearn.decomposition`
-    - 组合：`sklearn.ensemble`
-    - 评估：`sklearn.metrics`，包括`accuracy_score`，`confusion_matrix`，`classification_report`，`precision_recall_fscore_support`等
-    - 交叉验证：`sklearn.cross_validation`
-    - 网格搜索：`sklearn.grid_search`
-- 深度学习：**tensorflow**
+## Python与机器学习
+以下几个库奠定了Python今天在机器学习领域的地位：NumPy、scikit-learn和TensorFlow。
 
-### Data Analysis
+### Numpy
+- [多维数组](py_numpy_ndarray.html)：**ndarray**
+- [Universal function](py_numpy_ufunc.html)：**ufunc**
+- [常用函数](py_numpy_routines.html)：**routines**
+- SciPy扩展
+    - 稀疏矩阵：`scipy.sparse`、`coo_matrix`、`csc_matrix`、`csr_matrix`
+    - 积分：`scipy.integrate`
+    - 插值：`scipy.interpolate`
+    - 最优化：`scipy.optimize`
+    - 统计：`scipy.stats`
+
+### scikit-learn
+- 估计器（Estimator）：分类器模型，主要包含两个方法`fit()`和`predict()`。
+- 转换器（Transformer）：数据预处理与数据转换，主要包含三个方法`fit()`、`transform()`、`fit_transform()`。
+- 流水线（Pipeline）：流水线的输入是一连串的数据挖掘步骤，最后一步必须是估计器，前几步是转换器；每步用元组（'名称'，步骤）来表示。
+- 预处理（Preprocessing）
+    + 规范化：`MinMaxScaler`，最大最小值规范化；`Normalizer`，每条数据各特征的和为1；`StandardScaler`，使各特征均值为0，方差为1
+    + 编码：`LabelEncoder`，将字符串类型的数据转化为整型；`OneHotEncoder`，特征用一个二进制数字来表示；`Binarizer`，将数值特征二值化；`MultiLabelBinarizer`，将多标签二值化。
+- 特征（Feature）
+    + 特征抽取：`sklearn.feature_extraction`
+    + 特征选择：`sklearn.feature_selection`
+- 降维：`sklearn.decomposition`
+- 组合：`sklearn.ensemble`
+- 评估：`sklearn.metrics`，包括`accuracy_score`，`confusion_matrix`，`classification_report`，`precision_recall_fscore_support`等
+- 交叉验证：`sklearn.cross_validation`
+- 网格搜索：`sklearn.grid_search`
+
+### TensorFlow
+TensorFlow是目前最流行的深度学习框架。我们先引用一段官网对于TensorFlow的介绍，来看一下Google对于它这个产品的定位。
+
+> TensorFlow™ is an open source software library for numerical computation using data flow graphs. Nodes in the graph represent mathematical operations, while the graph edges represent the multidimensional data arrays (tensors) communicated between them. The flexible architecture allows you to deploy computation to one or more CPUs or GPUs in a desktop, server, or mobile device with a single API.
+
+上文并没有提到大红大紫的Deep Learning，而是聚焦在一个更广泛的科学计算应用领域。引文的关键词有：
+
+- Numerical Computation：应用领域是数值计算，所以TensorFlow不仅能支持Deep Learning，还支持其他机器学习算法，甚至包括更一般的数值计算任务（如求导、积分、变换等）。
+- Data Flow Graph：用graph来描述一个计算任务。
+- Node：代表一个数学运算（mathmatical operations，简称ops），这里面包括了深度学习模型经常需要使用的ops。
+- Edge：指向node的edge代表这个node的输入，从node引出来的edge代表这个node的输出，输入和输出都是multidimensional data arrays，即多维数组，在数学上又称之为tensor。这也是TensorFlow名字的由来，表示多维数组在graph中流动。
+- CPUs/GPUs：支持CPU和GPU两种设备，支持单机和分布式计算。
+
+作者基于官方文档对TensorFlow进行了初步的学习，并对实践过程进行了记录：
+
+- [Hello World](https://segmentfault.com/a/1190000007484465)
+- [线性回归](https://segmentfault.com/a/1190000007966370)
+- [多元线性回归](https://segmentfault.com/a/1190000007969901)
+- [逻辑回归](https://segmentfault.com/a/1190000008011596)
+- [MNIST数据集](http://yann.lecun.com/exdb/mnist/)
+- [Softmax Regression](https://segmentfault.com/a/1190000008110394)
+- [CNN](https://segmentfault.com/a/1190000008251179)
+- [RNN](https://segmentfault.com/a/1190000008346992)
+- [Embeddings](https://segmentfault.com/a/1190000008288459)
+- [Tensor与Graph可视化](https://segmentfault.com/a/1190000008302430)
+- [分布式TensorFlow](https://segmentfault.com/a/1190000008376957)
+
+<hr>
+
+## Python与数据分析
 - [数据框](python_pandas.html)：**pandas**
 - [日期时间处理](Python_datetime.html)：**datetime**
 - 统计绘图
@@ -33,21 +71,31 @@ output:
     - **seaborn**
     - **bokeh**
 
-### Tool
+<hr>
+
+## Python与工具开发
 - 环境管理：**virtualenv**
 - 命令行工具开发：**click**
 - [多进程、多线程并发](python_parallel.html)：**multiprocessing**，**multiprocessing.dummy**
 - 单元测试：**unittest**
 - 日志：**logging**
+- [服务主备](python_zookeeper.html)：**zookeeper**
+- [将C代码变为Python库](python_c_interface.html)
 
-### Web Server
+<hr>
+
+## Python服务端开发
 - 数据库：**pymysql**
 - ORM：**SQLAlchemy**
 - WSGI工具：**werkzeug**
 - HTML模板：**jinja2**
 - Web框架：**flask**
+- [socket编程](python_socket.html)
+- [自行实现WSGI](python_wsgi.html)
 
-### Web Client
+<hr>
+
+## Python客户端开发
 - HTTP请求：**requests**
 - [JSON解析](Python_JSON.html)：**json**
 - HTML解析：**beautifulsoup**

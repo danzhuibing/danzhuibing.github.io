@@ -17,5 +17,5 @@ output:
 
 ## 其他
 + [推荐系统-协同过滤算法](collaborative_filtering.html)
-
++ [时间序列-ARIMA](ml_arima_basic.html)
 
