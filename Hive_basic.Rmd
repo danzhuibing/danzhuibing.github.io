@@ -1,11 +1,10 @@
 ---
-title: "Hive基础"
+title: "三问Hive"
 output:
   html_document:
     toc: true
     toc_float: 
       collapsed: false
-    highlight: textmate
 ---
 
 ## 如何理解SQL与MapReduce之间的关系
@@ -50,18 +49,19 @@ FROM (
 
 ```  sql
 SELECT from_unixtime(unix_timestamp(time)-pmod(unix_timestamp(time),300)) as time,
-             adcode,
-             cpcode,
-             count(distinct eid) as users,
-             count(eid) as request_count
-FROM traffic_logs
+  adcode,
+  cpcode,
+  count(distinct eid) as users,
+  count(eid) as request_count
+FROM 
+  traffic_logs
 WHERE cpcode regexp '^[a-zA-Z0-9_]+$' 
-and status = 0 
-and (type = 1 or type = 2)
+  and status = 0 
+  and (type = 1 or type = 2)
 GROUP BY 
-from_unixtime(unix_timestamp(time)-pmod(unix_timestamp(time),300)),
-adcode,
-cpcode;
+  from_unixtime(unix_timestamp(time)-pmod(unix_timestamp(time),300)),
+  adcode,
+  cpcode;
 ```
 
 ## 留存分析
@@ -81,6 +81,7 @@ cpcode;
 参考答案：
 
 建立一张编码表：
+
 | code | region |
 | ----- | -------- | 
 | 1 |  1  |
@@ -91,30 +92,30 @@ cpcode;
 然后执行SQL：
 ``` sql
 select
-    sum(cnt1) as cnt1,
-    sum(cnt2) as cnt2,
-    sum(cnt3) as cnt3
+  sum(cnt1) as cnt1,
+  sum(cnt2) as cnt2,
+  sum(cnt3) as cnt3
 from (
-select
-    case when flag = 1 then 1
-    else 0 end as cnt1,
-    case when flag = 11 then 1
-    else 0 end as cnt2,
-    case when flag = 111 then 1
-    else 0 end as cnt3
-from(
-select 
-    a.car,
-    sum(b.code) as flag
-from 
-    car_region a
-join
-    code_region b
-on 
-    a.region = b.region
-group by
-      a.car
-) tmp
-) tmp2
+  select
+      case when flag = 1 then 1
+      else 0 end as cnt1,
+      case when flag = 11 then 1
+      else 0 end as cnt2,
+      case when flag = 111 then 1
+      else 0 end as cnt3
+  from(
+    select 
+        a.car,
+        sum(b.code) as flag
+    from 
+        car_region a
+    join
+        code_region b
+    on 
+        a.region = b.region
+    group by
+          a.car
+    ) tmp
+  ) tmp2
 ```
 

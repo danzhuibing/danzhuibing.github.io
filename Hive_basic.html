@@ -11,7 +11,7 @@
 
 
 
-<title>Hive基础</title>
+<title>三问Hive</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -303,7 +303,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Hive基础</h1>
+<h1 class="title toc-ignore">三问Hive</h1>
 
 </div>
 
@@ -404,18 +404,19 @@ FROM (
 <p>注：统计时要求统计status值为0，type值为1或2，cpcode为字母、数字、下划线组成的字符串</p>
 <p>参考答案：</p>
 <pre class="sql"><code>SELECT from_unixtime(unix_timestamp(time)-pmod(unix_timestamp(time),300)) as time,
-             adcode,
-             cpcode,
-             count(distinct eid) as users,
-             count(eid) as request_count
-FROM traffic_logs
+  adcode,
+  cpcode,
+  count(distinct eid) as users,
+  count(eid) as request_count
+FROM 
+  traffic_logs
 WHERE cpcode regexp &#39;^[a-zA-Z0-9_]+$&#39; 
-and status = 0 
-and (type = 1 or type = 2)
+  and status = 0 
+  and (type = 1 or type = 2)
 GROUP BY 
-from_unixtime(unix_timestamp(time)-pmod(unix_timestamp(time),300)),
-adcode,
-cpcode;</code></pre>
+  from_unixtime(unix_timestamp(time)-pmod(unix_timestamp(time),300)),
+  adcode,
+  cpcode;</code></pre>
 </div>
 <div class="section level2">
 <h2>留存分析</h2>
@@ -456,34 +457,56 @@ cpcode;</code></pre>
 </tbody>
 </table>
 <p>参考答案：</p>
-<p>建立一张编码表： | code | region | | —– | ——– | | 1 | 1 | | 10 | 2 | | 100 | 3 |</p>
+<p>建立一张编码表：</p>
+<table>
+<thead>
+<tr class="header">
+<th>code</th>
+<th>region</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>100</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
 <p>然后执行SQL：</p>
 <pre class="sql"><code>select
-    sum(cnt1) as cnt1,
-    sum(cnt2) as cnt2,
-    sum(cnt3) as cnt3
+  sum(cnt1) as cnt1,
+  sum(cnt2) as cnt2,
+  sum(cnt3) as cnt3
 from (
-select
-    case when flag = 1 then 1
-    else 0 end as cnt1,
-    case when flag = 11 then 1
-    else 0 end as cnt2,
-    case when flag = 111 then 1
-    else 0 end as cnt3
-from(
-select 
-    a.car,
-    sum(b.code) as flag
-from 
-    car_region a
-join
-    code_region b
-on 
-    a.region = b.region
-group by
-      a.car
-) tmp
-) tmp2</code></pre>
+  select
+      case when flag = 1 then 1
+      else 0 end as cnt1,
+      case when flag = 11 then 1
+      else 0 end as cnt2,
+      case when flag = 111 then 1
+      else 0 end as cnt3
+  from(
+    select 
+        a.car,
+        sum(b.code) as flag
+    from 
+        car_region a
+    join
+        code_region b
+    on 
+        a.region = b.region
+    group by
+          a.car
+    ) tmp
+  ) tmp2</code></pre>
 </div>
 
 

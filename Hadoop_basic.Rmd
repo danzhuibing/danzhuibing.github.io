@@ -1,19 +1,74 @@
 ---
-title: "Hadoop基础"
+title: "五问Hadoop"
 output:
   html_document:
     toc: true
     toc_float: 
       collapsed: false
-    highlight: textmate
 ---
 
-# 详述shuffle过程
+## 听说你会Hadoop，写个Word Count让我看看
+
+**mapper.py**
+
+```{python,eval=F}
+import sys
+
+for line in sys.stdin:
+  flds = line.rstrip().split('\t')
+  for item in flds:
+    print item
+```
+
+**reducer.py**
+
+```{python,eval=F}
+import sys
+
+pred_word = None
+pred_cnt = 0
+
+for word in sys.stdin:
+  if pred_word == None:
+    pred_word = word
+  if pred_word == word:
+    pred_cnt += 1
+  else:
+    print "\t".join([pred_word, pred_cnt])
+    pred_word = word
+    pred_cnt = 1
+
+# last word
+print "\t".join([pred_word, pred_cnt])
+```
+
+**run.sh**
+
+```{shell,eval=F}
+bin/hadoop jar hadoop_streaming.jar \
+    -files mapper.py,reducer.py \
+    -D stream.num.map.output.key.fields=1 \
+    -input /xxx/ooo/setences.txt \
+    -output /xxx/ooo/wordcnt.txt \
+    -mapper "python mapper.py" \
+    -reducer "python reducer.py"
+```
+
+## 什么是shuffle，详细阐述下
 Map阶段分为Read-Map-Collect-Spill-Merge。Read读取数据，拆分为split，对每个Split执行Map函数，然后Map的输出进入Collect阶段。map的输出是(key, value), collect调用partitioner，获得输出(partition, key, value)，存入环形缓冲区，并按照key进行快速排序，如果有combiner，按照key进行聚合。缓冲区存储达到阈值时，发生spill，写入磁盘。一次spill吐出一个临时文件，信息还包含每个分区在spill文件中的偏移量，便于快速获取需要的分区。merge阶段，将多个spill临时文件进行归并排序，生成一个大文件，因此每个mapper最后输出一个文件。
 
 Reducer阶段分为Copy-Sort-Reduce。Reducer会定期查看哪些mapper已经完成，并将其output位置放在scheduledCoppies列表里，然后启动多个MapOutputCopier线程，去ScheduledCopies列表里指定的远程位置去拷贝数据。Reducer只拷贝map输出文件里属于自己处理的partition，拷贝的数据存在内存中，放不下则生成文件。Sort阶段，对多个mapper拷贝来的结果进行归并排序，保证全局有序。然后将排序后的结果喂给reduce函数处理，保存处理结果至HDFS。
 
-# 使用MapReduce实现join的方法
+Shuffle过程就是Collect+Spill+Merge+Copy+Sort，由Hadoop框架实现。这样用户只需要关注业务逻辑相关的map逻辑和reduce逻辑。
+
+## 看来有两把刷子，怎么控制reducer数和mapper数
+reducer的个数用-D mapred.reduce.tasks指定。
+mapper的个数由split的数量决定，split的数量由splitSize决定，splitSize=max[minSize, min(maxSize, blockSize)]. 此外，如果文件是压缩格式，也会影响splitSize，gz压缩文件不可以进行分割。
+
+## 可以可以，再跟我说说什么叫二级排序
+二级排序是指Collect过程会在map输出结果的key前加入partition，reduce阶段首先根据自己负责的partition抓取map端的数据，然后再按照key进行排序。
+
+## 厉害，怎么使用MapReduce实现下面的join语句
 
 ``` sql
 select 
@@ -35,7 +90,8 @@ on
 Hadoop Streaming的参考实现：
 
 **mapper.py**
-``` python
+
+``` {python,eval=F}
 import os
 import sys
 def read_input(file):
@@ -61,7 +117,8 @@ if __name__ == "__main__":
 ```
 
 **reducer.py**
-``` python
+
+``` {python,eval=F}
 from operator import itemgetter
 from itertools import groupby
 import sys
@@ -85,8 +142,10 @@ def main(separator='\t'):
 if __name__ == "__main__":
     main()
 ```
+
 **run_hadoop.sh**
-``` shell
+
+``` {shell,eval=F}
 #!/bin/bash
 CUR_DIR=$(cd `dirname $0`;pwd)
 JAR_PATH=".xxxxx/hadoop-streaming.jar"
@@ -106,7 +165,5 @@ bin/hadoop jar $JAR_PATH \
     -reducer "python reducer.py"
 ```
 
-# 怎么控制Mapper和Reducer的个数
-reducer的个数用-D mapred.reduce.tasks指定。
-mapper的个数由split的数量决定，split的数量由splitSize决定，splitSize=max[minSize, min(maxSize, blockSize)]. 此外，如果文件是压缩格式，也会影响splitSize，gz压缩文件不可以进行分割。
 
+恭喜你，Hadoop已过关。

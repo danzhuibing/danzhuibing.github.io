@@ -7,8 +7,8 @@ output:
 
 ## 大数据框架
 
-+ [Hadoop](Hadoop_basic.html)
-+ [Hive](Hive_basic.html)
++ [五问Hadoop](Hadoop_basic.html)
++ [三问Hive](Hive_basic.html)
 + [Storm](Storm_basic.html)
 + [Spark](Spark_basic.html)
 + [HBase](hbase_basic.html)
