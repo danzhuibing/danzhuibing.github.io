@@ -418,95 +418,34 @@ GROUP BY
   adcode,
   cpcode;</code></pre>
 </div>
-<div class="section level2">
-<h2>留存分析</h2>
-<p>高德的数据能够得到每辆车经过的区域。现在我们对3个区域感兴趣，想求出以下数字：经过区域1的车数，同时经过区域1和2的车数，同时经过区域1、2、3的车数，怎么办？</p>
-<p>输入示例：</p>
-<table>
-<thead>
-<tr class="header">
-<th>car</th>
-<th>region</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>车辆1</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td>车辆2</td>
-<td>2</td>
-</tr>
-<tr class="odd">
-<td>车辆1</td>
-<td>2</td>
-</tr>
-<tr class="even">
-<td>车辆3</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td>车辆1</td>
-<td>3</td>
-</tr>
-<tr class="even">
-<td>车辆3</td>
-<td>2</td>
-</tr>
-</tbody>
-</table>
-<p>参考答案：</p>
-<p>建立一张编码表：</p>
-<table>
-<thead>
-<tr class="header">
-<th>code</th>
-<th>region</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td>10</td>
-<td>2</td>
-</tr>
-<tr class="odd">
-<td>100</td>
-<td>3</td>
-</tr>
-</tbody>
-</table>
-<p>然后执行SQL：</p>
-<pre class="sql"><code>select
-  sum(cnt1) as cnt1,
-  sum(cnt2) as cnt2,
-  sum(cnt3) as cnt3
-from (
-  select
-      case when flag = 1 then 1
-      else 0 end as cnt1,
-      case when flag = 11 then 1
-      else 0 end as cnt2,
-      case when flag = 111 then 1
-      else 0 end as cnt3
-  from(
-    select 
-        a.car,
-        sum(b.code) as flag
-    from 
-        car_region a
-    join
-        code_region b
-    on 
-        a.region = b.region
-    group by
-          a.car
-    ) tmp
-  ) tmp2</code></pre>
+<div id="hive" class="section level2">
+<h2>Hive调优经验</h2>
+<div id="join" class="section level3">
+<h3>Join长尾调优</h3>
+<div id="1" class="section level4">
+<h4>情形1：小表长尾</h4>
+<p>Join倾斜时，如果某路输入比较小，可以采用Mapjoin避免倾斜。Mapjoin的原理是将Join操作提前到Map端执行，这样可以避免因为分发Key不均匀导致数据倾斜。但是Mapjoin的使用有限制，必须是Join中的从表比较小才可用。所谓从表，即Left Outer Join中的右表，或者Right Outer Join中的左表。</p>
+</div>
+<div id="2" class="section level4">
+<h4>情形2：空值长尾</h4>
+<p>做left outer join时，左表存在大量空值，聚集到了一个reducer处。通过<code>coalesce(left_table.key, rand()*9999)</code>将key为空的情况下赋予随机值，来避免空值集中。</p>
+</div>
+<div id="3" class="section level4">
+<h4>情形3：热点值长尾</h4>
+<p>从连接表a中取出热点值，建立临时表t。 a表mapjoin表t，取出非热点值的部分，与表b连接输出r1。此时因为无热点值，这部分不再存在长尾问题。</p>
+<p>用mapjoin取出表a的热点值部分得到c，用mapjoin取出表b的热点值部分得到d，c再mapjoin表d，得到热点值的输出r2.</p>
+<p>r1和r2 union all得到最后的结果。</p>
+</div>
+</div>
+<div id="map" class="section level3">
+<h3>Map端长尾</h3>
+<p>Map端读数据时，由于文件大小分布不均匀，一些map任务读取并处理的数据特别多，一些map任务处理的数据特别少，造成map端长尾。这种情形没有特别好的方法，只能调节splitsize来增加mapper数量，让数据分片更小，以期望获得更均匀的分配。</p>
+</div>
+<div id="reduce" class="section level3">
+<h3>Reduce端长尾</h3>
+<p>典型case是Multi Distinct。一个distinct的实现是将group by的key和distinct的字段合并在一起作为mapreduce的key，将group by的key作为partition的key，然后在reduce端去重计数即可。而Multi Distinct，map端的一行数据就会输出n行。</p>
+<p>可以将multi distinct改为两层group by，第一层的group by的key为multi distinct group by的key与distinct的key，第二层为multi distinct的group by的key。</p>
+</div>
 </div>
 
 
