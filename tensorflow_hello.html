@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Hello TesorFlow</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Hello TesorFlow</h1>
+
+</div>
+
+
+<div id="tensorflow" class="section level2">
+<h2>TensorFlow有多火？</h2>
+<p>2015年11月，Google发布深度学习框架TensorFlow并宣布开源。一年多来，TensorFlow一骑绝尘，已然成为深度学习的代名词，将其他深度学习框架Theano、Caffe、Torch甩出了好几个身段。我们看一下StackOverflow上各个框架的提问数来直观地感受一下TensorFlow的火爆：一大波数据挖掘工程师正走在成为掏粪男孩（TF Boy）的路上！</p>
+<div class="figure">
+<img src="images/tf_trend.png" />
+
+</div>
+<p>本文的目的是帮助懂一些机器学习或统计学的朋友理解深度学习与TensorFlow的关键概念和用法。</p>
+</div>
+<div id="hello-linear-regression" class="section level2">
+<h2>Hello Linear Regression</h2>
+<p>TensorFlow官网的Get Started教程，演示了如何使用TensorFlow的Python API训练线性回归模型。这个例子特别好：线性回归模型大家都很熟，学这段代码不用纠结于高大上的深度学习模型理论；但是TensorFlow的精髓又都包含在这里面。</p>
+<pre class="python"><code>#-*- coding=utf-8 -*-
+
+import tensorflow as tf
+import numpy as np
+
+# 阶段1：定义计算图
+# 创建线性回归输入数据
+x_data = np.random.rand(100).astype(np.float32)
+y_data = x_data * 0.1 + 0.3
+
+# 定义待学习参数：W为斜率，b为截距
+W = tf.Variable(tf.random_uniform([1], -1.0, 1.0))
+b = tf.Variable(tf.zeros([1]))
+
+# 定义线性回归模型
+y = W * x_data + b
+
+# 定义损失（目标函数）
+loss = tf.reduce_mean(tf.square(y - y_data))
+
+# 定义参数求解器，代表一次参数更新操作
+optimizer = tf.train.GradientDescentOptimizer(0.5)
+train = optimizer.minimize(loss)
+
+# 定义变量初始化操作
+init = tf.global_variables_initializer()
+
+# 阶段2：执行计算图
+sess = tf.Session()
+sess.run(init)
+
+for step in range(201):
+    # 执行参数更新操作    
+    sess.run(train)
+    if step % 20 == 0:
+        print(step, sess.run(W), sess.run(b))</code></pre>
+</div>
+<div class="section level2">
+<h2>基本概念</h2>
+<p>TensorFlow使用数据流图（Data Flow Graph）来描述一个深度学习任务。图由节点（Node）和边（Edge）组成；每个节点代表一个数学运算（简称op），指向一个节点的边代表该节点的输入，从节点引出来的边代表该节点的输出；输入和输出都是多维数组（Multidimensional Array），数学上又称Tensor。这是TensorFlow名字的由来。</p>
+</div>
+<div class="section level2">
+<h2>双阶段编程模式</h2>
+<p>从代码里，我们发现，TensorFlow的代码往往由两个阶段组成：</p>
+<blockquote>
+<p>A construction phase, that assembles a graph, and an execution phase that uses a session to execute ops in the graph.</p>
+</blockquote>
+<p>TensorFlow通过<code>tf.Session</code>类，将两个阶段连接起来，作用是把在Python里定义好的数据流图部署到设备（Devices，如CPU、GPU），并提供具体执行这些op的方法。</p>
+<p>为什么要这么设计呢？考虑到Python运行性能较低，我们在执行数值计算的时候，都会尽量使用非Python语言编写的代码，比如使用NumPy这种预编译好的C代码来做矩阵运算。在Python内部计算环境和外部计算环境（如NumPy）切换需要花费的时间称为overhead cost。对于一个简单运算，比如矩阵运算，从Python环境切换到Numpy，Numpy运算得到结果，再从Numpy切回Python，这个成本，比纯粹在Python内部做同类运算的成本要低很多。但是，一个复杂数值运算由多个基本运算组合而成，如果每个基本运算来一次这种环境切换，overhead cost就不可忽视了。为了减少来回的环境切换，TensorFlow的做法是，先在Python内定义好整个Graph（即一套复杂的数值运算集合），然后在Python外运行整个完整的Graph。因此TensorFlow的代码结构也就对应为两个阶段了。</p>
+<p>下面我们来逐行解读一下这段代码。</p>
+<div id="1graph" class="section level3">
+<h3>阶段1：定义Graph</h3>
+<pre class="python"><code>W = tf.Variable(tf.random_uniform([1], -1.0, 1.0))
+b = tf.Variable(tf.zeros([1]))</code></pre>
+<p><code>tf.Variable</code>是TensorFlow的一个类，是取值可变的Tensor，构造函数的第一个参数是初始值initial_value。</p>
+<blockquote>
+<p>initial_value: A Tensor, or Python object convertible to a Tensor, which is the initial value for the Variable.</p>
+</blockquote>
+<p><code>tf.zeros(shape, dtype=tf.float32, name=None)</code>是一个op，用于生成取值全是0的Constant Value Tensor。</p>
+<p><code>tf.random_uniform(shape, minval=0, maxval=None, dtype=tf.float32, seed=None, name=None)</code>是一个op，用于生成服从uniform distribution的Random Tensor。</p>
+<pre class="python"><code>y = W * x_data + b</code></pre>
+<p>y是线性回归运算产生的Tensor。运算符*和+，等价为<code>tf.multiple()</code>和<code>tf.add()</code>这两个TensorFlow提供的数学类ops。<code>tf.multiple()</code>的输入是W和x_data；W是Variable，属于Tensor，可以直接作为op的输入；x_data是numpy的多维数组ndarray，TensorFlow的ops接收到ndarray的输入时，会将其转化为tensor。<code>tf.multiple()</code>的输出是一个tensor，和b一起交给<code>tf.add()</code>，得到输出结果y。</p>
+<p>至此，线性回归的模型已经建立好，但这只是Graph的一部分，还需要定义损失。</p>
+<pre class="python"><code>loss = tf.reduce_mean(tf.square(y - y_data))</code></pre>
+<p>loss是最小二乘法需要的目标函数，是一个Tensor，具体的op不再赘述。</p>
+<pre class="python"><code>optimizer = tf.train.GradientDescentOptimizer(0.5)
+train = optimizer.minimize(loss)</code></pre>
+<p>这一步指定求解器，并设定求解器的最小化目标为损失。train代表了求解器执行一次的输出Tensor。这里我们使用了梯度下降求解器，每一步会对输入loss求一次梯度，然后将loss里Variable类型的Tensor按照梯度更新取值。</p>
+<pre class="python"><code>init = tf.global_variables_initializer()</code></pre>
+<p>定义Graph阶段的代码，只是在Python内定义了Graph的结构，并不会真正执行。在执行Graph阶段，所有的变量要先进行初始化。每个变量可以单独初始化，但这样做有些繁琐，所以TensorFlow提供了一个方便的函数<code>tf.global_variables_initializer()</code>可以在Graph中添加一个初始化所有变量的op。</p>
+</div>
+<div id="2graph" class="section level3">
+<h3>阶段2：执行Graph</h3>
+<pre class="python"><code>sess = tf.Session()
+sess.run(init)</code></pre>
+<p>Session是连接两个阶段的纽带。在进行任何计算以前，先给Variable赋初始值。</p>
+<pre class="python"><code>for step in range(201):
+    sess.run(train)</code></pre>
+<p>train操作对应梯度下降法的一步迭代。当step为0时，train里的variable取值为初始值，根据初始值可以计算出梯度，然后将初始值根据梯度更新为更好的取值；当step为1时，train里的variable为上一步更新的值，根据这一步的值可以计算出一个新的梯度，然后将variable的取值更新为更好的取值；以此类推，直到达到最大迭代次数。</p>
+<pre class="python"><code>print(step, sess.run(W), sess.run(b))</code></pre>
+<p>如果我们将<code>sess.run()</code>赋值给Python环境的变量，或者传给Python环境的print，可以fetch执行op的输出Tensor取值，这些取值会转化为numpy的ndarray结构。因此，这就需要一次环境的切换，会增加overhead cost。所以我们一般会每隔一定步骤才fetch一下计算结果，以减少时间开销。</p>
+</div>
+</div>
+<div class="section level2">
+<h2>小结</h2>
+<p>TensorFlow使用数据流图表示深度学习模型，节点是操作，边是Tensor。TensorFlow的代码分为两个阶段：第一阶段定义图，包括定义变量、模型、损失、训练op、初始化op等；第二阶段执行图，创建Session，包括执行初始化op，执行训练op，获取被更新的变量取值等。TensorFlow训练线性回归的代码，麻雀虽小，五脏俱全，只需要根据使用的模型替换掉线性回归模型那一行代码即可。入了门的TF Boy们，怎么进一步提高自己在这方面的技能呢？一是去钻研高大上的深度学习理论，二是去学习TensorFlow工程部署上的一些API（字符串处理、Tensor变换、保存变量、读取文件、分布式等），三是在项目中积累实战经验。祝各位TF Boy们掏粪快乐！</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
