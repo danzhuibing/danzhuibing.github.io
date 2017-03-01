@@ -49,7 +49,7 @@ TensorFlow是目前最流行的深度学习框架。我们先引用一段官网�
 
 作者基于官方文档对TensorFlow进行了初步的学习，并对实践过程进行了记录：
 
-- [Hello World](https://segmentfault.com/a/1190000007484465)
+- [Hello World](tensorflow_hello.html)
 - [线性回归](https://segmentfault.com/a/1190000007966370)
 - [多元线性回归](https://segmentfault.com/a/1190000007969901)
 - [逻辑回归](https://segmentfault.com/a/1190000008011596)
