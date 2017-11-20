@@ -2,3 +2,7 @@ base
 ggplot2
 lubridate
 jsonlite
+rpart
+rpart.plot
+dplyr
+bindrcpp

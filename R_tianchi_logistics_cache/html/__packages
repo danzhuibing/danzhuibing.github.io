@@ -1,13 +1,16 @@
 base
 lubridate
 jsonlite
+rpart
+rpart.plot
+dplyr
+bindrcpp
 DT
 ggplot2
 plotly
 readxl
 shiny
 shinyjs
-dplyr
 tidyr
 stringr
 scales

@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -206,17 +206,18 @@ $(document).ready(function () {
 <p><br></p>
 <div class="section level3">
 <h3>关于作者</h3>
-<p>我是丹追兵，真名陈水平，2014年硕士毕业加入阿里，从事算法工程师的工作，主要职责是基于高德地图驾车导航与出租车的GPS轨迹，将大数据工具、机器学习算法、数据可视化技术三者结合，提供改善用户出行体验的解决方案。</p>
+<p>我是陈水平，网名<a href="https://segmentfault.com/blog/datalab">丹追兵</a>，2014年硕士毕业加入阿里，从事算法工程师的工作，主要职责是基于高德地图驾车导航的GPS轨迹，将大数据工具、机器学习算法、数据可视化技术三者结合，提供改善用户出行体验的解决方案；2017年加入美团外卖，负责外卖骑手GPS轨迹数据仓库的搭建与数据挖掘算法研发。</p>
 <p>这个网站记录了我在算法领域的一些学习笔记和心得，希望对大家有所帮助。</p>
+<p>我的邮箱是 <a href="mailto:csp19890128@qq.com">csp19890128@qq.com</a>，有问题可以发邮件与我取得联系。目前（2017.11至今）我正在招聘若干个骑手轨迹挖掘方向的算法工程师和实习生，有意者可以发简历到我的邮箱。</p>
 <hr>
 <p>我擅长的研究领域包括以下几个方面：</p>
 <ul>
+<li>驾车规划路权学习：基于用户实走路线与驾车规划路线的差异，学习道路和路口的通行成本，改善驾车规划质量，降低用户偏航率。</li>
 <li>交通事件挖掘：基于实时道路速度与道路流量，及时挖掘可能的交通事件，如施工、大雾封闭、体育赛事封路、交通事故等。</li>
 <li>短期路况预测：根据历史和实时路况预测未来1小时的路况，基于未来路况推算导航规划路线的旅行时间（ETA）。</li>
 <li>城市交通分析：基于海量历史轨迹与实时路况提供以全国拥堵城市排行榜为核心的<a href="http://report.amap.com">权威报告</a>。</li>
-<li>小区选房行为建模：基于购房记录，应用离散选择模型，分析住宅特征的价值与人群偏好。</li>
-<li>铁路行程规划：对铁路时刻表进行时空图建模，开发高性能Dijkstra、A*等最短路算法生成铁路出行行程。</li>
-<li>酒店推荐系统：基于用户酒店点击行为设计协同过滤算法搭建酒店推荐系统。</li>
+<li>小区选房行为建模：基于购房记录，应用离散选择模型，分析住宅特征的价值与人群偏好，发表SSCI一篇。</li>
+<li>铁路行程规划：对铁路时刻表进行时空图建模，开发高性能Dijkstra、A*等最短路算法生成铁路行程，发表SCI一篇。</li>
 </ul>
 <p>我最熟悉的编程语言是Python和R，因为阿里技术环境的需要对Java也有一些研究。一般来讲，我用Python做数据清洗、后端服务、机器学习算法；用R做文档记录、数据分析与可视化、成果展示与分享；用Java做线上算法系统的后端开发。由于接触的数据量在TB、PB级别，对Hadoop和阿里云ODPS有比较深入的研究。我设计的算法需要在后台提供实时的运算服务，因此对Spark和Storm也有比较多的实践经验。</p>
 <hr>
@@ -224,7 +225,8 @@ $(document).ready(function () {
 <div class="section level3">
 <h3>工作经历</h3>
 <ul>
-<li>阿里移动事业群-高德地图-出行业务中心-机器学习，资深算法工程师</li>
+<li>美团外卖-配送技术部-算法策略组， P3-1</li>
+<li>阿里移动事业群-高德地图-出行业务中心-机器学习研发部，P6</li>
 </ul>
 <hr>
 </div>
@@ -241,11 +243,6 @@ $(document).ready(function () {
 <h3>发表论文</h3>
 <p>Jiang, H. and <strong>S. Chen</strong>, Dwelling Unit Choice in a Condominium Complex: Analysis of Willingness to Pay and Preference Heterogeneity, <strong>Urban Studies</strong>, v. 53, n. 11, pp. 2273-2292, 2016. （居民小区内的住宅选择:对支付意愿及偏好异质性的分析, SSCI）<a href="files/paper_dwelling_urban_studies.pdf">下载</a></p>
 <p>Jin, W., <strong>S. Chen</strong> and H. Jiang, Finding the K Shortest Paths in a Time-Schedule Network with Constraints on Arcs, <strong>Computers &amp; Operations Research</strong>, v. 40 n. 12, pp. 2975-2982, 2013. （时刻表网络下的 K 最短路算法, SCI）<a href="files/paper_kpath_computer_operation_research.pdf">下载</a></p>
-</div>
-<div class="section level3">
-<h3>公开资料</h3>
-<p>ECFI Hamburg 2015（欧洲未来互联网大会）：<a href="http://euchina-ict.eu/choice-workshop-exploring-fiware-opportunities-towards-china-hamburg-november-6-2015/">Big Data in Urban Traffic</a></p>
-<p>RONG系列论坛之三——大数据与未来人居研讨会：<a href="http://www.360doc.com/content/15/0608/15/20625606_476568022.shtml">高德交通大数据在城市交通分析方面的应用</a></p>
 </div>
 
 
@@ -271,7 +268,7 @@ $(document).ready(function () {
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

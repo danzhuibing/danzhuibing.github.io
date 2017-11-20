@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -23,7 +23,6 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-1.1/highlight.js"></script>
 
@@ -161,14 +160,6 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
-<style type="text/css">
-.code-folding-btn { margin-bottom: 4px; }
-</style>
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("show" === "show");
-});
-</script>
 
 
 
@@ -309,14 +300,6 @@ div.tocify {
 </div><!--/.navbar -->
 
 <div class="fluid-row" id="header">
-
-<div class="btn-group pull-right">
-<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu" style="min-width: 50px;">
-<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
-<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
-</ul>
-</div>
 
 
 
@@ -462,10 +445,10 @@ a[&#39;name&#39;][1]
 end = time.clock()
 print &quot;a[&#39;name&#39;][1] cost time: %f&quot; % (end-start)
 </code></pre>
-<pre><code>## a[1] cost time: 0.000013
-## a[&#39;name&#39;] cost time: 0.000026
-## a[1][&#39;name&#39;] cost time: 0.000031
-## a[&#39;name&#39;][1] cost time: 0.000005</code></pre>
+<pre><code>## a[1] cost time: 0.000007
+## a[&#39;name&#39;] cost time: 0.000006
+## a[1][&#39;name&#39;] cost time: 0.000011
+## a[&#39;name&#39;][1] cost time: 0.000003</code></pre>
 <p>从上面的结果，我们发现，获取相同的数据有多种操作，不同的操作性能差别很大。我做了一个推测，纯粹是瞎猜：numpy在建立结构化数组时，将整个结构体连续存储在一起，即按行存储，因此<code>a[1]</code>的速度最快；但是为了保证提取列的效率，对<code>a['name']</code>建立了索引，因此<code>a['name']</code>的效率也很高；但是这个索引只对整个a起作用，如果输入只有a的一部分，仍然需要遍历整个a，去提取出对应的数据，因此<code>a[1]['name']</code>比<code>a['name'][1]</code>的效率差很多。</p>
 </div>
 <div class="section level1">
@@ -569,7 +552,7 @@ $(document).ready(function () {
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

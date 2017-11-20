@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -418,10 +418,10 @@ printcp(cfit)</code></pre>
 ## 
 ##         CP nsplit rel error  xerror    xstd
 ## 1 0.104938      0   1.00000 1.00000 0.10802
-## 2 0.055556      3   0.68519 1.09259 0.10980
-## 3 0.027778      4   0.62963 0.88889 0.10511
-## 4 0.018519      6   0.57407 0.88889 0.10511
-## 5 0.010000      7   0.55556 0.88889 0.10511</code></pre>
+## 2 0.055556      3   0.68519 1.12963 0.11036
+## 3 0.027778      4   0.62963 0.92593 0.10618
+## 4 0.018519      6   0.57407 0.92593 0.10618
+## 5 0.010000      7   0.55556 0.96296 0.10715</code></pre>
 <pre class="r"><code>## 使用1-SE法则选出最优cp值:找到xerror最小的行，得到误差阈值为该行的xerror+xstd
 ## 找到所有xerror小于这个阈值的行，取其中最大值的上限为prune的阈值
 cfit2 &lt;- prune(cfit, cp=0.03)
@@ -454,7 +454,7 @@ $(document).ready(function () {
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
