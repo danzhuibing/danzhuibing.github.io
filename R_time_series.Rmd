@@ -1,0 +1,47 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## xts数据模型
+xts库的数据模型核心就是zoo库的数据模型，由两个部分支持，一是数据部分（向量、矩阵），二是数据索引（日期时间类型）。xts相比zoo而言在数据模型上的改进是支持更多种的日期时间类型。此外，xts还支持对数据添加属性，因此可以对更复杂的对象进行表达。
+
+## 创建xts
+
+R的主要数据类型是数据框，因此我们只需要掌握从数据框转变为xts的方法就可以应对绝大多数的情况。
+
+```{r, eval=F}
+library(xts)
+# 假设有一个数据框df，列1为时间戳ts，列2为时序取值value1，列3为时序取值value2
+sample <- xts(x=df[, c("value1", "value2")], order.by=as.POSIXct(df$ts, origin="1970-01-01"))
+# 获取时间索引
+index(sample)
+# 获取数据
+coredata(sample)
+align.time(sample, n=600)  # 按10分钟规整
+make.index.unique(sample,drop=TRUE)  # 删除重复时刻
+```
+
+对于日期时间的操作其实不需要用xts的API，直接用lubridate库的API更方便。
+
+## 可视化dygraphs
+
+```{r}
+library(dygraphs)
+lungDeaths <- cbind(mdeaths, fdeaths)
+
+dygraph(lungDeaths) %>%
+  dySeries("mdeaths", label = "Male") %>%
+  dySeries("fdeaths", label = "Female") %>%
+  dyOptions(stackedGraph = TRUE, 
+            colors = RColorBrewer::brewer.pal(3, "Set2"),
+            stepPlot = TRUE,
+            fillGraph = TRUE, fillAlpha = 0.4,
+            drawPoints = TRUE, pointSize = 2) %>%
+  dyRangeSelector(height = 20)
+```
+
+
