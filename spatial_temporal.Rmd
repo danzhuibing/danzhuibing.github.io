@@ -1,0 +1,33 @@
+---
+output:
+  html_document
+---
+
+<br>
+
+## 时空数据挖掘
+
+### 空间数据规格
+
+- 数据规格：shp, tab, WKB/WKT, GeoJSON/TopoJSON, PostGIS...
+- 工具库：GDAL(C/C++), GeoTools(Java), pyshp(Python), rgdal(R), sf(R)
+
+### 空间计算
+- 工具库：GEOS(C/C++), JTS(Java), shapely(Python), rgeos(R) 
+
+
+### 空间索引
+简单总结空间索引技术，就是一句话：点数据用Geohash，线、面数据用R树。下面是zhanlijun（美团->阿里）的一系列经典博文：
+
+- [Geohash算法原理](http://www.cnblogs.com/LBSer/p/3310455.html)
+- [空间索引1](http://www.cnblogs.com/LBSer/p/3392491.html)
+- [空间索引2](http://www.cnblogs.com/LBSer/p/3403933.html)
+- [地理围栏技术：判断点是否落在某多边形围栏内部](http://www.cnblogs.com/LBSer/p/4471742.html)
+
+
+### 空间可视化
+
+- [瓦片地图原理](https://segmentfault.com/a/1190000011276788)
+- [R空间可视化入门](spatial_analysis_R_vis.html)
+- [R绘制Geohash块](geohash_R_vis.html)
+- 工具库/软件：Mapnik(C++, Python), GeoServer(Java), Leaflet(Javascript), Leaflet for R(R), folium(Python)

@@ -7,6 +7,8 @@ navbar:
       href: bigdata_home.html
     - text: "Machine Learning"
       href: ml_home.html
+    - text: "Spatial-Temporal Data Mining"
+      href: spatial_temporal.html
     - text: "Python"
       href: python_home.html
     - text: "R"
