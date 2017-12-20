@@ -15,6 +15,11 @@ output:
 + [KMeans](kmeans.html)：基于划分的聚类
 + DBSCAN：基于密度的聚类
 
+## 深度学习
+
++ [Skip-Gram Model原理](http://mccormickml.com/2016/04/19/word2vec-tutorial-the-skip-gram-model/)
++ [word2vec_basic.py](word2vec_basic.py.html)
+
 ## 其他
 + [推荐系统-协同过滤算法](collaborative_filtering.html)
 + [时间序列-ARIMA](ml_arima_basic.html)
