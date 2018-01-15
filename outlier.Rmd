@@ -1,0 +1,40 @@
+---
+title: "异常点识别"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
+    highlight: textmate
+---
+
+
+## 基本概念
+
+- novelty detection: 训练数据无异常点，目的是在测试数据中识别异常点
+- outlier detection: 训练数据含异常点，目的是抛弃训练数据中的异常点
+
+## Isolation Forest
+从样本数据中随机选取`n`个观测，用随机森林将这些观测区别开。建树过程中，随机选取一个特征，然后从该特征的最大值和最小值之间随机选择一个值进行拆分。对于一个样本，如果将它区分出来需要经历的特征拆分数量越多，即树深越大，说明越可能是正常值。
+
+scikit-learn的默认设置参数如下：
+
+- `n_estimators`：随机森林有几棵树，默认是100棵
+- `max_samples`：训练每棵树用多少样本，默认取值是`min(256, n_samples)`
+- `contamination`：训练数据中异常点的占比，默认取值是0.1；该值用于确认异常值判定的阈值
+- `max_features`：每棵树使用的特征树，默认使用所有特征
+- `bootstrap`：是否有放回抽样，默认False
+
+
+## Local Outlier Factor (LOF)
+LOF算法对每个样本计算一个分数，该分数的含义是相比邻居而言该样本密度的偏差。如果一个样本相比邻居的密度比较低，该样本的异常程度就比较高了。
+
+实践中，LOF分数=k近邻的密度均值/观测自身的密度。正常样本的分数应该接近1，异常样本的密度会明显小。
+
+
+关于k近邻的k的设置原则如下：
+
+> The number k of neighbors considered, (alias parameter n_neighbors) is typically chosen 1) greater than the minimum number of objects a cluster has to contain, so that other objects can be local outliers relative to this cluster, and 2) smaller than the maximum number of close by objects that can potentially be local outliers. In practice, such informations are generally not available, and taking n_neighbors=20 appears to work well in general. When the proportion of outliers is high (i.e. greater than 10 %, as in the example below), n_neighbors should be greater (n_neighbors=35 in the example below).
+
+## 参考资料
+[scikit-learn官方文档](http://scikit-learn.org/stable/modules/outlier_detection.html)
