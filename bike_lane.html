@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>基于摩拜单车轨迹数据的自行车道规划</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LEVEL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="bigdata_home.html">Big Data</a>
+</li>
+<li>
+  <a href="ml_home.html">Machine Learning</a>
+</li>
+<li>
+  <a href="spatial_temporal.html">Spatial-Temporal Data Mining</a>
+</li>
+<li>
+  <a href="python_home.html">Python</a>
+</li>
+<li>
+  <a href="r_home.html">R</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">基于摩拜单车轨迹数据的自行车道规划</h1>
+
+</div>
+
+
+<p>下载原始论文请点击<a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2017/06/main-1.pdf">这里</a></p>
+<div class="section level2">
+<h2>总体框架</h2>
+<div class="figure">
+<img src="bike_lane/overview.png" />
+
+</div>
+<ul>
+<li>输入数据：自行车轨迹 + 路网</li>
+<li>Pre-processing：主要包括轨迹点去噪和地图匹配，以及根据道路ID获取相应轨迹的空间索引机制</li>
+<li>Bike-lane planning：文章的核心部分，基于数据观察的结果，提出了一种贪婪的路网扩散算法，以及该算法依赖的初始化算法</li>
+</ul>
+</div>
+<div class="section level2">
+<h2>自行车轨迹的特点</h2>
+<div class="figure">
+<img src="bike_lane/spatial_insights.png" />
+
+</div>
+<ul>
+<li>Spatial hot spots：取出摩拜单车轨迹的起点，绘制热力图，可以发现，最热的点往往是地铁站（左上）或大型商场（左下）</li>
+<li>Star like mobility pattern：根据摩拜单车的行驶轨迹，可以发现大家的出行模式都是从起点开始逐步往外扩散，类似星型（右图）</li>
+</ul>
+<p>考虑到hot spots，文章选取了top k热的路段作为算法的初始状态；考虑到star like mobility pattern，文章使用top k的相邻路段不断往外扩展生成自行车道规划结果。</p>
+</div>
+<div class="section level2">
+<h2>初始化算法</h2>
+<div class="figure">
+<img src="bike_lane/init_clustering.png" />
+
+</div>
+<p>直接选取最热的k个路段作为初始路段的效果不好，因为这k个路段之间往往会连在一块。对于连在一块的路段集合，我们希望只取其中一个路段来做代表。因此，我们需要使用聚类算法。</p>
+<p>文章使用的聚类算法流程如下：首先，选出top 1%的路段作为备选，这是为了削减聚类算法的输入数据量，提高算法效率；然后，使用hierarchical-based clustering method（agglomeration hierarchical clustering method）。选择这个聚类算法的原因是：不需要像DBSCAN那样需要精心调整参数才能获取较好的聚类效果；不像kmeans那样获取的结果不稳定。</p>
+</div>
+<div class="section level2">
+<h2>收益函数</h2>
+<div class="figure">
+<img src="bike_lane/score.png" />
+
+</div>
+<p>我们使用轨迹对自行车道的规划方案打分。对于一条自行车轨迹，自行车道覆盖的长度越长对用户来讲体验越好。但是，当两种规划方案覆盖的轨迹长度相同时，哪一种好呢？我们认为能够连续行驶的规划方案更好。因此，上图中Plan 2比Plan 1好。</p>
+<p>假设轨迹被规划方案覆盖的部分被分为了n段。上图Plan 1把轨迹分为两段，分别是<span class="math inline">\(s_1=1km\)</span>和<span class="math inline">\(s_2=1km\)</span>；Plan 2把轨迹分为1段，是<span class="math inline">\(s_1=2km\)</span>。Plan 2的得分应该比Plan 1要高，为了达到这个效果，我们使用下面的公式计算得分：</p>
+<p><span class="math display">\[score_i=\sum_{s_j \in S_i} \alpha ^{s_j} s_j, \alpha &gt; 1\]</span></p>
+<p>对于一个路段集合，把每条轨迹的分数加起来作为这个集合的得分。</p>
+<p>我们可以看一下<span class="math inline">\(\alpha\)</span>取值的影响效果：</p>
+<div class="figure">
+<img src="bike_lane/effectOfAlpha.png" />
+
+</div>
+</div>
+<div class="section level2">
+<h2>路网扩散方法</h2>
+<div class="figure">
+<img src="bike_lane/expansion.png" />
+
+</div>
+<p>初始化的路段选定以后，我们也获得了相应的邻接路段集合。对每个路段集合，我们评价将其加入后的得分，将得分除以该路段的建设成本得到ratio，将ratio最大的加入集合，如此反复，直到建设成本超出预算。</p>
+</div>
+<div class="section level2">
+<h2>关于摩拜的轨迹数据</h2>
+<div class="figure">
+<img src="bike_lane/mobike_trace_dist.png" />
+
+</div>
+<ul>
+<li><ol style="list-style-type: lower-alpha">
+<li>70%在2km以下</li>
+</ol></li>
+<li><ol start="2" style="list-style-type: lower-alpha">
+<li>绝大多数不到30分钟</li>
+</ol></li>
+<li><ol start="3" style="list-style-type: lower-alpha">
+<li>早高峰、晚高峰明显，凌晨依然有使用量</li>
+</ol></li>
+<li><ol start="4" style="list-style-type: lower-alpha">
+<li>不详</li>
+</ol></li>
+</ul>
+<p>摩拜单车的时空分布很有意思，如下图：</p>
+<div class="figure">
+<img src="bike_lane/mobike_time_spatial.png" />
+
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

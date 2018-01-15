@@ -36,3 +36,7 @@ output:
 - [R空间可视化入门](spatial_analysis_R_vis.html)
 - [R绘制Geohash块](geohash_R_vis.html)
 - 工具库/软件：Mapnik(C++, Python), GeoServer(Java), Leaflet(Javascript), Leaflet for R(R), folium(Python)
+
+### 经典论文阅读笔记
+
+- [基于摩拜单车轨迹数据的自行车道规划](bike_lane.html)
