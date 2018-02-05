@@ -1,0 +1,80 @@
+---
+title: "GeoServer基本使用方法"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
+    highlight: textmate
+---
+
+## 安装
+[安装教程](http://docs.geoserver.org/latest/en/user/installation/linux.html)
+
+## 制作shapefile
+我们使用python的pyshp库将文本文件转化为shape file
+
+```{python, eval=F}
+import shapefile
+
+w = shapefile.Writer(shapeType=shapefile.POINT)
+w.field("name1", "C")
+w.field("name2", "C")
+w.field("name3", "C")
+w.field("name4", "N")
+with open("test.txt") as f:
+    for line in f:
+        lng = **
+        lat = **
+        name1 = **
+        name2 = **
+        name3 = **
+        name4 = **
+        w.record(name1, name2, name3, name4)
+        w.point(lng, lat)
+w.save('test')
+```
+
+## 发布shapefile
+[发布shapefile](http://docs.geoserver.org/latest/en/user/gettingstarted/shapefile-quickstart/index.html)
+
+## Leaflet for R调用
+
+```{r, eval=F}
+ leaflet() %>%
+      addTiles(
+        'http://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+        options=tileOptions(tileSize=256, minZoom=9, maxZoom=20, subdomains="1234"),
+        attribution = '&copy; <a href="http://ditu.amap.com/">高德地图</a>',
+        group="地图"
+      ) %>%
+      addWMSTiles(
+        "http://localhost/geoserver/xxxx/wms",
+        layers = "xxx:xxxx",
+        options = WMSTileOptions(format = "image/png", transparent = TRUE),
+        group="GeoServer",
+        attribution = '&copy; <a href="https://segmentfault.com/blog/datalab">csp</a>'
+      ) %>%
+      addLayersControl(
+        overlayGroups = c("地图", "GeoServer"),
+        options = layersControlOptions(collapsed = FALSE)
+      ) %>%
+      setView(116.489528,40.004535, zoom = 16) 
+```
+
+## 获取shapefile的属性
+
+EPSG:4326的访问链接格式如下，可以获得一个bbox内的所有属性，返回JSON格式：
+
+```{text}
+http://example.com/geoserver/xxx/wfs?
+  service=wfs&
+  version=2.0.0&
+  request=GetFeature&
+  typeNames=namespace:featuretype&
+  count=50&
+  outputFormat=json&
+  bbox=lat1,lng1,lat2,lng2
+```
+
+

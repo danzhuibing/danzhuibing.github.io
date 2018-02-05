@@ -11,7 +11,7 @@
 
 
 
-<title></title>
+<title>GeoServer基本使用方法</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,6 +19,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-1.1/highlight.js"></script>
@@ -161,6 +164,107 @@ $(document).ready(function () {
 
 
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
 
 
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
@@ -202,62 +306,80 @@ $(document).ready(function () {
 
 
 
+<h1 class="title toc-ignore">GeoServer基本使用方法</h1>
 
 </div>
 
 
-<p><br></p>
 <div class="section level2">
-<h2>时间序列处理基础</h2>
-<ul>
-<li><a href="R_time_series.html">R时间序列处理入门</a></li>
-</ul>
+<h2>安装</h2>
+<p><a href="http://docs.geoserver.org/latest/en/user/installation/linux.html">安装教程</a></p>
 </div>
-<div class="section level2">
-<h2>空间数据处理基础</h2>
-<div class="section level3">
-<h3>空间数据规格</h3>
-<ul>
-<li>数据规格：shp, tab, WKB/WKT, GeoJSON/TopoJSON, PostGIS…</li>
-<li>工具库：GDAL(C/C++), GeoTools(Java), pyshp(Python), rgdal(R), sf(R)</li>
-</ul>
+<div id="shapefile" class="section level2">
+<h2>制作shapefile</h2>
+<p>我们使用python的pyshp库将文本文件转化为shape file</p>
+<pre class="python"><code>import shapefile
+
+w = shapefile.Writer(shapeType=shapefile.POINT)
+w.field(&quot;name1&quot;, &quot;C&quot;)
+w.field(&quot;name2&quot;, &quot;C&quot;)
+w.field(&quot;name3&quot;, &quot;C&quot;)
+w.field(&quot;name4&quot;, &quot;N&quot;)
+with open(&quot;test.txt&quot;) as f:
+    for line in f:
+        lng = **
+        lat = **
+        name1 = **
+        name2 = **
+        name3 = **
+        name4 = **
+        w.record(name1, name2, name3, name4)
+        w.point(lng, lat)
+w.save(&#39;test&#39;)</code></pre>
 </div>
-<div class="section level3">
-<h3>空间计算</h3>
-<ul>
-<li>工具库：GEOS(C/C++), JTS(Java), shapely(Python), rgeos(R)</li>
-</ul>
+<div id="shapefile" class="section level2">
+<h2>发布shapefile</h2>
+<p><a href="http://docs.geoserver.org/latest/en/user/gettingstarted/shapefile-quickstart/index.html">发布shapefile</a></p>
 </div>
-<div class="section level3">
-<h3>空间索引</h3>
-<p>简单总结空间索引技术，就是一句话：点数据用Geohash，线、面数据用R树。下面是zhanlijun（美团-&gt;阿里）的一系列经典博文：</p>
-<ul>
-<li><a href="http://www.cnblogs.com/LBSer/p/3310455.html">Geohash算法原理</a></li>
-<li><a href="http://www.cnblogs.com/LBSer/p/3392491.html">空间索引1</a></li>
-<li><a href="http://www.cnblogs.com/LBSer/p/3403933.html">空间索引2</a></li>
-<li><a href="http://www.cnblogs.com/LBSer/p/4471742.html">地理围栏技术：判断点是否落在某多边形围栏内部</a></li>
-</ul>
+<div id="leaflet-for-r" class="section level2">
+<h2>Leaflet for R调用</h2>
+<pre class="r"><code> leaflet() %&gt;%
+      addTiles(
+        &#39;http://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&amp;size=1&amp;scale=1&amp;style=8&amp;x={x}&amp;y={y}&amp;z={z}&#39;,
+        options=tileOptions(tileSize=256, minZoom=9, maxZoom=20, subdomains=&quot;1234&quot;),
+        attribution = &#39;&amp;copy; &lt;a href=&quot;http://ditu.amap.com/&quot;&gt;高德地图&lt;/a&gt;&#39;,
+        group=&quot;地图&quot;
+      ) %&gt;%
+      addWMSTiles(
+        &quot;http://localhost/geoserver/xxxx/wms&quot;,
+        layers = &quot;xxx:xxxx&quot;,
+        options = WMSTileOptions(format = &quot;image/png&quot;, transparent = TRUE),
+        group=&quot;GeoServer&quot;,
+        attribution = &#39;&amp;copy; &lt;a href=&quot;https://segmentfault.com/blog/datalab&quot;&gt;csp&lt;/a&gt;&#39;
+      ) %&gt;%
+      addLayersControl(
+        overlayGroups = c(&quot;地图&quot;, &quot;GeoServer&quot;),
+        options = layersControlOptions(collapsed = FALSE)
+      ) %&gt;%
+      setView(116.489528,40.004535, zoom = 16) </code></pre>
 </div>
-<div class="section level3">
-<h3>空间可视化</h3>
-<ul>
-<li><a href="https://segmentfault.com/a/1190000011276788">瓦片地图原理</a></li>
-<li><a href="spatial_analysis_R_vis.html">R空间可视化入门</a></li>
-<li><a href="geohash_R_vis.html">R绘制Geohash块</a></li>
-<li>工具库/软件：Mapnik(C++, Python), GeoServer(Java), Leaflet(Javascript), Leaflet for R(R), folium(Python)</li>
-<li><a href="geoserver.html">GeoServer基本使用方法</a></li>
-</ul>
-</div>
-<div class="section level3">
-<h3>经典论文阅读笔记</h3>
-<ul>
-<li><a href="bike_lane.html">基于摩拜单车轨迹数据的自行车道规划</a></li>
-</ul>
-</div>
+<div id="shapefile" class="section level2">
+<h2>获取shapefile的属性</h2>
+<p>EPSG:4326的访问链接格式如下，可以获得一个bbox内的所有属性，返回JSON格式：</p>
+<pre class="text"><code>http://example.com/geoserver/xxx/wfs?
+  service=wfs&amp;
+  version=2.0.0&amp;
+  request=GetFeature&amp;
+  typeNames=namespace:featuretype&amp;
+  count=50&amp;
+  outputFormat=json&amp;
+  bbox=lat1,lng1,lat2,lng2</code></pre>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
