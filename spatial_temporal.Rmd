@@ -38,6 +38,25 @@ output:
 - 工具库/软件：Mapnik(C++, Python), GeoServer(Java), Leaflet(Javascript), Leaflet for R(R), folium(Python)
 - [GeoServer基本使用方法](geoserver.html)
 
+### 轨迹挖掘
+- GPS噪点过滤
+    - Mean Filter或Median Filter：按照相邻观测位置进行噪点过滤
+    - 卡尔曼滤波：按照观测位置概率与动力学推断概率的复合概率进行位置平滑。[卡尔曼滤波原理](http://www.bzarg.com/p/how-a-kalman-filter-works-in-pictures/)、[Kalman与GPS](https://stackoverflow.com/questions/1134579/smooth-gps-data)、[pykalman应用于GPS](https://stackoverflow.com/questions/43377626/how-to-use-kalman-filter-in-python-for-location-data)
+    - 启发式噪点过滤：speed-based filter，density-based clustering
+- 停留点检测
+    - 启发式算法：[微软亚洲研究院郑宇](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/Mining20user20similarity20based20on20location20history.pdf)
+- 轨迹分段
+    - 按照时间分段：比如只考虑最近8分钟的轨迹点，常用于线上应用，经典例子是实时路况
+    - 按照时空特点分段：比如相邻两点的时间间隔超过6分钟；相邻转向超过120度；使用Douglas-Peucker压缩获得形状关键点，按照关键点分割；按照停留点分割；按照速度跃变分段
+    - 按照业务信息分段：根据起点和终点抽取轨迹；根据配送任务分段轨迹
+- 轨迹生成路网：[微软亚洲研究院郑宇](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/12/maps-from-GPS.pdf)
+- 地图分区
+    - 矢量分区：基于矢量形状的计算获取地图分区，[Python shapely](map_segmentation.html)
+    - 栅格分区：基于图片计算获取地图分区，[微软亚洲研究院郑宇](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/mapsegmentation.pdf)
+- 地图匹配
+    - Hidden Markov Model
+    - 启发式算法ST-Matching：[微软亚洲研究院郑宇](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/Map-Matching20for20Low-Sampling-Rate20GPS20Trajectories-cameraReady.pdf)
+
 ### 经典论文阅读笔记
 
 - [基于摩拜单车轨迹数据的自行车道规划](bike_lane.html)

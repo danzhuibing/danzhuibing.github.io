@@ -249,6 +249,38 @@ $(document).ready(function () {
 </ul>
 </div>
 <div class="section level3">
+<h3>轨迹挖掘</h3>
+<ul>
+<li>GPS噪点过滤
+<ul>
+<li>Mean Filter或Median Filter：按照相邻观测位置进行噪点过滤</li>
+<li>卡尔曼滤波：按照观测位置概率与动力学推断概率的复合概率进行位置平滑。<a href="http://www.bzarg.com/p/how-a-kalman-filter-works-in-pictures/">卡尔曼滤波原理</a>、<a href="https://stackoverflow.com/questions/1134579/smooth-gps-data">Kalman与GPS</a>、<a href="https://stackoverflow.com/questions/43377626/how-to-use-kalman-filter-in-python-for-location-data">pykalman应用于GPS</a></li>
+<li>启发式噪点过滤：speed-based filter，density-based clustering</li>
+</ul></li>
+<li>停留点检测
+<ul>
+<li>启发式算法：<a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/Mining20user20similarity20based20on20location20history.pdf">微软亚洲研究院郑宇</a></li>
+</ul></li>
+<li>轨迹分段
+<ul>
+<li>按照时间分段：比如只考虑最近8分钟的轨迹点，常用于线上应用，经典例子是实时路况</li>
+<li>按照时空特点分段：比如相邻两点的时间间隔超过6分钟；相邻转向超过120度；使用Douglas-Peucker压缩获得形状关键点，按照关键点分割；按照停留点分割；按照速度跃变分段</li>
+<li>按照业务信息分段：根据起点和终点抽取轨迹；根据配送任务分段轨迹</li>
+</ul></li>
+<li>轨迹生成路网：<a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/12/maps-from-GPS.pdf">微软亚洲研究院郑宇</a></li>
+<li>地图分区
+<ul>
+<li>矢量分区：基于矢量形状的计算获取地图分区，<a href="map_segmentation.html">Python shapely</a></li>
+<li>栅格分区：基于图片计算获取地图分区，<a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/mapsegmentation.pdf">微软亚洲研究院郑宇</a></li>
+</ul></li>
+<li>地图匹配
+<ul>
+<li>Hidden Markov Model</li>
+<li>启发式算法ST-Matching：<a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/Map-Matching20for20Low-Sampling-Rate20GPS20Trajectories-cameraReady.pdf">微软亚洲研究院郑宇</a></li>
+</ul></li>
+</ul>
+</div>
+<div class="section level3">
 <h3>经典论文阅读笔记</h3>
 <ul>
 <li><a href="bike_lane.html">基于摩拜单车轨迹数据的自行车道规划</a></li>

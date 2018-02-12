@@ -1,0 +1,50 @@
+---
+title: "Map Segmentation"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
+    highlight: textmate
+---
+
+## 前言
+本文介绍使用Python shapely库完成地图分区的基本原理。地图分区的具体内容是：输入道路网，根据路网将地图分割为多个互不重叠的区域。
+
+## 构建MultiLines
+将路网数据构建为Shapely的线对象：
+```{python, eval=F}
+from shapely.geometry import MultiLineString
+
+lines = [
+    ((0, 0), (1, 1)),
+    ((0, 0), (0, 1)),
+     ((0, 1), (1, 1)),
+     ((1, 1), (1, 0)),
+     ((1, 0), (0, 0)),
+    ((0, 2), (1,0))
+     ]
+road = MultiLineString(lines)
+road
+```
+
+## 根据线生成缓冲区多边形
+```{python, eval=F}
+road_poly = road.buffer(0.001)
+```
+
+
+## 构建一个矩形区域
+```{python, eval=F}
+from shapely.geometry import box
+region = box(0.0, 0.0, 2.0, 2.0)
+```
+
+## 求矩形区域与缓冲区的差集
+```{python, eval=F}
+polys = list(region.difference(road_poly))
+```
+
+polys就是map segmentation的结果。
+
+[参考资料](https://gis.stackexchange.com/questions/58245/generate-polygons-from-a-set-of-intersecting-lines)

@@ -11,7 +11,7 @@
 
 
 
-<title></title>
+<title>Map Segmentation</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,6 +19,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-1.1/highlight.js"></script>
@@ -161,6 +164,107 @@ $(document).ready(function () {
 
 
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
 
 
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
@@ -202,54 +306,51 @@ $(document).ready(function () {
 
 
 
+<h1 class="title toc-ignore">Map Segmentation</h1>
 
 </div>
 
 
-<p><br></p>
-<div class="section level3">
-<h3>关于作者</h3>
-<p>我是陈水平，硕士毕业于德国亚琛工大，2014年4月加入阿里，从事算法工程师的工作，主要职责是基于高德地图驾车导航的GPS轨迹，将大数据工具、机器学习算法、数据可视化技术三者结合，提供改善用户出行体验的解决方案；2017年9月加入美团外卖，负责时空数据挖掘。</p>
-<p>我的邮箱是 <a href="mailto:csp19890128@qq.com">csp19890128@qq.com</a>，有问题可以发邮件与我取得联系。</p>
-<hr>
-<p>我擅长的研究领域包括以下几个方面：</p>
-<ul>
-<li>骑手轨迹仓库与骑行难度挖掘：根据外卖运单、骑手轨迹、地图，搭建骑手轨迹仓库，并进行等餐、交付、骑行等时间预估算法研发</li>
-<li>驾车规划路权学习：基于用户实走路线与驾车规划路线的差异，学习道路和路口的通行成本，改善驾车规划质量，降低用户偏航率</li>
-<li>交通事件挖掘：基于实时道路速度与道路流量，及时挖掘可能的交通事件，如施工、大雾封闭、体育赛事封路、交通事故等</li>
-<li>短期路况预测：根据历史和实时路况预测未来1小时的路况，基于未来路况推算导航规划路线的旅行时间（ETA）</li>
-<li>城市交通分析：基于海量历史轨迹与实时路况提供以全国拥堵城市排行榜为核心的<a href="http://report.amap.com">权威报告</a></li>
-<li>小区选房行为建模：基于购房记录，应用离散选择模型，分析住宅特征的价值与人群偏好，发表SSCI一篇</li>
-<li>铁路行程规划：对铁路时刻表进行时空图建模，开发高性能Dijkstra、A*等最短路算法生成铁路行程，发表SCI一篇</li>
-</ul>
-<hr>
+<div class="section level2">
+<h2>前言</h2>
+<p>本文介绍使用Python shapely库完成地图分区的基本原理。地图分区的具体内容是：输入道路网，根据路网将地图分割为多个互不重叠的区域。</p>
 </div>
-<div class="section level3">
-<h3>工作经历</h3>
-<ul>
-<li>2017.09至今，美团外卖-配送事业部-算法策略组，P3-1</li>
-<li>2014.04-2017.09，阿里移动事业群-高德地图-出行业务中心-机器学习研发部，P6</li>
-</ul>
-<hr>
+<div id="multilines" class="section level2">
+<h2>构建MultiLines</h2>
+<p>将路网数据构建为Shapely的线对象：</p>
+<pre class="python"><code>from shapely.geometry import MultiLineString
+
+lines = [
+    ((0, 0), (1, 1)),
+    ((0, 0), (0, 1)),
+     ((0, 1), (1, 1)),
+     ((1, 1), (1, 0)),
+     ((1, 0), (0, 0)),
+    ((0, 2), (1,0))
+     ]
+road = MultiLineString(lines)
+road</code></pre>
 </div>
-<div class="section level3">
-<h3>教育背景</h3>
-<ul>
-<li>德国亚琛工业大学（<a href="http://www.rwth-aachen.de/">RWTH Aachen</a>）-机床研究所（<a href="http://www.wzl.rwth-aachen.de/en/index.htm">WZL</a>），工学硕士，2014</li>
-<li><a href="http://www.ie.tsinghua.edu.cn/List/index/cid/52.html">清华大学-运筹与统计研究所</a>，工学硕士，导师<a href="http://www.ie.tsinghua.edu.cn/haijiang/">姜海</a>，2014</li>
-<li><a href="http://www.ie.tsinghua.edu.cn/">清华大学-工业工程系</a>，工学学士，2011</li>
-</ul>
-<hr>
+<div class="section level2">
+<h2>根据线生成缓冲区多边形</h2>
+<pre class="python"><code>road_poly = road.buffer(0.001)</code></pre>
 </div>
-<div class="section level3">
-<h3>我的文章</h3>
-<p><a href="https://segmentfault.com/blog/datalab">SegmentFault技术专栏</a></p>
-<p>Jiang, H. and <strong>S. Chen</strong>, Dwelling Unit Choice in a Condominium Complex: Analysis of Willingness to Pay and Preference Heterogeneity, <strong>Urban Studies</strong>, v. 53, n. 11, pp. 2273-2292, 2016. （居民小区内的住宅选择:对支付意愿及偏好异质性的分析, SSCI）<a href="files/paper_dwelling_urban_studies.pdf">下载</a></p>
-<p>Jin, W., <strong>S. Chen</strong> and H. Jiang, Finding the K Shortest Paths in a Time-Schedule Network with Constraints on Arcs, <strong>Computers &amp; Operations Research</strong>, v. 40 n. 12, pp. 2975-2982, 2013. （时刻表网络下的 K 最短路算法, SCI）<a href="files/paper_kpath_computer_operation_research.pdf">下载</a></p>
+<div class="section level2">
+<h2>构建一个矩形区域</h2>
+<pre class="python"><code>from shapely.geometry import box
+region = box(0.0, 0.0, 2.0, 2.0)</code></pre>
+</div>
+<div class="section level2">
+<h2>求矩形区域与缓冲区的差集</h2>
+<pre class="python"><code>polys = list(region.difference(road_poly))</code></pre>
+<p>polys就是map segmentation的结果。</p>
+<p><a href="https://gis.stackexchange.com/questions/58245/generate-polygons-from-a-set-of-intersecting-lines">参考资料</a></p>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
