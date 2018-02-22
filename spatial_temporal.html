@@ -275,14 +275,23 @@ $(document).ready(function () {
 </ul></li>
 <li>地图匹配
 <ul>
-<li>Hidden Markov Model</li>
-<li>启发式算法ST-Matching：<a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/Map-Matching20for20Low-Sampling-Rate20GPS20Trajectories-cameraReady.pdf">微软亚洲研究院郑宇</a></li>
+<li>Hidden Markov Model：ST-Matching算法，可以看做是HMM的变种，<a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/Map-Matching20for20Low-Sampling-Rate20GPS20Trajectories-cameraReady.pdf">微软亚洲研究院郑宇</a></li>
 </ul></li>
 </ul>
 </div>
 <div class="section level3">
-<h3>经典论文阅读笔记</h3>
+<h3>经典论文</h3>
 <ul>
+<li>地图匹配：输入一串GPS点，返回一串Link
+<ul>
+<li>Hidden Markov Model：<a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/Map-Matching20for20Low-Sampling-Rate20GPS20Trajectories-cameraReady.pdf">Map-Matching for Low-Sampling-Rate GPS Trajectories</a></li>
+<li>Global Matching: <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.73.7466&amp;rep=rep1&amp;type=pdf">On Map-Matching Vehicle Tracking Data</a></li>
+</ul></li>
+<li>轨迹距离：根据海量轨迹获得任意两点之间的通行距离或通行时间
+<ul>
+<li>统计法：<a href="http://delivery.acm.org/10.1145/3000000/2996943/a61-hongjian.pdf?ip=103.37.140.17&amp;id=2996943&amp;acc=CHORUS&amp;key=4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E6D218144511F3437&amp;__acm__=1519287457_adca89a3efdf68474813607afa36fd04">A Simple Baseline for Travel Time Estimation using Large-Scale Trip Data</a></li>
+<li>神经网络：<a href="https://arxiv.org/pdf/1710.04350.pdf">A Unified Neural Network Approach for Estimating Travel Time and Distance for a Taxi Trip</a></li>
+</ul></li>
 <li><a href="bike_lane.html">基于摩拜单车轨迹数据的自行车道规划</a></li>
 </ul>
 </div>
