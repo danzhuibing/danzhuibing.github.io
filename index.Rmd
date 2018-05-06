@@ -63,6 +63,7 @@ output:
 - 难点挑战：解决不同数据源下道路分布不一致问题
 - 取得成果：每季度对外发布研究报告，提供实时查询网站 http://report.amap.com
 
+<hr>
 
 ### 教育背景
 + 德国亚琛工业大学（[RWTH Aachen](http://www.rwth-aachen.de/)）-机床研究所（[WZL](http://www.wzl.rwth-aachen.de/en/index.htm)），工学硕士，2014
