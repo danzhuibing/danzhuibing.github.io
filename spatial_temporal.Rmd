@@ -54,9 +54,13 @@ output:
     - 矢量分区：基于矢量形状的计算获取地图分区，[Python shapely](map_segmentation.html)
     - 栅格分区：基于图片计算获取地图分区，[微软亚洲研究院郑宇](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/mapsegmentation.pdf)
 - 地图匹配
-    - Hidden Markov Model
-    - 启发式算法ST-Matching：[微软亚洲研究院郑宇](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/Map-Matching20for20Low-Sampling-Rate20GPS20Trajectories-cameraReady.pdf)
+    - Hidden Markov Model：ST-Matching算法，可以看做是HMM的变种，[微软亚洲研究院郑宇](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/Map-Matching20for20Low-Sampling-Rate20GPS20Trajectories-cameraReady.pdf)
 
-### 经典论文阅读笔记
-
+### 经典论文
+- 地图匹配：输入一串GPS点，返回一串Link
+    - Hidden Markov Model：[Map-Matching for Low-Sampling-Rate GPS Trajectories](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/Map-Matching20for20Low-Sampling-Rate20GPS20Trajectories-cameraReady.pdf)
+    - Global Matching: [On Map-Matching Vehicle Tracking Data](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.73.7466&rep=rep1&type=pdf)
+- 轨迹距离：根据海量轨迹获得任意两点之间的通行距离或通行时间
+    - 统计法：[A Simple Baseline for Travel Time Estimation using Large-Scale Trip Data](http://delivery.acm.org/10.1145/3000000/2996943/a61-hongjian.pdf?ip=103.37.140.17&id=2996943&acc=CHORUS&key=4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E6D218144511F3437&__acm__=1519287457_adca89a3efdf68474813607afa36fd04)
+    - 神经网络：[A Unified Neural Network Approach for Estimating Travel Time and Distance for a Taxi Trip](https://arxiv.org/pdf/1710.04350.pdf)
 - [基于摩拜单车轨迹数据的自行车道规划](bike_lane.html)
