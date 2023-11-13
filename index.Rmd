@@ -5,60 +5,102 @@ output:
 ---
 <br>
 
-### 关于作者
+# 陈水平
+微信：THAachen | 邮箱：csp19890128<!-- -->@qq.com
 
-我是陈水平，硕士毕业于德国亚琛工业大学（RWTH Aachen）；2014年7月加入高德地图，从事算法研究工作，主要职责是基于驾车导航的GPS轨迹，综合应用大数据工具、空间数据处理、机器学习和可视化技术，提供改善用户驾车出行体验的解决方案；2017年9月加入美团外卖，从0到1建设即时配送业务的地图策略方向，负责骑手App地图功能的优化。
+### 招聘广告（发布日期：20231024）
+美团配送商流策略组正在招聘选品定价算法工程师，职级L6-L7，有意者可随时与我联系。
 
+商流策略组服务于美团外卖、美团闪购、美团买药、美团跑腿、拼好饭等业务线的十余个业务场景，专注于在线零售领域的算法研究与应用。我们通过机器学习、因果推断、运筹优化、强化学习、机器视觉、NLP、时空数据挖掘，为千万商家寻找商机，为平台运营提供智能化方案，为用户提高交易和履约体验，从而促进平台和生态的供给繁荣和用户增长。
 
-我的邮箱是 csp19890128@qq.com，有问题可以发邮件与我取得联系。
+这是一支快速成长中的学习型团队。在创造业务价值的同时，我们不断输出学术成果，在ICML、KDD、SIGSPATIAL、Transportation Research Part E等国际会议和期刊上发表数篇学术论文。团队学习氛围浓厚，每年组织五十余场分享交流，互相学习和启发。真诚邀请海内外相关方向的优秀人才加入我们，在这里成长并贡献才智。
+
 
 <hr>
 
 ### 工作经历
-+ 2017.09至今，美团外卖，算法专家
-+ 2014.04-2017.09，高德地图，资深算法工程师
+#### 2017.09至今，美团-外卖配送，L9
+**2021.08至今，商流策略组负责人**：负责配送网络规划、配送费定价和爆单。核心业绩是用户App的差异化履约产品（超区送、顺风餐、优享送、优惠送）、外卖配送选品定价系统（高维因果推断、大规模组合优化求解）。
+
+**2017.09-2021.08，地图策略组负责人**：负责骑手轨迹、交付点、AOI、骑行规划。核心业绩是骑手App的末端指引系统（交付点挖掘、AOI生产、出入口挖掘、骑步禁通行模式挖掘、末端算路）、骑手轨迹仓库（轨迹分段、地图匹配）。
+
+晋升2次，入职P3-1，2018晋升P3-2，2020晋升P3-3（2021职级体系迭代为L9）。
+
+
+#### 2014.07-2017.09，阿里巴巴-高德地图，P6
+**机器学习研发部算法工程师**。利用机器学习算法处理时空轨迹数据，改善用户驾车规划的体验。核心业绩是高德大数据交通报告、未来路况预测、封路挖掘、道路通行代价学习。
+
+晋升2次，校招入职T1.3，2015晋升T2（合并为阿里职级P5），2016晋升P6。
 
 <hr>
 
-### 项目经历
+### 教育经历
+#### 2011.09-2014.07，清华大学，管理科学与工程，硕士；德国亚琛工业大学，生产系统工程，硕士
+获留德全额奖学金、三菱重工奖学金、清华之友—德语奖学金。
 
-#### 轨迹挖掘（Trajectory Data Mining）
-- 描述：GPS轨迹的定位精度存在10-20m的误差，在城市峡谷、隧道、高架等复杂场景还会出现定位缺失、定位漂移等问题；此外，轨迹数据只包含采集时刻和经纬度等时空信息，需融合业务信息提取出具有明确语义的结构化数据，如从某个起点到某个终点的实际行驶路线、在某个商家等待取货、在某个小区进行交付等
-- 经验：在高德工作时，在导师指导下学习了如何在分布式计算环境实现轨迹分段和地图匹配算法；加入美团后，解决了外卖配送室内室外轨迹混合、骑手并单配送现象带来的挑战，参考郑宇博士城市计算团队的[轨迹挖掘框架](https://www.microsoft.com/en-us/research/project/trajectory-data-mining/)，建设了即时配送场景下的轨迹清洗技术体系
+#### 2007.09-2011.07，清华大学，工业工程，本科
+获国家奖学金、清华之友—渠玉芝奖学金和清华大学优良毕业生。
 
-#### 导航路线学习（Learning to Route）
-- 描述：导航规划路线与司机实走轨迹不一致，基本上可以概括为如下几个原因，一是路网缺失，二是路况不准，三是起终点抓路错误，四是路网权值（道路通行代价）设置不合理；导航路线学习针对最后一个场景，研究如何基于海量实走轨迹，用机器学习的方法对路网权值进行学习
-- 经验：在高德工作时，在导师指导下将路权设置转化为路线排序问题，使用TensorFlow实现了整个方案，解决了feature为路段/路口label为路线的问题，并通过轨迹挑选、构造pair样本、预训练、添加约束、改造目标函数等方式有效解决了bad case；加入美团后，基于高频商家和用户的历史送货轨迹，采用数据挖掘方法提取了大多数骑手选择的热门路线（Popular Route），显著提升了配送路线的无偏航率和覆盖率
+<hr>
 
-#### 封路挖掘（Road Closure Mining）
-- 描述：物理世界发生封路时，导航引擎如果没有及时感知，就会导致规划路线不可通行，对用户体验造成极大伤害；封闭道路的表现形式很丰富，包括全部施工封闭、局部施工封闭、长期不可通行、周边借道通行等，在轨迹上分别会体现出和正常通行道路不同的特征；封路挖掘的目的是通过提取轨迹的统计特征发现封闭道路，并在导航引擎中对封闭路段进行规避
-- 经验：在高德工作时，在导师指导下沿着道路形状创建横纵分布的网格来提取轨迹分布特征，使用决策树模型对道路封闭状态进行识别；加入美团后，构建了封路系统，基于流量、速度、行驶方向、轨迹分布等特征，自动化审核和处理骑手和城市经理上报的道路不可通行问题
+### 研究经历
+#### 研究领域1：决策智能
 
-#### 交付点挖掘（Delivery Point Mining）
-- 描述：获取用户收货地址的行业模式是先选取一个参照POI，再填写明细地址，骑手根据POI的坐标和明细地址的描述，确认收货地点的真实位置；这个模式受用户选择参照POI的影响很大，用户选错或选不到合适的POI时，系统获取的用户坐标与真实物理世界的坐标偏差极大，会导致下游派单、定价、时间预估等业务作出错误决策，对新骑手的配送也会造成误导
-- 经验：加入美团后，主持了交付点挖掘项目，通过地址结构化和骑手签到数据聚类生成了精确到单元粒度的交付点数据，极大地提升了外卖配送系统用户坐标的准确性
+**外卖配送选品定价**
+
++ 背景：商家配送范围（选品）和C端配送费（定价）的模型为订单视角，假设同一用户（AOI）在不同商家（POI）之间的下单行为相互独立，即一个POI-AOI是否可见或价格只影响自身的转化率，不影响其他POI-AOI的转化率。这种忽视订单转移的设定，虽然降低了技术建模难度，但是与强竞争替代效应下的外卖业务实际情况不符，得到的是伪最优决策。
++ 成果：从用户视角出发，建模每个AOI基于可见商家列表形成的listwise干预下是否下单。通过量化listwise干预之间的相互影响（称为替代弹性），准确区分平台内部商家之间的订单转移和平台的增量订单，从而得到平台视角下的最优选品和出价决策。
++ 论文：Dwelling unit choice in a condominium complex: Analysis of willingness to pay and preference heterogeneity. **Urban Studies**. 2016. 二作.
+
+**因果推断**
+
++ 背景：配送价格和用户下单意愿之间的关系是因果关系。在观测数据中由于配送价格在各种商家用户对之中并非随机分配的，而是根据某种策略机制与商家用户的属性相关，而这些属性往往对用户下单意愿也有作用，因此在观测数据上应用机器学习算法无法区分相关性和因果关系。
++ 成果：建立了两套因果推断体系。一是建立随机实验机制，避免观测数据的选择偏差对建模造成影响。二是研发基于样本重加权的因果去偏技术，在无法开展随机实验或随机实验数据不足场景，针对二值型干预、多值型干预、连续型干预分别建立了re-weighting方向的去偏技术。
++ 论文：Counterfactual Prediction for Outcome-Oriented Treatments. **ICML 2022**. 四作.
 
 
-#### 其他
-- 路况预测：基于海量历史路况和实时路况，预测未来一小时的路况；随机森林模型，每条道路一个模型，使用上下游若干米内的道路路况信息作为特征
-- [交通大数据分析报告](http://report.amap.com)
-- AOI挖掘：将AOI数据与轨迹数据融合，构建AOI画像
+**运筹优化**
+
++ 背景：现有运筹优化算法可以做到对小规模问题的精确求解，面对超大参数规模问题时，常规方法的求解精度和运行效率不理想。外卖配送的选品定价场景，决策变量规模可达上亿，是一个超大规模的优化分配问题。在有限的几个小时内求解最大能力仅为十万量级，只能选择丧失精度来近似求解。
++ 成果：基于图神经网络的组合优化，将混合整数线性规划（MILP）的决策变量和约束表示成二分图的节点，变量是否在约束表达式中用边表示，然后通过图卷积生成每个节点的node embedding，再接MLP，预测每个变量节点取值为1的概率。模型训练完成后，会基于GCN预测的每个决策变量取值概率值，固定一部分变量的取值，剩余未固定的变量构成了一个子问题，子问题规模较小，可调用免费开源的低维优化求解器实现快速高效求解超大规模的高维整数规划问题。
+
+
+#### 研究领域2：时空数据挖掘
+**轨迹挖掘**
+
++ 背景：骑手GPS轨迹记录了骑手履约过程的时空信息，对判断骑手何时何地取货或交付、驾驶路线偏好、道路通行状态、社区管理模式具有巨大的数据价值；然而配送轨迹具有室内室外混合、骑手并单配送的业务特点，加上GPS定位本身存在10-20m的误差，在城市峡谷、隧道、高架等复杂场景易发的定位缺失和漂移问题，使得轨迹预处理面临了较大的技术挑战。
++ 成果：通过融合运单和轨迹数据，基于Spark与Flink实现了漂移清洗、停留识别、轨迹分段、地图匹配等轨迹预处理算法，清洗出每天千万级的高质量轨迹数据，为配送各个算法场景提供了海量真值数据。
++ 论文：Cycling Map Inference Using Global Positioning System Trajectories: A Case Study in the Online Food Delivery Business. **Transportation Research Record**. 2023. 三作.
+
+
+**POI&AOI挖掘**
+
++ 背景：末端百米配送是骑手配送困难的痛点环节，存在社区门难找、门难进（封闭、步行）、楼难找问题。地图行业现有的AOI数据仅能覆盖较低比例外卖配送下单地址，需自行发现和补充AOI轮廓、挖掘AOI的出入口位置、AOI通行模式和顾客地址交付点。
++ 成果：打造了骑手App端地图页的末端指引服务。提出基于多模态地理数据的AOI自动生成算法，融合外卖配送地理位置数据和卫片、路网等多源地理数据，通过语义分割和轮廓学习生成AOI边界。基于海量历史轨迹挖掘头部AOI的通行模式、楼栋分布和出入口位置。通过地址结构化和骑手轨迹挖掘获得楼栋和单元粒度的交付点数据，替换原始的POI坐标，显著提升用户坐标的准确度。
++ 论文：C-AOI: Contour-based Instance Segmentation for High-Quality Areas-of-Interest in Online Food Delivery Platform. **KDD 2023**. 通讯作者.
++ 论文：Automatic generation of areas of interest using multimodal geospatial data from an on-demand food delivery platform. **ACM SIGSPATIAL 2022**. 通讯作者.
++ 论文：Simultaneous detection of multiple areas-of-interest using geospatial data from an online food delivery platform. **ACM SIGSPATIAL 2022**. 四作.
++ 论文：POI Detection of High-Rise Buildings Using Remote Sensing Images: A Semantic Segmentation Method Based on Multitask Attention Res-U-Net. **IEEE Transactions on Geoscience and Remote Sensing**. 2022. 三作.
++ 论文：A semantic segmentation based poi coordinates generating framework for on-demand food delivery service. **ACM SIGSPATIAL 2021**. 通讯作者.
+
+
+
+**路线规划**
+
++ 背景：规划路线与司机/骑手实走轨迹不一致，基本上可以概括为以下几个原因，一是路网缺失，二是路况不准，三是起终点抓路错误，四是路网权值（道路通行代价）设置不合理；导航路线学习针对最后一个场景，研究如何基于海量实走轨迹，用机器学习的方法对路网权值进行学习。
++ 成果：实验了两种不同的建模方法；一是端到端方法，将路权学习转化为路线排序问题，使用神经网络生成每个道路和路口的权值，使用实走路线权值小于规划路线的pair对方式构造损失函数；二是预训练方法，使用RNN模型学习道路之间的转移概率，基于道路的转移概率生成最优路线；两种方法均能有效提升规划路线的无偏航率和覆盖率。
++ 论文：Route planning using divide-and-conquer: A GAT enhanced insertion transformer approach. **Transportation Research Part E: Logistics and Transportation Review**. 2023. 五作.
++ 论文：Integrating Dijkstra’s algorithm into deep inverse reinforcement learning for food delivery route planning. **Transportation Research Part E: Logistics and Transportation Review**. 2020. 三作.
++ 论文：Finding the K shortest paths in a time-schedule network with constraints on arcs. **Computers & Operations Research**. 2013. 二作.
 
 
 <hr>
 
-### 教育背景
-+ 德国亚琛工业大学（[RWTH Aachen](http://www.rwth-aachen.de/)）-机床研究所（[WZL](http://www.wzl.rwth-aachen.de/en/index.htm)），工学硕士，2014
-+ [清华大学-运筹与统计研究所](http://www.ie.tsinghua.edu.cn/List/index/cid/52.html)，工学硕士，导师[姜海](http://www.ie.tsinghua.edu.cn/haijiang/)，2014
-+ [清华大学-工业工程系](http://www.ie.tsinghua.edu.cn/)，工学学士，2011
 
-<hr>
-
-### 我的文章
-[SegmentFault技术专栏](https://segmentfault.com/blog/datalab)
-
-Jiang, H. and **S. Chen**, Dwelling Unit Choice in a Condominium Complex: Analysis of Willingness to Pay and Preference Heterogeneity, **Urban Studies**, v. 53, n. 11, pp. 2273-2292, 2016. （居民小区内的住宅选择:对支付意愿及偏好异质性的分析, SSCI）[下载](files/paper_dwelling_urban_studies.pdf)
-
-Jin, W., **S. Chen** and H. Jiang, Finding the K Shortest Paths in a Time-Schedule Network with Constraints on Arcs, **Computers & Operations Research**, v. 40 n. 12, pp. 2975-2982, 2013. （时刻表网络下的 K 最短路算法, SCI）[下载](files/paper_kpath_computer_operation_research.pdf)
-
+### 专业技能
+- 大数据：熟练使用Hadoop、Hive、Spark处理海量GPS数据；熟练使用Storm、Flink进行实时轨迹流处理。
+- 机器学习：熟练使用TensorFlow进行神经网络开发；熟练使用Numpy和scikit-learn完成常规机器学习模型研发。
+- 空间计算：熟练使用R语言完成数据分析与前端工具开发；熟悉shp、WKT、GeoJSON等常见的空间数据格式，熟练使用GEOS、JTS、Shapely、GeoServer进行空间计算。
+- 运筹优化：熟悉Dijkstra、A*等最短路算法；熟悉派单、TSP、VRP等调度算法；熟悉分支定界、拉格朗日松弛、动态规划等精确求解算法；熟悉Gurobi、SCIP开发。
+- 外语：英语六级，德语C1。
 
